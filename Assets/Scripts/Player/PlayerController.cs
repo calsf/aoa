@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     private float currVelocityY;
     private Vector3 velocity;
 
-    private bool isSliding;
+    public bool isSliding { get; set; }
     public bool isAiming { get; set; }
 
     private int jumpMaxAvailable;

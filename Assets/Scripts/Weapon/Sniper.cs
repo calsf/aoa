@@ -7,6 +7,8 @@ public class Sniper : Weapon
     [SerializeField] SpriteRenderer scopeOverlay;
     protected float scopeOverlayMaxAlpha = .7f;
 
+    protected float overlayColorVelocity;
+
     void Start()
     {
         sizeDeltaModifier = 1250;
@@ -18,23 +20,23 @@ public class Sniper : Weapon
         if (Input.GetButton("Aim") && !isReloading) // Aim down sights position, field of view, inaccuracy, scope overlay alpha
         {
             player.isAiming = true;
-            transform.localPosition = Vector3.Lerp(transform.localPosition, aimPos, Time.deltaTime * aimSpeed);
-            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, camMaxFov - zoom, Time.deltaTime * aimSpeed);
-            inaccuracyCurr = Mathf.Lerp(inaccuracyCurr, inaccuracyMin, Time.deltaTime * aimSpeed);
-            scopeOverlay.color = new Color(0, 0, 0, Mathf.Lerp(scopeOverlay.color.a, 0, Time.deltaTime * aimSpeed * 4));
+            transform.localPosition = Vector3.SmoothDamp(transform.localPosition, aimPos, ref posVelocity, aimTime);
+            cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov - zoom, ref camVelocity, aimTime);
+            inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMin, ref inaccuracyVelocity, aimTime);
+            scopeOverlay.color = new Color(0, 0, 0, Mathf.SmoothDamp(scopeOverlay.color.a, 0, ref overlayColorVelocity, aimTime));
         }
         else // Hip fire position, field of view, inaccuracy, scope overlay alpha
         {
             player.isAiming = false;
-            transform.localPosition = Vector3.Lerp(transform.localPosition, hipPos, Time.deltaTime * aimSpeed);
-            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, camMaxFov, Time.deltaTime * aimSpeed);
-            inaccuracyCurr = Mathf.Lerp(inaccuracyCurr, inaccuracyMax, Time.deltaTime * aimSpeed);
-            scopeOverlay.color = new Color(0, 0, 0, Mathf.Lerp(scopeOverlay.color.a, scopeOverlayMaxAlpha, Time.deltaTime * aimSpeed));
+            transform.localPosition = Vector3.SmoothDamp(transform.localPosition, hipPos, ref posVelocity, aimTime);
+            cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov, ref camVelocity, aimTime);
+            inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMax, ref inaccuracyVelocity, aimTime);
+            scopeOverlay.color = new Color(0, 0, 0, Mathf.SmoothDamp(scopeOverlay.color.a, scopeOverlayMaxAlpha, ref overlayColorVelocity, aimTime));
         }
 
         // Crosshair size
         float sizeDelta = inaccuracyCurr * sizeDeltaModifier;
         sizeDelta = Mathf.Clamp(sizeDelta, 60, sizeDelta);
-        crosshair.sizeDelta = Vector2.Lerp(crosshair.sizeDelta, new Vector2(sizeDelta, sizeDelta), Time.deltaTime * aimSpeed);
+        crosshair.sizeDelta = Vector2.SmoothDamp(crosshair.sizeDelta, new Vector2(sizeDelta, sizeDelta), ref crosshairVelocity, aimTime);
     }
 }

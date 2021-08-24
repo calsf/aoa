@@ -59,6 +59,13 @@ public class Shotgun : Weapon
                     GameObject obj = Instantiate(placeholder);
                     obj.transform.position = hit.point;
                     Debug.Log(hit.collider.tag);
+
+                    if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall"))
+                    {
+                        WallBlock wallBlock = hit.collider.gameObject.GetComponent<WallBlock>();
+
+                        wallBlock.Damaged(weapon.DAMAGE_BASE);
+                    }
                 }
             }
         }
@@ -70,26 +77,26 @@ public class Shotgun : Weapon
         if (Input.GetButton("Aim") && !isReloading) // Aim down sights position, field of view, inaccuracy
         {
             player.isAiming = true;
-            transform.localPosition = Vector3.Lerp(transform.localPosition, aimPos, Time.deltaTime * aimSpeed);
-            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, camMaxFov - zoom, Time.deltaTime * aimSpeed);
-            inaccuracyCurr = Mathf.Lerp(inaccuracyCurr, inaccuracyMin, Time.deltaTime * aimSpeed);
+            transform.localPosition = Vector3.SmoothDamp(transform.localPosition, aimPos, ref posVelocity, aimTime);
+            cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov - zoom, ref camVelocity, aimTime);
+            inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMin, ref inaccuracyVelocity, aimTime);
 
             // Crosshair size
             float size = inaccuracyCurr * (sizeDeltaModifier + 500);
             size = Mathf.Clamp(size, 60, inaccuracyCurr * sizeDeltaModifier);
-            crosshairCircleRect.sizeDelta = Vector2.Lerp(crosshairCircleRect.sizeDelta, new Vector2(size, size), Time.deltaTime * aimSpeed);
+            crosshairCircleRect.sizeDelta = Vector2.SmoothDamp(crosshairCircleRect.sizeDelta, new Vector2(size, size), ref crosshairVelocity, aimTime);
         }
         else // Hip fire position, field of view, inaccuracy
         {
             player.isAiming = false;
-            transform.localPosition = Vector3.Lerp(transform.localPosition, hipPos, Time.deltaTime * aimSpeed);
-            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, camMaxFov, Time.deltaTime * aimSpeed);
-            inaccuracyCurr = Mathf.Lerp(inaccuracyCurr, inaccuracyMax, Time.deltaTime * aimSpeed);
+            transform.localPosition = Vector3.SmoothDamp(transform.localPosition, hipPos, ref posVelocity, aimTime);
+            cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov, ref camVelocity, aimTime);
+            inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMax, ref inaccuracyVelocity, aimTime);
 
             // Crosshair size
             float size = inaccuracyCurr * sizeDeltaModifier;
             size = Mathf.Clamp(size, 60, size);
-            crosshairCircleRect.sizeDelta = Vector2.Lerp(crosshairCircleRect.sizeDelta, new Vector2(size, size), Time.deltaTime * aimSpeed);
+            crosshairCircleRect.sizeDelta = Vector2.SmoothDamp(crosshairCircleRect.sizeDelta, new Vector2(size, size), ref crosshairVelocity, aimTime);
         }
     }
 }

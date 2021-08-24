@@ -14,6 +14,8 @@ public abstract class Weapon : MonoBehaviour
 
     protected Animator anim;
 
+    protected LayerMask shootLayerMask;
+
     protected RectTransform crosshair;
     protected Image[] crosshairLines;
     protected Image crosshairCenter;
@@ -24,6 +26,10 @@ public abstract class Weapon : MonoBehaviour
     protected Vector3 aimPos;
     protected Vector3 hipPos;
 
+    protected Vector3 posVelocity;
+    protected Vector2 crosshairVelocity;
+    protected float inaccuracyVelocity;
+    protected float camVelocity;
     protected float camMaxFov;
 
     protected bool isShooting;
@@ -35,7 +41,7 @@ public abstract class Weapon : MonoBehaviour
     protected float damage;
     protected int magSizeMax;
     protected int magSizeCurr;
-    protected float aimSpeed;
+    protected float aimTime;
     protected float inaccuracyMin;
     protected float inaccuracyMax;
     protected float inaccuracyCurr;
@@ -65,12 +71,17 @@ public abstract class Weapon : MonoBehaviour
         aimPos = transform.Find("AimPositions/Aim").localPosition;
         hipPos = transform.Find("AimPositions/Hip").localPosition;
 
+        shootLayerMask = new LayerMask();
+        shootLayerMask.value = (1 << LayerMask.NameToLayer("Enemy") 
+            | 1 << LayerMask.NameToLayer("Ground")
+            | 1 << LayerMask.NameToLayer("Wall"));
+
         reload = weapon.RELOAD_BASE;
         fireRate = weapon.FIRE_RATE_BASE;
         damage = weapon.DAMAGE_BASE;
         magSizeMax = weapon.MAG_SIZE_BASE;
         magSizeCurr = magSizeMax;
-        aimSpeed = weapon.AIM_SPEED_BASE;
+        aimTime = weapon.AIM_TIME_BASE;
         inaccuracyMin = weapon.INACCURACY_MIN;
         inaccuracyMax = weapon.INACCURACY_BASE;
         inaccuracyCurr = inaccuracyMax;
@@ -142,13 +153,21 @@ public abstract class Weapon : MonoBehaviour
         dir.Normalize();
 
         RaycastHit hit;
-        if (Physics.Raycast(cam.transform.position, dir, out hit))
+        if (Physics.Raycast(cam.transform.position, dir, out hit, Mathf.Infinity, shootLayerMask))
         {
-            if (hit.transform.name != "Plane")
+            if (hit.collider != null)
             {
+                // TODO: Apply on hit and account for effective range damage
                 GameObject obj = Instantiate(placeholder);
                 obj.transform.position = hit.point;
-                Debug.Log(hit.collider.tag);
+                Debug.Log(hit.collider.tag + "DISTANCE " + hit.distance);
+
+                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall"))
+                {
+                    WallBlock wallBlock = hit.collider.gameObject.GetComponent<WallBlock>();
+
+                    wallBlock.Damaged(weapon.DAMAGE_BASE);
+                }
             }
         }
     }
@@ -158,21 +177,21 @@ public abstract class Weapon : MonoBehaviour
         if (Input.GetButton("Aim") && !isReloading) // Aim down sights position, field of view, inaccuracy
         {
             player.isAiming = true;
-            transform.localPosition = Vector3.Lerp(transform.localPosition, aimPos, Time.deltaTime * aimSpeed);
-            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, camMaxFov - zoom, Time.deltaTime * aimSpeed);
-            inaccuracyCurr = Mathf.Lerp(inaccuracyCurr, inaccuracyMin, Time.deltaTime * aimSpeed);
+            transform.localPosition = Vector3.SmoothDamp(transform.localPosition, aimPos, ref posVelocity, aimTime);
+            cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov - zoom, ref camVelocity, aimTime);
+            inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMin, ref inaccuracyVelocity, aimTime);
         }
         else // Hip fire position, field of view, inaccuracy
         {
             player.isAiming = false;
-            transform.localPosition = Vector3.Lerp(transform.localPosition, hipPos, Time.deltaTime * aimSpeed);
-            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, camMaxFov, Time.deltaTime * aimSpeed);
-            inaccuracyCurr = Mathf.Lerp(inaccuracyCurr, inaccuracyMax, Time.deltaTime * aimSpeed);
+            transform.localPosition = Vector3.SmoothDamp(transform.localPosition, hipPos, ref posVelocity, aimTime);
+            cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov, ref camVelocity, aimTime);
+            inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMax, ref inaccuracyVelocity, aimTime);
         }
 
         // Crosshair size
         float sizeDelta = inaccuracyCurr * sizeDeltaModifier;
         sizeDelta = Mathf.Clamp(sizeDelta, 60, sizeDelta);
-        crosshair.sizeDelta = Vector2.Lerp(crosshair.sizeDelta, new Vector2(sizeDelta, sizeDelta), Time.deltaTime * aimSpeed);
+        crosshair.sizeDelta = Vector2.SmoothDamp(crosshair.sizeDelta, new Vector2(sizeDelta, sizeDelta), ref crosshairVelocity, aimTime);
     }
 }
