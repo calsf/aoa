@@ -39,6 +39,7 @@ public abstract class Weapon : MonoBehaviour
     protected float reload; // Anim dependent
     protected float fireRate; // Anim dependent
     protected float damage;
+    protected float headshotMultiplier;
     protected int magSizeMax;
     protected int magSizeCurr;
     protected float aimTime;
@@ -79,6 +80,7 @@ public abstract class Weapon : MonoBehaviour
         reload = weapon.RELOAD_BASE;
         fireRate = weapon.FIRE_RATE_BASE;
         damage = weapon.DAMAGE_BASE;
+        headshotMultiplier = weapon.HEADSHOT_MULTIPLIER_BASE;
         magSizeMax = weapon.MAG_SIZE_BASE;
         magSizeCurr = magSizeMax;
         aimTime = weapon.AIM_TIME_BASE;

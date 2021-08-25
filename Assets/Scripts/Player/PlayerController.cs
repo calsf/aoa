@@ -31,7 +31,6 @@ public class PlayerController : MonoBehaviour
     private float mouseSens = 1.5f;
     private float cameraY = 0f;
 
-    // Start is called before the first frame update
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -43,7 +42,6 @@ public class PlayerController : MonoBehaviour
         speedCurr = speedMax;
     }
 
-    // Update is called once per frame
     void Update()
     {
         Look();

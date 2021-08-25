@@ -11,7 +11,6 @@ public class PlayerHealth : MonoBehaviour
     private int healthCurr;
     private float nextDamagedTime;
 
-    // Start is called before the first frame update
     void Start()
     {
         healthMax = HEALTH_BASE;

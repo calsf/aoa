@@ -8,6 +8,7 @@ public class WeaponObject : ScriptableObject
     public float RELOAD_BASE = 1f;   // Anim dependent
     public float FIRE_RATE_BASE = 1f;    // Anim dependent
     public float DAMAGE_BASE;
+    public float HEADSHOT_MULTIPLIER_BASE;
     public int MAG_SIZE_BASE;
     public float AIM_TIME_BASE;
     public float INACCURACY_MIN;

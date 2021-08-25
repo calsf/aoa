@@ -4,41 +4,115 @@ using UnityEngine;
 
 public class WallBlock : MonoBehaviour
 {
-    private Renderer renderer;
+    [SerializeField] private GameObject destroyedFx;
+    private MeshRenderer rend;
 
-    private float healthMax = 500f;
-    private float healthCurr = 500f;
+    private float healthMax;
+    private float healthCurr;
 
-    // Start is called before the first frame update
     void Start()
     {
-        renderer = GetComponent<Renderer>();
-    }
+        rend = GetComponent<MeshRenderer>();
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        healthMax = 500;
+        healthCurr = healthMax;
     }
 
     public void Damaged(float dmg)
     {
-        healthCurr -= dmg;
-
         if (healthCurr <= 0)
         {
-            Destroy(gameObject);
+            return;
         }
-        else
+
+        if (healthCurr - dmg <= 0)  // Will be destroyed
         {
-            float blend1 = (healthMax - healthCurr) / 200;
-            float blend2 = healthCurr < healthMax / 1.5f ? blend1 / 1.5f : 0;
-            float blend3 = healthCurr < healthMax / 3 ? blend1 / 2 : 0;
-            blend2 = Mathf.Clamp(blend2, 0, 1);
-            blend3 = Mathf.Clamp(blend3, 0, 1);
-            renderer.material.SetFloat("_Blend1", blend1);
-            renderer.material.SetFloat("_Blend2", blend2);
-            renderer.material.SetFloat("_Blend3", blend3);
+            healthCurr -= dmg;
+            StartCoroutine(FlashBreak());
+        }
+        else // Damaged, will not be destroyed
+        {
+            healthCurr -= dmg;
+
+            float blend1;
+            float blend2;
+            float blend3;
+            float missingHealth = healthMax - healthCurr;
+
+            if (missingHealth <= 150) // Blend texture 1 based on missing health
+            {
+                blend1 = (healthMax - healthCurr) / 30;
+                blend2 = 0;
+                blend3 = 0;
+            }
+            else if (missingHealth <= 300) // Blend texture 2 based on missing health, cap texture 1 to 5
+            {
+                blend1 = 5;
+                blend2 = ((healthMax - 150) - healthCurr) / 30;
+                blend3 = 0;
+            }
+            else // Blend texture 3 based on missing health, cap texture 2 to 5, decrease texture 1 blend based on current texture 3 blend
+            {
+                blend2 = 5;
+                blend3 = ((healthMax - 300) - healthCurr) / 30;
+
+                blend1 = 5 - blend3;
+            }
+
+            rend.material.SetFloat("_Blend1", blend1);
+            rend.material.SetFloat("_Blend2", blend2);
+            rend.material.SetFloat("_Blend3", blend3);
         }
     }
+
+    private IEnumerator FlashBreak()
+    {
+        float waitTime;
+        float elapsedTime;
+
+        float startBlend1 = rend.material.GetFloat("_Blend1");
+        float startBlend2 = rend.material.GetFloat("_Blend2");
+        float startBlend3 = rend.material.GetFloat("_Blend3");
+
+        waitTime = .1f;
+        elapsedTime = 0f;
+        while (elapsedTime < waitTime)
+        {
+            float blend1 = Mathf.Lerp(startBlend1, 0, elapsedTime / waitTime);
+            float blend2 = Mathf.Lerp(startBlend2, 40, elapsedTime / waitTime);
+            float blend3 = Mathf.Lerp(startBlend3, 40, elapsedTime / waitTime);
+
+            rend.material.SetFloat("_Blend1", blend1);
+            rend.material.SetFloat("_Blend2", blend2);
+            rend.material.SetFloat("_Blend3", blend3);
+
+            elapsedTime += Time.deltaTime;
+
+            yield return null;
+        }
+
+        waitTime = .05f;
+        elapsedTime = 0;
+        while (elapsedTime < waitTime)
+        {
+            float blend1 = Mathf.Lerp(startBlend1, 0, elapsedTime / waitTime);
+            float blend2 = Mathf.Lerp(startBlend2, 5, elapsedTime / waitTime);
+            float blend3 = Mathf.Lerp(startBlend3, 5, elapsedTime / waitTime);
+
+            rend.material.SetFloat("_Blend1", blend1);
+            rend.material.SetFloat("_Blend2", blend2);
+            rend.material.SetFloat("_Blend3", blend3);
+
+            elapsedTime += Time.deltaTime;
+
+            yield return null;
+        }
+
+        // Create destroyed effect and destroy this wall block
+        GameObject obj = Instantiate(destroyedFx);
+        obj.transform.position = transform.position;
+        obj.SetActive(true);
+        Destroy(gameObject);
+    }
+
 }

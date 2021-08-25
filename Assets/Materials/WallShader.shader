@@ -2,9 +2,9 @@ Shader "Custom/Wall Shader"
 {
     Properties
     {
-        _Blend1 ("Blend 1", Range(0, 1)) = 0
-        _Blend2 ("Blend 2", Range(0, 1)) = 0
-        _Blend3 ("Blend 3", Range(0, 1)) = 0
+        _Blend1 ("Blend 1", Range(0, 10)) = 0
+        _Blend2 ("Blend 2", Range(0, 10)) = 0
+        _Blend3 ("Blend 3", Range(0, 10)) = 0
         _MainTex ("Main Texture", 2D) = ""
         _BlendTex1 ("Blend Texture 1", 2D) = ""
         _BlendTex2 ("Blend Texture 2", 2D) = ""

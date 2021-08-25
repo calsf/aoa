@@ -13,7 +13,6 @@ public class Enemy : MonoBehaviour
 
     private int damage = 5;
 
-    // Start is called before the first frame update
     void Start()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
@@ -21,7 +20,6 @@ public class Enemy : MonoBehaviour
         navMeshAgent.isStopped = true;
     }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         navMeshAgent.destination = player.position;
