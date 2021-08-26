@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public abstract class Weapon : MonoBehaviour
+public class Weapon : MonoBehaviour
 {
     // TEMP!!!!
     [SerializeField] protected GameObject placeholder;
@@ -14,8 +14,7 @@ public abstract class Weapon : MonoBehaviour
 
     protected Animator anim;
 
-    protected LayerMask shootLayerMask;
-
+    // Shooting
     protected RectTransform crosshair;
     protected Image[] crosshairLines;
     protected Image crosshairCenter;
@@ -32,9 +31,13 @@ public abstract class Weapon : MonoBehaviour
     protected float camVelocity;
     protected float camMaxFov;
 
+    protected LayerMask shootLayerMask;
     protected bool isShooting;
     protected bool isReloading;
 
+    public bool isEnemyPunchthrough { get; set; }
+
+    // Weapon props
     [SerializeField] protected WeaponObject weapon;
     protected float reload; // Anim dependent
     protected float fireRate; // Anim dependent
@@ -76,6 +79,8 @@ public abstract class Weapon : MonoBehaviour
         shootLayerMask.value = (1 << LayerMask.NameToLayer("Enemy") 
             | 1 << LayerMask.NameToLayer("Ground")
             | 1 << LayerMask.NameToLayer("Wall"));
+
+        isEnemyPunchthrough = true;
 
         reload = weapon.RELOAD_BASE;
         fireRate = weapon.FIRE_RATE_BASE;
@@ -148,27 +153,108 @@ public abstract class Weapon : MonoBehaviour
         isShooting = true;
         magSizeCurr -= 1;
 
-        // Apply any inaccuracy to shot
+        // Get shot direction and apply any inaccuracy to the shot
         Vector3 dir = cam.transform.forward;
         dir += Random.Range(-inaccuracyCurr, inaccuracyCurr) * cam.transform.up;
         dir += Random.Range(-inaccuracyCurr, inaccuracyCurr) * cam.transform.right;
         dir.Normalize();
 
-        RaycastHit hit;
-        if (Physics.Raycast(cam.transform.position, dir, out hit, Mathf.Infinity, shootLayerMask))
+        // Shoot raycast in direction and check hit
+        ShootRaycast(dir);
+    }
+
+    protected void ShootRaycast(Vector3 dir)
+    {
+        if (!isEnemyPunchthrough) // No enemy punchthrough
         {
-            if (hit.collider != null)
+            RaycastHit hit;
+            bool hasHit = Physics.Raycast(cam.transform.position, dir, out hit, Mathf.Infinity, shootLayerMask);
+
+            if (hasHit && hit.collider != null)
             {
-                // TODO: Apply on hit and account for effective range damage
+                // TEMP!!!
                 GameObject obj = Instantiate(placeholder);
                 obj.transform.position = hit.point;
                 Debug.Log(hit.collider.tag + "DISTANCE " + hit.distance);
 
-                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall"))
+                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy")) // Enemy hit
                 {
-                    WallBlock wallBlock = hit.collider.gameObject.GetComponent<WallBlock>();
+                    // Check for distance and apply falloff to damage if necessary
+                    float damageDealt = hit.distance > effectiveRange ? damage * falloffModifer : damage;
 
-                    wallBlock.Damaged(weapon.DAMAGE_BASE);
+                    // Headshot
+                    if (hit.collider.gameObject.tag == "EnemyHead")
+                    {
+                        damageDealt *= headshotMultiplier;
+                    }
+
+                    hit.collider.gameObject.GetComponentInParent<Enemy>().Damaged(damageDealt);
+                }
+                else if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall")) // Wall hit
+                {
+                    // Check for distance and apply falloff to damage if necessary
+                    // Use base damage and base weapon falloff modifier for hits on wall
+                    float damageDealt = hit.distance > effectiveRange ? weapon.DAMAGE_BASE * weapon.FALLOFF_MODIFIER_BASE : weapon.DAMAGE_BASE;
+
+                    hit.collider.gameObject.GetComponent<WallBlock>().Damaged(damageDealt);
+                }
+            }
+        }
+        else // Apply enemy punchthrough, only hits wall if wall is first
+        {
+            RaycastHit[] allHit = Physics.RaycastAll(cam.transform.position, dir, Mathf.Infinity, shootLayerMask);
+
+            // Sort hit in ascending order
+            System.Array.Sort(allHit, (hit1, hit2) => hit1.distance.CompareTo(hit2.distance));
+
+            // Check if first hit was a wall, if so, apply damage and do not apply any further punchthrough
+            if (allHit.Length > 0 && allHit[0].collider.gameObject.layer == LayerMask.NameToLayer("Wall"))
+            {
+                // Check for distance and apply falloff to damage if necessary (Use base damage and base weapon falloff modifier for hits on wall)
+                float damageDealt = allHit[0].distance > effectiveRange ? weapon.DAMAGE_BASE * weapon.FALLOFF_MODIFIER_BASE : weapon.DAMAGE_BASE;
+
+                allHit[0].collider.gameObject.GetComponent<WallBlock>().Damaged(damageDealt);
+
+                // Do not punch through wall
+                return;
+            }
+
+            // Apply hit on all hit or until wall is hit
+            List<GameObject> hitEnemies = new List<GameObject>();
+            foreach (RaycastHit hit in allHit)
+            {
+                // TEMP!!!
+                GameObject obj = Instantiate(placeholder);
+                obj.transform.position = hit.point;
+                Debug.Log(hit.collider.tag + "DISTANCE " + hit.distance);
+
+                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy")) // Enemy hit
+                {
+                    // If enemy object was already hit, do not apply hit again
+                    // Since all hit is ordered by distance, first hit is the correct hit point and should not apply hit again to same enemy again
+                    if (hitEnemies.Contains(hit.collider.gameObject.transform.parent.gameObject))
+                    {
+                        continue;
+                    }
+
+                    // Check for distance and apply falloff to damage if necessary
+                    float damageDealt = hit.distance > effectiveRange ? damage * falloffModifer : damage;
+
+                    // Headshot
+                    if (hit.collider.gameObject.tag == "EnemyHead")
+                    {
+                        damageDealt *= headshotMultiplier;
+                    }
+
+                    hit.collider.gameObject.GetComponentInParent<Enemy>().Damaged(damageDealt);
+
+                    // Add this enemy object to list of hit objects so it does not get hit again
+                    hitEnemies.Add(hit.collider.gameObject.transform.parent.gameObject);
+                }
+                else if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall")) // Wall hit
+                {
+                    // Punchthrough should stop after hitting a wall, do not apply damage
+                    return;
                 }
             }
         }

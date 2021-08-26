@@ -37,7 +37,7 @@ public class PlayerController : MonoBehaviour
 
         controller = GetComponent<CharacterController>();
 
-        jumpMaxAvailable = 1;
+        jumpMaxAvailable = 3;
         speedMax = SPEED_BASE;
         speedCurr = speedMax;
     }

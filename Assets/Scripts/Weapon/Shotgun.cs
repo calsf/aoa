@@ -27,7 +27,7 @@ public class Shotgun : Weapon
         isShooting = true;
         magSizeCurr -= 1;
 
-        // Calculate spread
+        // Calculate spread directions
         Vector3[] dirs = new Vector3[17];
         dirs[0] = cam.transform.forward.normalized;
  
@@ -49,25 +49,10 @@ public class Shotgun : Weapon
         dirs[15] = (cam.transform.forward + (-inaccuracyCurr * cam.transform.right)).normalized;
         dirs[16] = (cam.transform.forward + (inaccuracyCurr * cam.transform.right)).normalized;
 
-        RaycastHit hit;
+        // Shoot raycast in direction and check hit
         foreach (Vector3 dir in dirs)
         {
-            if (Physics.Raycast(cam.transform.position, dir, out hit))
-            {
-                if (hit.transform.name != "Plane")
-                {
-                    GameObject obj = Instantiate(placeholder);
-                    obj.transform.position = hit.point;
-                    Debug.Log(hit.collider.tag);
-
-                    if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall"))
-                    {
-                        WallBlock wallBlock = hit.collider.gameObject.GetComponent<WallBlock>();
-
-                        wallBlock.Damaged(weapon.DAMAGE_BASE);
-                    }
-                }
-            }
+            ShootRaycast(dir);
         }
     }
 

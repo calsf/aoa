@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
-    private const int HEALTH_BASE = 100;
+    private const float HEALTH_BASE = 100;
     private const float INVULN_TIME = 1f;
 
-    private int healthMax;
-    private int healthCurr;
+    private float healthMax;
+    private float healthCurr;
     private float nextDamagedTime;
 
     void Start()
@@ -17,7 +17,7 @@ public class PlayerHealth : MonoBehaviour
         healthCurr = healthMax;
     }
 
-    public void DamagePlayer(int damage)
+    public void DamagePlayer(float damage)
     {
         // Return if player is still invulnerable from previous damaged
         if (Time.time < nextDamagedTime)

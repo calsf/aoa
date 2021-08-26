@@ -1,58 +1,63 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
-public class Enemy : MonoBehaviour
+public abstract class Enemy : MonoBehaviour
 {
-    private NavMeshAgent navMeshAgent;
+    [SerializeField] GameObject deathEffect;
+ 
+    protected GameObject player;
+    protected PlayerHealth playerHealth;
+    protected GameObject enemyGameObject;
 
-    private bool isAggro = false;
+    protected bool isAggro = false;
 
-    [SerializeField] private Transform player;
+    // Enemy props
+    [SerializeField] protected EnemyObject enemy;
+    protected float moveSpeedMax;
+    protected float moveSpeedCurr;
+    protected float healthMax;
+    protected float healthCurr;
+    protected float damage;
 
-    private int damage = 5;
-
-    void Start()
+    void Awake()
     {
-        navMeshAgent = GetComponent<NavMeshAgent>();
+        player = GameObject.FindGameObjectWithTag("Player");
+        playerHealth = player.GetComponent<PlayerHealth>();
+        enemyGameObject = transform.GetChild(0).gameObject;
 
-        navMeshAgent.isStopped = true;
+        moveSpeedMax = enemy.MOVE_SPEED_BASE;
+        moveSpeedCurr = moveSpeedMax;
+        healthMax = enemy.HEALTH_BASE;
+        healthCurr = healthMax;
+        damage = enemy.DAMAGE_BASE;
     }
 
     void FixedUpdate()
     {
-        navMeshAgent.destination = player.position;
+        Move();
+    }
 
-        // Aggro only if path to take to player is of certain distance
-        if (navMeshAgent.remainingDistance < 10 && !isAggro)
+    public void Damaged(float dmg)
+    {
+        healthCurr -= dmg;
+
+        if (healthCurr <= 0)
         {
-            isAggro = true;
-            navMeshAgent.isStopped = false;
-        }
-
-        // Adjust base offset to adjust Y position
-        if (isAggro && navMeshAgent.remainingDistance < 5)
-        {
-            if (player.position.y > transform.position.y)
-            {
-                navMeshAgent.baseOffset += .025f;
-            }
-            else if (player.position.y < transform.position.y)
-            {
-                navMeshAgent.baseOffset -= .025f;
-            }
-
-            // TODO: May need to clamp offset so enemy doesn't clip through ground/ceiling
+            GameObject obj = Instantiate(deathEffect);
+            obj.transform.position = enemyGameObject.transform.position;
+            Destroy(gameObject);
         }
     }
+
+    protected abstract void Move();
 
     private void OnTriggerEnter(Collider other)
     {
         // Attempt to damage player
-        if (other.gameObject.tag == "Player")
+        if (other.gameObject == player)
         {
-            other.gameObject.GetComponent<PlayerHealth>().DamagePlayer(damage);
+            playerHealth.DamagePlayer(damage);
         }
     }
 

@@ -6,6 +6,6 @@ using UnityEngine;
 public class EnemyObject : ScriptableObject
 {
     public float MOVE_SPEED_BASE;
-    public float HEALTH_MAX;
+    public float HEALTH_BASE;
     public float DAMAGE_BASE;
 }
