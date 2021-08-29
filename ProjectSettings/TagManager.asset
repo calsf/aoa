@@ -11,6 +11,7 @@ TagManager:
   - CrosshairCenter
   - CrosshairCircle
   - CrosshairLine
+  - Grid
   layers:
   - Default
   - TransparentFX

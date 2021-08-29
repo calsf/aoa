@@ -1,46 +1,59 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class NormalEnemy : Enemy
 {
-    protected NavMeshAgent navMeshAgent;
+    private int currPathPos;
+    private Vector3 nextPathPos;
+
+    private Rigidbody rb;
 
     void Start()
     {
-        navMeshAgent = GetComponent<NavMeshAgent>();
-        navMeshAgent.isStopped = true;
+        rb = GetComponent<Rigidbody>();
+        InvokeRepeating("PathFind", 3, 1);
     }
 
-    void Update()
-    {
-        
-    }
-
-    // TODO: Pathfinding and movement (May need to clamp offset so enemy doesn't clip through ground/ceiling)
     override protected void Move()
     {
-        navMeshAgent.speed = moveSpeedCurr;
-        navMeshAgent.destination = player.transform.position;
-
-        // Aggro only if path to take to player is of certain distance
-        if (navMeshAgent.remainingDistance < 10 && !isAggro)
+        if (!isAggro && path != null && path.Count > 0)
         {
             isAggro = true;
-            navMeshAgent.isStopped = false;
         }
-
-        // Adjust base offset to adjust Y position
-        if (isAggro && navMeshAgent.remainingDistance < 10)
+        else if (isAggro)
         {
-            if (player.transform.position.y > transform.position.y)
+            if (path != null)
             {
-                navMeshAgent.baseOffset += .025f;
-            }
-            else if (player.transform.position.y < transform.position.y)
-            {
-                navMeshAgent.baseOffset -= .025f;
+                // Reset if path was changed
+                if (pathChanged)
+                {
+                    pathChanged = false;
+                    currPathPos = 0;
+                }
+
+                // Once path has been fulfilled, try to go to player
+                if (currPathPos > path.Count - 1)
+                {
+                    nextPathPos = player.transform.position;
+                }
+                else
+                {
+                    nextPathPos = path[currPathPos].position;
+                }
+
+                // Move to next path position
+                if (Vector3.Distance(transform.position, nextPathPos) > 1f)
+                {
+                    Vector3 moveDir = nextPathPos - transform.position;
+                    moveDir.Normalize();
+
+                    rb.velocity = moveDir * moveSpeedCurr;
+                }
+                else
+                {
+                    currPathPos++;
+                }
             }
         }
     }
