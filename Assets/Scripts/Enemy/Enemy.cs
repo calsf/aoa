@@ -24,23 +24,70 @@ public abstract class Enemy : MonoBehaviour
     [SerializeField] protected float fCostLimit; // fCost limit for a path
 
     protected Grid3D grid;
+    protected Node[, ,] gridArrayCopy;
     protected Vector3 startPos;
     protected Vector3 targetPos;
     protected List<Node> path;
     protected bool pathChanged;
 
-    void Awake()
+    void Start()
     {
         grid = GameObject.FindGameObjectWithTag("Grid").GetComponent<Grid3D>();
         player = GameObject.FindGameObjectWithTag("Player");
         playerHealth = player.GetComponent<PlayerHealth>();
         enemyGameObject = transform.GetChild(0).gameObject;
 
+        // Create copy of grid array for this enemy to use
+        gridArrayCopy = new Node[grid.gridSizeX, grid.gridSizeY, grid.gridSizeZ];
+        for (int x = 0; x < grid.gridSizeX; x++)
+        {
+            for (int y = 0; y < grid.gridSizeY; y++)
+            {
+                for (int z = 0; z < grid.gridSizeZ; z++)
+                {
+                    gridArrayCopy[x, y, z] = new Node(x, y, z, grid.grid[x, y, z].position, grid.grid[x, y, z].isWalkable);
+                }
+            }
+        }
+
+        // Assign neighbor nodes for this grid copy
+        for (int x = 0; x < grid.gridSizeX; x++)
+        {
+            for (int y = 0; y < grid.gridSizeY; y++)
+            {
+                for (int z = 0; z < grid.gridSizeZ; z++)
+                {
+                    gridArrayCopy[x, y, z].neighbors = grid.GetNeighborNodes(gridArrayCopy, gridArrayCopy[x, y, z]);
+                }
+            }
+        }
+
         moveSpeedMax = enemy.MOVE_SPEED_BASE;
         moveSpeedCurr = moveSpeedMax;
         healthMax = enemy.HEALTH_BASE;
         healthCurr = healthMax;
         damage = enemy.DAMAGE_BASE;
+    }
+
+    void OnEnable()
+    {
+        if (grid == null)
+        {
+            grid = GameObject.FindGameObjectWithTag("Grid").GetComponent<Grid3D>();
+        }
+
+        // Update node walkable for this grid copy when original gets updated
+        grid.OnNodeWalkableUpdate.AddListener((nodeIndex) => UpdateNodeWalkable(nodeIndex));
+    }
+
+    void OnDisable()
+    {
+        grid.OnNodeWalkableUpdate.RemoveListener((nodeIndex) => UpdateNodeWalkable(nodeIndex));
+    }
+
+    protected void UpdateNodeWalkable((int, int, int) nodeIndex)
+    {
+        gridArrayCopy[nodeIndex.Item1, nodeIndex.Item2, nodeIndex.Item3].isWalkable = grid.grid[nodeIndex.Item1, nodeIndex.Item2, nodeIndex.Item3].isWalkable;
     }
 
     void FixedUpdate()
@@ -82,8 +129,16 @@ public abstract class Enemy : MonoBehaviour
         startPos = transform.position;
         targetPos = player.transform.position + (Vector3.up * 5); // Offset player position
 
-        Node startNode = grid.GetNodeAtPosition(startPos);
-        Node targetNode = grid.GetNodeAtPosition(targetPos);
+        (int, int, int) startNodeIndex = grid.GetNodeIndexFromPosition(startPos);
+        (int, int, int) targetNodeIndex = grid.GetNodeIndexFromPosition(targetPos);
+        Node startNode = gridArrayCopy[startNodeIndex.Item1, startNodeIndex.Item2, startNodeIndex.Item3];
+        Node targetNode = gridArrayCopy[targetNodeIndex.Item1, targetNodeIndex.Item2, targetNodeIndex.Item3];
+ 
+        // Already at target node
+        if (startNode == targetNode)
+        {
+            return;
+        }
 
         PriorityQueue<Node> openList = new PriorityQueue<Node>();
         HashSet<Node> closedList = new HashSet<Node>();
@@ -103,6 +158,7 @@ public abstract class Enemy : MonoBehaviour
             if (currNode == targetNode) // Path found, get the final path
             {
                 GetPath(startNode, targetNode);
+                return;
             }
             else if (!isAggro && currNode.fCost > fCostLimit) // If not aggro and cost to reach this node is too high, we can ignore its neighbors and continue through open list
             {
@@ -180,7 +236,8 @@ public abstract class Enemy : MonoBehaviour
             }
         }
 
-        Node targetNode = grid.GetNodeAtPosition(targetPos);
+        (int, int, int) targetNodeIndex = grid.GetNodeIndexFromPosition(targetPos);
+        Node targetNode = gridArrayCopy[targetNodeIndex.Item1, targetNodeIndex.Item2, targetNodeIndex.Item3];
         Gizmos.color = Color.yellow;
         Gizmos.DrawCube(targetNode.position, Vector3.one * 10);
     }

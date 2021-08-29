@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Grid3D : MonoBehaviour
 {
@@ -12,15 +13,17 @@ public class Grid3D : MonoBehaviour
     [SerializeField] private float nodeRadius;
 
     // The grid sizes based on the size of each node
-    private int gridSizeX;
-    private int gridSizeZ;
-    private int gridSizeY;
+    public int gridSizeX { get; set; }
+    public int gridSizeZ { get; set; }
+    public int gridSizeY { get; set; }
 
     private Vector3 botLeft;
 
     public float nodeDiameter { get { return nodeRadius * 2; } }
 
-    void Start()
+    public UnityEvent<(int, int, int)> OnNodeWalkableUpdate;
+
+    void Awake()
     {
         unwalkableMask = new LayerMask();
         unwalkableMask = 1 << LayerMask.NameToLayer("Wall");
@@ -73,7 +76,7 @@ public class Grid3D : MonoBehaviour
             {
                 for (int z = 0; z < gridSizeZ; z++)
                 {
-                    grid[x, y, z].neighbors = GetNeighborNodes(grid[x, y, z]);
+                    grid[x, y, z].neighbors = GetNeighborNodes(grid, grid[x, y, z]);
                 }
             }
         }
@@ -83,10 +86,14 @@ public class Grid3D : MonoBehaviour
     {
         bool isWalkable = Physics.CheckBox(worldPos, Vector3.one * (nodeRadius - .5f), Quaternion.Euler(0, 0, 0), unwalkableMask) ? false : true;
 
-        GetNodeAtPosition(worldPos).isWalkable = isWalkable;
+        (int, int, int) nodeIndex = GetNodeIndexFromPosition(worldPos);
+        grid[nodeIndex.Item1, nodeIndex.Item2, nodeIndex.Item3].isWalkable = isWalkable;
+
+        // Invoke event to update any grid copies
+        OnNodeWalkableUpdate.Invoke(nodeIndex);
     }
 
-    public Node GetNodeAtPosition(Vector3 worldPos)
+    public (int, int, int) GetNodeIndexFromPosition(Vector3 worldPos)
     {
         float xPos = (worldPos.x + gridSizeTotal.x / 2) / gridSizeTotal.x;
         float yPos = (worldPos.y + gridSizeTotal.y / 2) / gridSizeTotal.y;
@@ -100,73 +107,39 @@ public class Grid3D : MonoBehaviour
         int y = Mathf.RoundToInt((gridSizeY - 1) * yPos);
         int z = Mathf.RoundToInt((gridSizeZ - 1) * zPos);
 
-        return grid[x, y, z];
+        return (x, y, z);
     }
 
-    public List<Node> GetNeighborNodes(Node node)
+    public List<Node> GetNeighborNodes(Node[, ,] grid, Node node)
     {
         List<Node> neighborNodes = new List<Node>();
-        int neighborX;
-        int neighborY;
-        int neighborZ;
-
-        // Only check in cardinal directions
-
-        // X
-        neighborX = node.gridXIndex + 1;
-        neighborY = node.gridYIndex;
-        neighborZ = node.gridZIndex;
-        if (neighborX >= 0 && neighborX < gridSizeX
-            && neighborY >= 0 && neighborY < gridSizeY
-            && neighborZ >= 0 && neighborZ < gridSizeZ)
+ 
+        // Check for neighbors in every direction from node
+        for (int x = -1; x <= 1; x++)
         {
-            neighborNodes.Add(grid[neighborX, neighborY, neighborZ]);
-        }
+            for (int y = -1; y <= 1; y++)
+            {
+                for (int z = -1; z <= 1; z++)
+                {
+                    // Vector zero is the original node so we can skip
+                    if (x == 0 && y == 0 && z == 0)
+                    {
+                        continue;
+                    }
 
-        neighborX = node.gridXIndex - 1;
-        if (neighborX >= 0 && neighborX < gridSizeX
-            && neighborY >= 0 && neighborY < gridSizeY
-            && neighborZ >= 0 && neighborZ < gridSizeZ)
-        {
-            neighborNodes.Add(grid[neighborX, neighborY, neighborZ]);
-        }
+                    int neighborX = node.gridXIndex + x;
+                    int neighborY = node.gridYIndex + y;
+                    int neighborZ = node.gridZIndex + z;
 
-        // Y
-        neighborX = node.gridXIndex;
-        neighborY = node.gridYIndex + 1;
-        neighborZ = node.gridZIndex;
-        if (neighborX >= 0 && neighborX < gridSizeX
-            && neighborY >= 0 && neighborY < gridSizeY
-            && neighborZ >= 0 && neighborZ < gridSizeZ)
-        {
-            neighborNodes.Add(grid[neighborX, neighborY, neighborZ]);
-        }
-
-        neighborY = node.gridYIndex - 1;
-        if (neighborX >= 0 && neighborX < gridSizeX
-            && neighborY >= 0 && neighborY < gridSizeY
-            && neighborZ >= 0 && neighborZ < gridSizeZ)
-        {
-            neighborNodes.Add(grid[neighborX, neighborY, neighborZ]);
-        }
-
-        // Z
-        neighborX = node.gridXIndex;
-        neighborY = node.gridYIndex;
-        neighborZ = node.gridZIndex + 1;
-        if (neighborX >= 0 && neighborX < gridSizeX
-            && neighborY >= 0 && neighborY < gridSizeY
-            && neighborZ >= 0 && neighborZ < gridSizeZ)
-        {
-            neighborNodes.Add(grid[neighborX, neighborY, neighborZ]);
-        }
-
-        neighborZ = node.gridZIndex - 1;
-        if (neighborX >= 0 && neighborX < gridSizeX
-            && neighborY >= 0 && neighborY < gridSizeY
-            && neighborZ >= 0 && neighborZ < gridSizeZ)
-        {
-            neighborNodes.Add(grid[neighborX, neighborY, neighborZ]);
+                    // Check that node is within grid bounds
+                    if (neighborX >= 0 && neighborX < gridSizeX
+                        && neighborY >= 0 && neighborY < gridSizeY
+                        && neighborZ >= 0 && neighborZ < gridSizeZ)
+                    {
+                        neighborNodes.Add(grid[neighborX, neighborY, neighborZ]);
+                    }
+                }
+            }
         }
 
         return neighborNodes;

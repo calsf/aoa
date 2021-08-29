@@ -9,10 +9,24 @@ public class NormalEnemy : Enemy
 
     private Rigidbody rb;
 
-    void Start()
+    private float nextPathfind;
+    private int pathfindDelay;
+
+    void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        InvokeRepeating("PathFind", 3, 1);
+    }
+
+    void Update()
+    {
+        if (nextPathfind < Time.time)
+        {
+            // Determine next pathfind call depending on enemy aggro state
+            pathfindDelay = isAggro ? Random.Range(1, 3) : 1;
+            nextPathfind = Time.time + pathfindDelay;
+
+            PathFind();
+        }
     }
 
     override protected void Move()
@@ -23,6 +37,8 @@ public class NormalEnemy : Enemy
         }
         else if (isAggro)
         {
+            transform.LookAt(player.transform);
+
             if (path != null)
             {
                 // Reset if path was changed
