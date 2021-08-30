@@ -1,46 +1,75 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class NormalEnemy : Enemy
 {
-    protected NavMeshAgent navMeshAgent;
+    private int currPathPos;
+    private Vector3 nextPathPos;
 
-    void Start()
+    private Rigidbody rb;
+
+    private float nextPathfind;
+    private int pathfindDelay;
+
+    void Awake()
     {
-        navMeshAgent = GetComponent<NavMeshAgent>();
-        navMeshAgent.isStopped = true;
+        rb = GetComponent<Rigidbody>();
     }
 
     void Update()
     {
-        
+        if (nextPathfind < Time.time)
+        {
+            // Determine next pathfind call depending on enemy aggro state
+            pathfindDelay = isAggro ? Random.Range(3, 9) : 1;
+            nextPathfind = Time.time + pathfindDelay;
+
+            PathFind();
+        }
     }
 
-    // TODO: Pathfinding and movement (May need to clamp offset so enemy doesn't clip through ground/ceiling)
     override protected void Move()
     {
-        navMeshAgent.speed = moveSpeedCurr;
-        navMeshAgent.destination = player.transform.position;
-
-        // Aggro only if path to take to player is of certain distance
-        if (navMeshAgent.remainingDistance < 10 && !isAggro)
+        if (!isAggro && (healthCurr < healthMax || (path != null && path.Count > 0))) // Aggro when hit or when path to player is close enough
         {
             isAggro = true;
-            navMeshAgent.isStopped = false;
         }
-
-        // Adjust base offset to adjust Y position
-        if (isAggro && navMeshAgent.remainingDistance < 10)
+        else if (isAggro) // Aggro on player
         {
-            if (player.transform.position.y > transform.position.y)
+            transform.LookAt(player.transform);
+
+            if (path != null)
             {
-                navMeshAgent.baseOffset += .025f;
-            }
-            else if (player.transform.position.y < transform.position.y)
-            {
-                navMeshAgent.baseOffset -= .025f;
+                // Reset if path was changed
+                if (pathChanged)
+                {
+                    pathChanged = false;
+                    currPathPos = 0;
+                }
+
+                // Once path has been fulfilled, try to go to player
+                if (currPathPos > path.Count - 1)
+                {
+                    nextPathPos = player.transform.position;
+                }
+                else
+                {
+                    nextPathPos = path[currPathPos].position;
+                }
+
+                // Move to next path position
+                if (Vector3.Distance(transform.position, nextPathPos) > 1f || nextPathPos == player.transform.position)
+                {
+                    Vector3 moveDir = nextPathPos - transform.position;
+                    moveDir.Normalize();
+
+                    rb.AddForce((moveDir * moveSpeedCurr) - rb.velocity, ForceMode.VelocityChange);
+                }
+                else
+                {
+                    currPathPos++;
+                }
             }
         }
     }

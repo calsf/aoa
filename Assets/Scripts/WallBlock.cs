@@ -6,12 +6,14 @@ public class WallBlock : MonoBehaviour
 {
     [SerializeField] private GameObject destroyedFx;
     private MeshRenderer rend;
+    private Grid3D grid;
 
     private float healthMax;
     private float healthCurr;
 
     void Start()
     {
+        grid = GameObject.FindGameObjectWithTag("Grid").GetComponent<Grid3D>();
         rend = GetComponent<MeshRenderer>();
 
         healthMax = 500;
@@ -108,10 +110,16 @@ public class WallBlock : MonoBehaviour
             yield return null;
         }
 
-        // Create destroyed effect and destroy this wall block
+        // Create destroyed effect
         GameObject obj = Instantiate(destroyedFx);
         obj.transform.position = transform.position;
         obj.SetActive(true);
+
+        // Update the grid node isWalkable at this wall block's position
+        gameObject.SetActive(false); // Set inactive before updating so grid won't see the block
+        grid.UpdateNodeWalkable(transform.position);
+
+        // Destroy this wall block
         Destroy(gameObject);
     }
 
