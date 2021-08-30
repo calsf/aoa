@@ -8,7 +8,6 @@ public abstract class Enemy : MonoBehaviour
  
     protected GameObject player;
     protected PlayerHealth playerHealth;
-    protected GameObject enemyGameObject;
 
     protected bool isAggro = false;
 
@@ -35,7 +34,6 @@ public abstract class Enemy : MonoBehaviour
         grid = GameObject.FindGameObjectWithTag("Grid").GetComponent<Grid3D>();
         player = GameObject.FindGameObjectWithTag("Player");
         playerHealth = player.GetComponent<PlayerHealth>();
-        enemyGameObject = transform.GetChild(0).gameObject;
 
         // Create copy of grid array for this enemy to use
         gridArrayCopy = new Node[grid.gridSizeX, grid.gridSizeY, grid.gridSizeZ];
@@ -50,7 +48,7 @@ public abstract class Enemy : MonoBehaviour
             }
         }
 
-        // Assign neighbor nodes for this grid copy
+        // Assign the neighbor nodes for this grid copy
         for (int x = 0; x < grid.gridSizeX; x++)
         {
             for (int y = 0; y < grid.gridSizeY; y++)
@@ -99,13 +97,20 @@ public abstract class Enemy : MonoBehaviour
 
     public void Damaged(float dmg)
     {
-        healthCurr -= dmg;
-
         if (healthCurr <= 0)
         {
-            GameObject obj = Instantiate(deathEffect);
-            obj.transform.position = enemyGameObject.transform.position;
-            Destroy(gameObject);
+            return;
+        }
+        else
+        {
+            healthCurr -= dmg;
+
+            if (healthCurr <= 0)
+            {
+                GameObject obj = Instantiate(deathEffect);
+                obj.transform.position = transform.position;
+                Destroy(gameObject);
+            }
         }
     }
 
@@ -131,6 +136,14 @@ public abstract class Enemy : MonoBehaviour
 
         (int, int, int) startNodeIndex = grid.GetNodeIndexFromPosition(startPos);
         (int, int, int) targetNodeIndex = grid.GetNodeIndexFromPosition(targetPos);
+
+        // Check that the start and target nodes are valid nodes
+        if (startNodeIndex.Item1 >= grid.gridSizeX - 1 || startNodeIndex.Item2 >= grid.gridSizeY - 1 || startNodeIndex.Item3 >= grid.gridSizeZ - 1 ||
+            targetNodeIndex.Item1 >= grid.gridSizeX - 1 || targetNodeIndex.Item2 >= grid.gridSizeY - 1 || targetNodeIndex.Item3 >= grid.gridSizeZ - 1)
+        {
+            return;
+        }
+
         Node startNode = gridArrayCopy[startNodeIndex.Item1, startNodeIndex.Item2, startNodeIndex.Item3];
         Node targetNode = gridArrayCopy[targetNodeIndex.Item1, targetNodeIndex.Item2, targetNodeIndex.Item3];
  
@@ -227,7 +240,7 @@ public abstract class Enemy : MonoBehaviour
         if (grid == null || grid.grid == null)
             return;
 
-        foreach (Node node in grid.grid)
+        foreach (Node node in gridArrayCopy)
         {
             if (path != null && path.Contains(node))
             {
@@ -237,6 +250,11 @@ public abstract class Enemy : MonoBehaviour
         }
 
         (int, int, int) targetNodeIndex = grid.GetNodeIndexFromPosition(targetPos);
+
+        if (targetNodeIndex.Item1 >= grid.gridSizeX - 1 || targetNodeIndex.Item2 >= grid.gridSizeY - 1 || targetNodeIndex.Item3 >= grid.gridSizeZ - 1)
+        {
+            return;
+        }
         Node targetNode = gridArrayCopy[targetNodeIndex.Item1, targetNodeIndex.Item2, targetNodeIndex.Item3];
         Gizmos.color = Color.yellow;
         Gizmos.DrawCube(targetNode.position, Vector3.one * 10);

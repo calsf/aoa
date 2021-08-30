@@ -96,7 +96,7 @@ public class Grid3D : MonoBehaviour
     public (int, int, int) GetNodeIndexFromPosition(Vector3 worldPos)
     {
         float xPos = (worldPos.x + gridSizeTotal.x / 2) / gridSizeTotal.x;
-        float yPos = (worldPos.y + gridSizeTotal.y / 2) / gridSizeTotal.y;
+        float yPos = ((worldPos.y + gridSizeTotal.y / 2) - transform.position.y) / gridSizeTotal.y; // Account for any Y offset of the grid game object
         float zPos = (worldPos.z + gridSizeTotal.z / 2) / gridSizeTotal.z;
 
         xPos = Mathf.Clamp01(xPos);

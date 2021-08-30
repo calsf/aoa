@@ -22,7 +22,7 @@ public class NormalEnemy : Enemy
         if (nextPathfind < Time.time)
         {
             // Determine next pathfind call depending on enemy aggro state
-            pathfindDelay = isAggro ? Random.Range(1, 3) : 1;
+            pathfindDelay = isAggro ? Random.Range(3, 9) : 1;
             nextPathfind = Time.time + pathfindDelay;
 
             PathFind();
@@ -31,11 +31,11 @@ public class NormalEnemy : Enemy
 
     override protected void Move()
     {
-        if (!isAggro && path != null && path.Count > 0)
+        if (!isAggro && (healthCurr < healthMax || (path != null && path.Count > 0))) // Aggro when hit or when path to player is close enough
         {
             isAggro = true;
         }
-        else if (isAggro)
+        else if (isAggro) // Aggro on player
         {
             transform.LookAt(player.transform);
 
@@ -59,12 +59,12 @@ public class NormalEnemy : Enemy
                 }
 
                 // Move to next path position
-                if (Vector3.Distance(transform.position, nextPathPos) > 1f)
+                if (Vector3.Distance(transform.position, nextPathPos) > 1f || nextPathPos == player.transform.position)
                 {
                     Vector3 moveDir = nextPathPos - transform.position;
                     moveDir.Normalize();
 
-                    rb.velocity = moveDir * moveSpeedCurr;
+                    rb.AddForce((moveDir * moveSpeedCurr) - rb.velocity, ForceMode.VelocityChange);
                 }
                 else
                 {
