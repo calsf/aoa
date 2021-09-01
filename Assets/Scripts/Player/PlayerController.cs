@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     private const float MIN_Y = 90f;
     private const float GRAVITY = -9.81f * 2.5f;
     private const float SPEED_BASE = 10f;
-    private const float JUMP_HEIGHT = 6f;
+    private const float JUMP_HEIGHT = 15f;
     private const float STRAFE_MODIFIER = .8f;
     private const float AIM_MOVE_MODIFIER_X = .35f;
     private const float AIM_MOVE_MODIFIER_Z = .6f;
@@ -106,12 +106,8 @@ public class PlayerController : MonoBehaviour
             // Consume 1 available jump
             jumpCurrAvailable--;
 
-            // Set velocityY to be some positive velocity based on jump height
-            if (currVelocityY < 0)  // Reset to 0 if necessary so first jump height is accurate
-            {
-                currVelocityY = 0;
-            }
-            currVelocityY += Mathf.Sqrt((JUMP_HEIGHT * -1f) * GRAVITY);
+            currVelocityY = 0; // Reset to 0 if necessary so jump heights are always consistent
+            currVelocityY += Mathf.Sqrt((JUMP_HEIGHT * -1f) * GRAVITY); // Set velocityY to be some positive velocity based on jump height
         }
 
         // Apply movement and velocityY
@@ -150,21 +146,35 @@ public class PlayerController : MonoBehaviour
         float elapsedTime;
         float targetY;
         float originalY = transform.position.y;
+        float startY;
 
         // Set target y position and set controller values for slide
-        targetY = originalY - 1;
-        controller.height = 1;
-        controller.center = new Vector3(0, 1.5f, 0);
+        targetY = originalY - 1.5f;
+        controller.height = .5f;
+        controller.center = new Vector3(0, 2f, 0);
 
         // Increase move speed for slide
         speedCurr *= 2;
 
         // Lerp y position for slide duration or until isSliding is false, which will cancel slide
-        waitTime = .5f;
+        waitTime = .2f;
+        elapsedTime = 0f;
+        startY = transform.position.y;
+        while (elapsedTime < waitTime && isSliding)
+        {
+            float y = Mathf.Lerp(startY, targetY, elapsedTime / waitTime);
+            elapsedTime += Time.deltaTime;
+
+            transform.position = new Vector3(transform.position.x, y, transform.position.z);
+
+            yield return null;
+        }
+
+        // Slide duration while in sliding position
+        waitTime = .35f;
         elapsedTime = 0f;
         while (elapsedTime < waitTime && isSliding)
         {
-            transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, targetY, transform.position.z), elapsedTime / waitTime);
             elapsedTime += Time.deltaTime;
 
             yield return null;
@@ -183,11 +193,14 @@ public class PlayerController : MonoBehaviour
         // Lerp y position back to original position
         waitTime = .2f;
         elapsedTime = 0f;
-        while (elapsedTime < waitTime && Mathf.Abs(transform.position.y - originalY) > .1f) // Stop within range to avoid jitter
+        startY = transform.position.y;
+        while (elapsedTime < waitTime) // Stop within range to avoid jitter
         {
-            transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, targetY, transform.position.z), elapsedTime / waitTime);
+            float y = Mathf.Lerp(startY, targetY, elapsedTime / waitTime);
             elapsedTime += Time.deltaTime;
- 
+
+            transform.position = new Vector3(transform.position.x, y, transform.position.z);
+
             yield return null;
         }
 
