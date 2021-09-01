@@ -22,7 +22,7 @@ public class NormalEnemy : Enemy
         if (nextPathfind < Time.time)
         {
             // Determine next pathfind call depending on enemy aggro state
-            pathfindDelay = isAggro ? Random.Range(3, 9) : 1;
+            pathfindDelay = isAggro ? Random.Range(1, 4) : 1;
             nextPathfind = Time.time + pathfindDelay;
 
             PathFind();
@@ -68,6 +68,8 @@ public class NormalEnemy : Enemy
                 }
                 else
                 {
+                    // Set last valid position to the node that was successfully traversed in case start node is on an unwalkable node during PathFind
+                    lastValidPosition = path[currPathPos].position;
                     currPathPos++;
                 }
             }

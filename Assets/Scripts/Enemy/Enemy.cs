@@ -4,6 +4,8 @@ using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour
 {
+    protected const int MAX_NODES_TO_LOOK = 5;
+
     [SerializeField] GameObject deathEffect;
  
     protected GameObject player;
@@ -28,6 +30,7 @@ public abstract class Enemy : MonoBehaviour
     protected Vector3 targetPos;
     protected List<Node> path;
     protected bool pathChanged;
+    protected Vector3 lastValidPosition;
 
     void Start()
     {
@@ -59,6 +62,8 @@ public abstract class Enemy : MonoBehaviour
                 }
             }
         }
+
+        lastValidPosition = transform.position;
 
         moveSpeedMax = enemy.MOVE_SPEED_BASE;
         moveSpeedCurr = moveSpeedMax;
@@ -146,6 +151,13 @@ public abstract class Enemy : MonoBehaviour
 
         Node startNode = gridArrayCopy[startNodeIndex.Item1, startNodeIndex.Item2, startNodeIndex.Item3];
         Node targetNode = gridArrayCopy[targetNodeIndex.Item1, targetNodeIndex.Item2, targetNodeIndex.Item3];
+
+        // Check that the start node is actually valid and walkable, if not, use the last valid position which should be the last node position that was successfully traversed
+        if (!startNode.isWalkable)
+        {
+            startNodeIndex = grid.GetNodeIndexFromPosition(lastValidPosition);
+            startNode = gridArrayCopy[startNodeIndex.Item1, startNodeIndex.Item2, startNodeIndex.Item3];
+        }
  
         // Already at target node
         if (startNode == targetNode)
@@ -160,6 +172,7 @@ public abstract class Enemy : MonoBehaviour
         openList.Enqueue(startNode);
 
         // Look for path
+        int numNodesLooked = 0;
         while (!openList.IsEmpty())
         {
             // Get next node
@@ -167,6 +180,7 @@ public abstract class Enemy : MonoBehaviour
 
             // Set node as already visited
             closedList.Add(currNode);
+            numNodesLooked++;
 
             if (currNode == targetNode) // Path found, get the final path
             {
@@ -176,6 +190,11 @@ public abstract class Enemy : MonoBehaviour
             else if (!isAggro && currNode.fCost > fCostLimit) // If not aggro and cost to reach this node is too high, we can ignore its neighbors and continue through open list
             {
                 continue;
+            }
+            else if (numNodesLooked > MAX_NODES_TO_LOOK) // Limit number of nodes to look through and return partial path
+            {
+                GetPath(startNode, currNode);
+                return;
             }
             else // Else, keep looking
             {
@@ -249,13 +268,21 @@ public abstract class Enemy : MonoBehaviour
             }
         }
 
+        (int, int, int) startNodeIndex = grid.GetNodeIndexFromPosition(startPos);
         (int, int, int) targetNodeIndex = grid.GetNodeIndexFromPosition(targetPos);
 
-        if (targetNodeIndex.Item1 >= grid.gridSizeX - 1 || targetNodeIndex.Item2 >= grid.gridSizeY - 1 || targetNodeIndex.Item3 >= grid.gridSizeZ - 1)
+        // Check that the start and target nodes are valid nodes
+        if (startNodeIndex.Item1 >= grid.gridSizeX - 1 || startNodeIndex.Item2 >= grid.gridSizeY - 1 || startNodeIndex.Item3 >= grid.gridSizeZ - 1 ||
+            targetNodeIndex.Item1 >= grid.gridSizeX - 1 || targetNodeIndex.Item2 >= grid.gridSizeY - 1 || targetNodeIndex.Item3 >= grid.gridSizeZ - 1)
         {
             return;
         }
+
+        Node startNode = gridArrayCopy[startNodeIndex.Item1, startNodeIndex.Item2, startNodeIndex.Item3];
         Node targetNode = gridArrayCopy[targetNodeIndex.Item1, targetNodeIndex.Item2, targetNodeIndex.Item3];
+
+        Gizmos.color = Color.white;
+        Gizmos.DrawCube(startNode.position, Vector3.one * 10);
         Gizmos.color = Color.yellow;
         Gizmos.DrawCube(targetNode.position, Vector3.one * 10);
     }
