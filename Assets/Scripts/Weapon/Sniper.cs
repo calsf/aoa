@@ -15,9 +15,9 @@ public class Sniper : Weapon
     }
 
     // Override aim to also change scope overlay
-    protected override void Aim()
+    public override void Aim()
     {
-        if (Input.GetButton("Aim") && !isReloading) // Aim down sights position, field of view, inaccuracy, scope overlay alpha
+        if (Input.GetButton("Aim") && !isReloading && !isSwapping) // Aim down sights position, field of view, inaccuracy, scope overlay alpha
         {
             player.isAiming = true;
             transform.localPosition = Vector3.SmoothDamp(transform.localPosition, aimPos, ref posVelocity, aimTime);

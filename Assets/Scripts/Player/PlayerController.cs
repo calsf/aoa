@@ -106,7 +106,7 @@ public class PlayerController : MonoBehaviour
             // Consume 1 available jump
             jumpCurrAvailable--;
 
-            currVelocityY = 0; // Reset to 0 if necessary so jump heights are always consistent
+            currVelocityY = 0; // Reset to 0 so jump heights are always consistent
             currVelocityY += Mathf.Sqrt((JUMP_HEIGHT * -1f) * GRAVITY); // Set velocityY to be some positive velocity based on jump height
         }
 
