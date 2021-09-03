@@ -15,11 +15,11 @@ public class Sniper : Weapon
     }
 
     // Override aim to also change scope overlay
-    protected override void Aim()
+    public override void Aim()
     {
-        if (Input.GetButton("Aim") && !isReloading) // Aim down sights position, field of view, inaccuracy, scope overlay alpha
+        if (Input.GetButton("Aim") && !isReloading && !isSwapping) // Aim down sights position, field of view, inaccuracy, scope overlay alpha
         {
-            player.isAiming = true;
+            playerMoveControl.isAiming = true;
             transform.localPosition = Vector3.SmoothDamp(transform.localPosition, aimPos, ref posVelocity, aimTime);
             cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov - zoom, ref camVelocity, aimTime);
             inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMin, ref inaccuracyVelocity, aimTime);
@@ -27,7 +27,7 @@ public class Sniper : Weapon
         }
         else // Hip fire position, field of view, inaccuracy, scope overlay alpha
         {
-            player.isAiming = false;
+            playerMoveControl.isAiming = false;
             transform.localPosition = Vector3.SmoothDamp(transform.localPosition, hipPos, ref posVelocity, aimTime);
             cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov, ref camVelocity, aimTime);
             inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMax, ref inaccuracyVelocity, aimTime);

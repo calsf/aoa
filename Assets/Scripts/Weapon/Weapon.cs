@@ -8,7 +8,7 @@ public class Weapon : MonoBehaviour
     // TEMP!!!!
     [SerializeField] protected GameObject placeholder;
 
-    protected PlayerController player;
+    protected PlayerMoveController playerMoveControl;
 
     protected Camera cam;
 
@@ -34,6 +34,11 @@ public class Weapon : MonoBehaviour
     protected LayerMask shootLayerMask;
     protected bool isShooting;
     protected bool isReloading;
+ 
+    public bool isSwapping { get; set; }
+
+    public bool canShoot { get { return !isShooting && !isReloading && magSizeCurr > 0 && !isSwapping; } }
+    public bool canReload { get { return magSizeCurr != magSizeMax && !isReloading && !isSwapping; } }
 
     public bool isEnemyPunchthrough { get; set; }
 
@@ -68,7 +73,7 @@ public class Weapon : MonoBehaviour
         crosshairCircle = GameObject.FindGameObjectWithTag("CrosshairCircle").GetComponent<Image>();
         crosshairCircleRect = crosshairCircle.GetComponent<RectTransform>();
 
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        playerMoveControl = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMoveController>();
         cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         anim = GetComponent<Animator>();
         camMaxFov = cam.fieldOfView;
@@ -108,25 +113,11 @@ public class Weapon : MonoBehaviour
         crosshairCircle.enabled = false;
     }
 
-    void Update()
-    {
-        if (Input.GetButton("Fire") && !isShooting && !isReloading && magSizeCurr > 0)
-        {
-            Shoot();
-        }
-
-        if (Input.GetButtonDown("Reload") && magSizeCurr != magSizeMax && !isReloading)
-        {
-            Reload();
-        }
-
-        Aim();
-    }
-
     protected void OnFinishShoot()
     {
         isShooting = false;
 
+        // Check for reload after shot
         if (magSizeCurr <= 0)
         {
             Reload();
@@ -141,13 +132,76 @@ public class Weapon : MonoBehaviour
         isShooting = false; // Also reset isShooting in case shooting was cancelled by reload
     }
 
-    protected void Reload()
+    protected void OnFinishSwapIn()
+    {
+        isSwapping = false;
+
+        // Check for reload on swap in
+        if (magSizeCurr <= 0)
+        {
+            Reload();
+        }
+    }
+
+    public IEnumerator SwapOutFor(Weapon nextWeapon)
+    {
+        isSwapping = true;
+
+        anim.Play("SwapOut");
+
+        // Wait for swap out animation to finish
+        while (anim.GetCurrentAnimatorStateInfo(0).IsName("SwapOut"))
+        {
+            yield return null;
+        }
+
+        // Swap in next weapon
+        nextWeapon.gameObject.SetActive(true);
+        nextWeapon.SwapIn();
+
+        // Reset values for this weapon and deactivate
+        isSwapping = false;
+        isReloading = false;
+        isShooting = false;
+        gameObject.SetActive(false);
+    }
+
+    public void SwapIn()
+    {
+        isSwapping = true;
+        anim.Play("SwapIn");
+    }
+
+    public void Reload()
     {
         isReloading = true;
         anim.Play("Reload");
     }
 
-    protected virtual void Shoot()
+    public virtual void Aim()
+    {
+        if (Input.GetButton("Aim") && !isReloading && !isSwapping) // Aim down sights position, field of view, inaccuracy
+        {
+            playerMoveControl.isAiming = true;
+            transform.localPosition = Vector3.SmoothDamp(transform.localPosition, aimPos, ref posVelocity, aimTime);
+            cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov - zoom, ref camVelocity, aimTime);
+            inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMin, ref inaccuracyVelocity, aimTime);
+        }
+        else // Hip fire position, field of view, inaccuracy
+        {
+            playerMoveControl.isAiming = false;
+            transform.localPosition = Vector3.SmoothDamp(transform.localPosition, hipPos, ref posVelocity, aimTime);
+            cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov, ref camVelocity, aimTime);
+            inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMax, ref inaccuracyVelocity, aimTime);
+        }
+
+        // Crosshair size
+        float sizeDelta = inaccuracyCurr * sizeDeltaModifier;
+        sizeDelta = Mathf.Clamp(sizeDelta, 60, sizeDelta);
+        crosshair.sizeDelta = Vector2.SmoothDamp(crosshair.sizeDelta, new Vector2(sizeDelta, sizeDelta), ref crosshairVelocity, aimTime);
+    }
+
+    public virtual void Shoot()
     {
         anim.Play("Shoot");
         isShooting = true;
@@ -258,28 +312,5 @@ public class Weapon : MonoBehaviour
                 }
             }
         }
-    }
-
-    protected virtual void Aim()
-    {
-        if (Input.GetButton("Aim") && !isReloading) // Aim down sights position, field of view, inaccuracy
-        {
-            player.isAiming = true;
-            transform.localPosition = Vector3.SmoothDamp(transform.localPosition, aimPos, ref posVelocity, aimTime);
-            cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov - zoom, ref camVelocity, aimTime);
-            inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMin, ref inaccuracyVelocity, aimTime);
-        }
-        else // Hip fire position, field of view, inaccuracy
-        {
-            player.isAiming = false;
-            transform.localPosition = Vector3.SmoothDamp(transform.localPosition, hipPos, ref posVelocity, aimTime);
-            cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov, ref camVelocity, aimTime);
-            inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMax, ref inaccuracyVelocity, aimTime);
-        }
-
-        // Crosshair size
-        float sizeDelta = inaccuracyCurr * sizeDeltaModifier;
-        sizeDelta = Mathf.Clamp(sizeDelta, 60, sizeDelta);
-        crosshair.sizeDelta = Vector2.SmoothDamp(crosshair.sizeDelta, new Vector2(sizeDelta, sizeDelta), ref crosshairVelocity, aimTime);
     }
 }

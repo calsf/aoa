@@ -21,7 +21,35 @@ public class Shotgun : Weapon
         crosshairCircle.enabled = true;
     }
 
-    protected override void Shoot()
+    // Override aim to change scope circle size
+    public override void Aim()
+    {
+        if (Input.GetButton("Aim") && !isReloading && !isSwapping) // Aim down sights position, field of view, inaccuracy
+        {
+            playerMoveControl.isAiming = true;
+            transform.localPosition = Vector3.SmoothDamp(transform.localPosition, aimPos, ref posVelocity, aimTime);
+            cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov - zoom, ref camVelocity, aimTime);
+            inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMin, ref inaccuracyVelocity, aimTime);
+
+            // Crosshair size
+            float size = inaccuracyCurr * (sizeDeltaModifier + 500);
+            size = Mathf.Clamp(size, 60, inaccuracyCurr * sizeDeltaModifier);
+            crosshairCircleRect.sizeDelta = Vector2.SmoothDamp(crosshairCircleRect.sizeDelta, new Vector2(size, size), ref crosshairVelocity, aimTime);
+        }
+        else // Hip fire position, field of view, inaccuracy
+        {
+            playerMoveControl.isAiming = false;
+            transform.localPosition = Vector3.SmoothDamp(transform.localPosition, hipPos, ref posVelocity, aimTime);
+            cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov, ref camVelocity, aimTime);
+            inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMax, ref inaccuracyVelocity, aimTime);
+
+            // Crosshair size
+            float size = inaccuracyCurr * sizeDeltaModifier;
+            size = Mathf.Clamp(size, 60, size);
+            crosshairCircleRect.sizeDelta = Vector2.SmoothDamp(crosshairCircleRect.sizeDelta, new Vector2(size, size), ref crosshairVelocity, aimTime);
+        }
+    }
+    public override void Shoot()
     {
         anim.Play("Shoot");
         isShooting = true;
@@ -53,35 +81,6 @@ public class Shotgun : Weapon
         foreach (Vector3 dir in dirs)
         {
             ShootRaycast(dir);
-        }
-    }
-
-    // Override aim to change scope circle size
-    protected override void Aim()
-    {
-        if (Input.GetButton("Aim") && !isReloading) // Aim down sights position, field of view, inaccuracy
-        {
-            player.isAiming = true;
-            transform.localPosition = Vector3.SmoothDamp(transform.localPosition, aimPos, ref posVelocity, aimTime);
-            cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov - zoom, ref camVelocity, aimTime);
-            inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMin, ref inaccuracyVelocity, aimTime);
-
-            // Crosshair size
-            float size = inaccuracyCurr * (sizeDeltaModifier + 500);
-            size = Mathf.Clamp(size, 60, inaccuracyCurr * sizeDeltaModifier);
-            crosshairCircleRect.sizeDelta = Vector2.SmoothDamp(crosshairCircleRect.sizeDelta, new Vector2(size, size), ref crosshairVelocity, aimTime);
-        }
-        else // Hip fire position, field of view, inaccuracy
-        {
-            player.isAiming = false;
-            transform.localPosition = Vector3.SmoothDamp(transform.localPosition, hipPos, ref posVelocity, aimTime);
-            cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov, ref camVelocity, aimTime);
-            inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMax, ref inaccuracyVelocity, aimTime);
-
-            // Crosshair size
-            float size = inaccuracyCurr * sizeDeltaModifier;
-            size = Mathf.Clamp(size, 60, size);
-            crosshairCircleRect.sizeDelta = Vector2.SmoothDamp(crosshairCircleRect.sizeDelta, new Vector2(size, size), ref crosshairVelocity, aimTime);
         }
     }
 }
