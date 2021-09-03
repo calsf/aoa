@@ -8,7 +8,7 @@ public class Weapon : MonoBehaviour
     // TEMP!!!!
     [SerializeField] protected GameObject placeholder;
 
-    protected PlayerController player;
+    protected PlayerMoveController playerMoveControl;
 
     protected Camera cam;
 
@@ -73,7 +73,7 @@ public class Weapon : MonoBehaviour
         crosshairCircle = GameObject.FindGameObjectWithTag("CrosshairCircle").GetComponent<Image>();
         crosshairCircleRect = crosshairCircle.GetComponent<RectTransform>();
 
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        playerMoveControl = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMoveController>();
         cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         anim = GetComponent<Animator>();
         camMaxFov = cam.fieldOfView;
@@ -182,14 +182,14 @@ public class Weapon : MonoBehaviour
     {
         if (Input.GetButton("Aim") && !isReloading && !isSwapping) // Aim down sights position, field of view, inaccuracy
         {
-            player.isAiming = true;
+            playerMoveControl.isAiming = true;
             transform.localPosition = Vector3.SmoothDamp(transform.localPosition, aimPos, ref posVelocity, aimTime);
             cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov - zoom, ref camVelocity, aimTime);
             inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMin, ref inaccuracyVelocity, aimTime);
         }
         else // Hip fire position, field of view, inaccuracy
         {
-            player.isAiming = false;
+            playerMoveControl.isAiming = false;
             transform.localPosition = Vector3.SmoothDamp(transform.localPosition, hipPos, ref posVelocity, aimTime);
             cam.fieldOfView = Mathf.SmoothDamp(cam.fieldOfView, camMaxFov, ref camVelocity, aimTime);
             inaccuracyCurr = Mathf.SmoothDamp(inaccuracyCurr, inaccuracyMax, ref inaccuracyVelocity, aimTime);
