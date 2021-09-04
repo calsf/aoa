@@ -197,7 +197,7 @@ public abstract class Enemy : MonoBehaviour
                 GetPath(startNode, currNode);
                 return;
             }
-            else // Else, keep looking, check cardinal neighbors first then check diagonals if enough cardinals are open
+            else // Else, keep looking
             {
                 // Look at curr node cardinal neighbors
                 foreach (Node neighborNode in currNode.cardinalNeighbors)
