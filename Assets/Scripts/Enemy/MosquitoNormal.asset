@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: MosquitoNormal
   m_EditorClassIdentifier: 
   MOVE_SPEED_BASE: 8
-  HEALTH_BASE: 300
+  HEALTH_BASE: 200
   DAMAGE_BASE: 10

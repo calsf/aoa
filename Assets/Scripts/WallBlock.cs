@@ -111,8 +111,7 @@ public class WallBlock : MonoBehaviour
         }
 
         // Create destroyed effect
-        GameObject obj = Instantiate(destroyedFx);
-        obj.transform.position = transform.position;
+        GameObject obj = Instantiate(destroyedFx, transform.position, Quaternion.identity);
         obj.SetActive(true);
 
         // Update the grid node isWalkable at this wall block's position

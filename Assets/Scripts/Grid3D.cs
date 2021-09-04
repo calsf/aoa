@@ -17,6 +17,8 @@ public class Grid3D : MonoBehaviour
     public int gridSizeZ { get; set; }
     public int gridSizeY { get; set; }
 
+    public Vector3 gridBounds { get { return new Vector3(gridSizeTotal.x / 2, gridSizeTotal.y / 2, gridSizeTotal.z / 2); } }
+
     private Vector3 botLeft;
 
     public float nodeDiameter { get { return nodeRadius * 2; } }
@@ -76,7 +78,8 @@ public class Grid3D : MonoBehaviour
             {
                 for (int z = 0; z < gridSizeZ; z++)
                 {
-                    grid[x, y, z].neighbors = GetNeighborNodes(grid, grid[x, y, z]);
+                    grid[x, y, z].cardinalNeighbors = GetCardinalNeighborNodes(grid, grid[x, y, z]);
+                    grid[x, y, z].diagonalNeighbors = GetDiagonalNeighborNodes(grid, grid[x, y, z]);
                 }
             }
         }
@@ -95,25 +98,23 @@ public class Grid3D : MonoBehaviour
 
     public (int, int, int) GetNodeIndexFromPosition(Vector3 worldPos)
     {
-        float xPos = (worldPos.x + gridSizeTotal.x / 2) / gridSizeTotal.x;
-        float yPos = ((worldPos.y + gridSizeTotal.y / 2) - transform.position.y) / gridSizeTotal.y; // Account for any Y offset of the grid game object
-        float zPos = (worldPos.z + gridSizeTotal.z / 2) / gridSizeTotal.z;
+        // Get node index from world position, if a given world position is out of the grid bounds, set to be out of index bounds -- caller must handle out of bounds check
+        int x = worldPos.x > gridSizeTotal.x ? gridSizeX : gridSizeX - 1 - (int) (Mathf.Abs(worldPos.x - gridSizeTotal.x / 2) / nodeDiameter);
+        int y = worldPos.y > gridSizeTotal.y ? gridSizeY : gridSizeY - 1 - (int) (Mathf.Abs((worldPos.y - gridSizeTotal.y / 2) - transform.position.y) / nodeDiameter); // Account for any Y offset of the grid game object
+        int z = worldPos.y > gridSizeTotal.z ? gridSizeZ : gridSizeZ - 1 - (int) (Mathf.Abs(worldPos.z - gridSizeTotal.z / 2) / nodeDiameter);
 
-        xPos = Mathf.Clamp01(xPos);
-        yPos = Mathf.Clamp01(yPos);
-        zPos = Mathf.Clamp01(zPos);
-
-        int x = Mathf.RoundToInt((gridSizeX - 1) * xPos);
-        int y = Mathf.RoundToInt((gridSizeY - 1) * yPos);
-        int z = Mathf.RoundToInt((gridSizeZ - 1) * zPos);
+        // Avoid returning negative index, will still need to check for upper index bound
+        x = Mathf.Clamp(x, 0, x);
+        y = Mathf.Clamp(y, 0, y);
+        z = Mathf.Clamp(z, 0, z);
 
         return (x, y, z);
     }
 
-    public List<Node> GetNeighborNodes(Node[, ,] grid, Node node)
+    public List<Node> GetCardinalNeighborNodes(Node[, ,] grid, Node node)
     {
         List<Node> neighborNodes = new List<Node>();
- 
+
         // Check for neighbors in every direction from node
         for (int x = -1; x <= 1; x++)
         {
@@ -121,8 +122,53 @@ public class Grid3D : MonoBehaviour
             {
                 for (int z = -1; z <= 1; z++)
                 {
-                    // Vector zero is the original node so we can skip
-                    if (x == 0 && y == 0 && z == 0)
+                    int originDimCount = 0; // Number of dimensions with 0 value to determine cardinal or diagonal node
+                    originDimCount = x == 0 ? originDimCount + 1 : originDimCount;
+                    originDimCount = y == 0 ? originDimCount + 1 : originDimCount;
+                    originDimCount = z == 0 ? originDimCount + 1 : originDimCount;
+
+                    // Skip if vector zero which is the original node or if is a diagonal node
+                    if ((x == 0 && y == 0 && z == 0) || originDimCount <= 1)
+                    {
+                        continue;
+                    }
+
+                    int neighborX = node.gridXIndex + x;
+                    int neighborY = node.gridYIndex + y;
+                    int neighborZ = node.gridZIndex + z;
+
+                    // Check that node is within grid bounds
+                    if (neighborX >= 0 && neighborX < gridSizeX
+                        && neighborY >= 0 && neighborY < gridSizeY
+                        && neighborZ >= 0 && neighborZ < gridSizeZ)
+                    {
+                        neighborNodes.Add(grid[neighborX, neighborY, neighborZ]);
+                    }
+                }
+            }
+        }
+
+        return neighborNodes;
+    }
+
+    public List<Node> GetDiagonalNeighborNodes(Node[,,] grid, Node node)
+    {
+        List<Node> neighborNodes = new List<Node>();
+
+        // Check for neighbors in every direction from node
+        for (int x = -1; x <= 1; x++)
+        {
+            for (int y = -1; y <= 1; y++)
+            {
+                for (int z = -1; z <= 1; z++)
+                {
+                    int originDimCount = 0; // Number of dimensions with 0 value to determine cardinal or diagonal node
+                    originDimCount = x == 0 ? originDimCount + 1 : originDimCount;
+                    originDimCount = y == 0 ? originDimCount + 1 : originDimCount;
+                    originDimCount = z == 0 ? originDimCount + 1 : originDimCount;
+
+                    // Skip if vector zero which is the original node or if is a cardinal node
+                    if ((x == 0 && y == 0 && z == 0) || originDimCount >= 2)
                     {
                         continue;
                     }

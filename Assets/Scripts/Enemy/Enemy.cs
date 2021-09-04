@@ -4,11 +4,12 @@ using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour
 {
-    protected const int MAX_NODES_TO_LOOK = 5;
+    protected const int MAX_NODES_TO_LOOK = 10;
 
     [SerializeField] GameObject deathEffect;
  
     protected GameObject player;
+    protected PlayerMoveController playerMoveController;
     protected PlayerHealth playerHealth;
 
     protected bool isAggro = false;
@@ -26,16 +27,16 @@ public abstract class Enemy : MonoBehaviour
 
     protected Grid3D grid;
     protected Node[, ,] gridArrayCopy;
-    protected Vector3 startPos;
+    protected Vector3 lastValidStartPos;
     protected Vector3 targetPos;
     protected List<Node> path;
     protected bool pathChanged;
-    protected Vector3 lastValidPosition;
 
     void Start()
     {
         grid = GameObject.FindGameObjectWithTag("Grid").GetComponent<Grid3D>();
         player = GameObject.FindGameObjectWithTag("Player");
+        playerMoveController = player.GetComponent<PlayerMoveController>();
         playerHealth = player.GetComponent<PlayerHealth>();
 
         // Create copy of grid array for this enemy to use
@@ -58,12 +59,13 @@ public abstract class Enemy : MonoBehaviour
             {
                 for (int z = 0; z < grid.gridSizeZ; z++)
                 {
-                    gridArrayCopy[x, y, z].neighbors = grid.GetNeighborNodes(gridArrayCopy, gridArrayCopy[x, y, z]);
+                    gridArrayCopy[x, y, z].cardinalNeighbors = grid.GetCardinalNeighborNodes(gridArrayCopy, gridArrayCopy[x, y, z]);
+                    gridArrayCopy[x, y, z].diagonalNeighbors = grid.GetDiagonalNeighborNodes(gridArrayCopy, gridArrayCopy[x, y, z]);
                 }
             }
         }
 
-        lastValidPosition = transform.position;
+        lastValidStartPos = transform.position;
 
         moveSpeedMax = enemy.MOVE_SPEED_BASE;
         moveSpeedCurr = moveSpeedMax;
@@ -95,6 +97,14 @@ public abstract class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
+        // Check for and update last valid start node position for enemy
+        (int, int, int) startNodeIndex = grid.GetNodeIndexFromPosition(transform.position);
+        if (startNodeIndex.Item1 <= grid.gridSizeX - 1 && startNodeIndex.Item2 <= grid.gridSizeY - 1 && startNodeIndex.Item3 <= grid.gridSizeZ - 1)
+        {
+            lastValidStartPos = transform.position;
+        }
+
+        // Move
         Move();
     }
 
@@ -112,8 +122,7 @@ public abstract class Enemy : MonoBehaviour
 
             if (healthCurr <= 0)
             {
-                GameObject obj = Instantiate(deathEffect);
-                obj.transform.position = transform.position;
+                GameObject obj = Instantiate(deathEffect, transform.position, Quaternion.identity);
                 Destroy(gameObject);
             }
         }
@@ -136,28 +145,20 @@ public abstract class Enemy : MonoBehaviour
     // --- Pathfinding ---
     protected void PathFind()
     {
-        startPos = transform.position;
         targetPos = player.transform.position + (Vector3.up * 5); // Offset player position
 
-        (int, int, int) startNodeIndex = grid.GetNodeIndexFromPosition(startPos);
+        (int, int, int) startNodeIndex = grid.GetNodeIndexFromPosition(lastValidStartPos);
         (int, int, int) targetNodeIndex = grid.GetNodeIndexFromPosition(targetPos);
 
-        // Check that the start and target nodes are valid nodes
-        if (startNodeIndex.Item1 >= grid.gridSizeX - 1 || startNodeIndex.Item2 >= grid.gridSizeY - 1 || startNodeIndex.Item3 >= grid.gridSizeZ - 1 ||
-            targetNodeIndex.Item1 >= grid.gridSizeX - 1 || targetNodeIndex.Item2 >= grid.gridSizeY - 1 || targetNodeIndex.Item3 >= grid.gridSizeZ - 1)
+        // Check that the start and target nodes are valid nodes, return if not
+        if (startNodeIndex.Item1 > grid.gridSizeX - 1 || startNodeIndex.Item2 > grid.gridSizeY - 1 || startNodeIndex.Item3 > grid.gridSizeZ - 1 ||
+            targetNodeIndex.Item1 > grid.gridSizeX - 1 || targetNodeIndex.Item2 > grid.gridSizeY - 1 || targetNodeIndex.Item3 > grid.gridSizeZ - 1)
         {
             return;
         }
 
         Node startNode = gridArrayCopy[startNodeIndex.Item1, startNodeIndex.Item2, startNodeIndex.Item3];
         Node targetNode = gridArrayCopy[targetNodeIndex.Item1, targetNodeIndex.Item2, targetNodeIndex.Item3];
-
-        // Check that the start node is actually valid and walkable, if not, use the last valid position which should be the last node position that was successfully traversed
-        if (!startNode.isWalkable)
-        {
-            startNodeIndex = grid.GetNodeIndexFromPosition(lastValidPosition);
-            startNode = gridArrayCopy[startNodeIndex.Item1, startNodeIndex.Item2, startNodeIndex.Item3];
-        }
  
         // Already at target node
         if (startNode == targetNode)
@@ -196,12 +197,75 @@ public abstract class Enemy : MonoBehaviour
                 GetPath(startNode, currNode);
                 return;
             }
-            else // Else, keep looking
+            else // Else, keep looking, check cardinal neighbors first then check diagonals if enough cardinals are open
             {
-                foreach (Node neighborNode in currNode.neighbors) // Look at curr node neighbors
+                // Look at curr node cardinal neighbors
+                foreach (Node neighborNode in currNode.cardinalNeighbors)
                 {
                     // Skip if neighbor is not walkable or is already checked
                     if (!neighborNode.isWalkable || closedList.Contains(neighborNode))
+                    {
+                        continue;
+                    }
+
+                    // Calculate move costs
+                    int gCost = currNode.gCost + GetManhattanDistance(currNode, neighborNode);
+
+                    if (gCost < neighborNode.gCost || !openList.Contains(neighborNode))
+                    {
+                        neighborNode.gCost = gCost; // Cost to reach this neighbor node from start state
+                        neighborNode.hCost = GetManhattanDistance(neighborNode, targetNode); // Cost to reach target from this neighbor node
+                        neighborNode.parent = currNode; // Set parent of neighbor so we can backtrack for final path
+
+                        // If isAggro, no cost limit
+                        // If cost to reach this node is too high, do not add to open list
+                        if ((isAggro || neighborNode.fCost < fCostLimit) && !openList.Contains(neighborNode))
+                        {
+                            openList.Enqueue(neighborNode);
+                        }
+                    }
+                }
+
+                // Look at curr node diagonal neighbors
+                foreach (Node neighborNode in currNode.diagonalNeighbors)
+                {
+                    // Skip if neighbor is not walkable or is already checked
+                    if (!neighborNode.isWalkable || closedList.Contains(neighborNode))
+                    {
+                        continue;
+                    }
+
+                    // Check for any blocking cardinal blocks for this diagonal neighbor
+                    int unwalkableCount = 0;
+                    if (neighborNode.gridXIndex != 0)
+                    {
+                        Node cardinalNode = gridArrayCopy[neighborNode.gridXIndex, currNode.gridYIndex, currNode.gridZIndex];
+                        if (!cardinalNode.isWalkable)
+                        {
+                            unwalkableCount++;
+                        }
+                    }
+
+                    if (neighborNode.gridYIndex != 0)
+                    {
+                        Node cardinalNode = gridArrayCopy[currNode.gridXIndex, neighborNode.gridYIndex, currNode.gridZIndex];
+                        if (!cardinalNode.isWalkable)
+                        {
+                            unwalkableCount++;
+                        }
+                    }
+
+                    if (neighborNode.gridZIndex != 0)
+                    {
+                        Node cardinalNode = gridArrayCopy[currNode.gridXIndex, currNode.gridYIndex, neighborNode.gridZIndex];
+                        if (!cardinalNode.isWalkable)
+                        {
+                            unwalkableCount++;
+                        }
+                    }
+
+                    // Skip if at least 2 are blocking (realistically, a node of type (1, 1, 1) from curr should be reachable as long as < 3 are blocking but we'll cut off at 2)
+                    if (unwalkableCount >= 2)
                     {
                         continue;
                     }
@@ -268,12 +332,12 @@ public abstract class Enemy : MonoBehaviour
             }
         }
 
-        (int, int, int) startNodeIndex = grid.GetNodeIndexFromPosition(startPos);
+        (int, int, int) startNodeIndex = grid.GetNodeIndexFromPosition(lastValidStartPos);
         (int, int, int) targetNodeIndex = grid.GetNodeIndexFromPosition(targetPos);
 
         // Check that the start and target nodes are valid nodes
-        if (startNodeIndex.Item1 >= grid.gridSizeX - 1 || startNodeIndex.Item2 >= grid.gridSizeY - 1 || startNodeIndex.Item3 >= grid.gridSizeZ - 1 ||
-            targetNodeIndex.Item1 >= grid.gridSizeX - 1 || targetNodeIndex.Item2 >= grid.gridSizeY - 1 || targetNodeIndex.Item3 >= grid.gridSizeZ - 1)
+        if (startNodeIndex.Item1 > grid.gridSizeX - 1 || startNodeIndex.Item2 > grid.gridSizeY - 1 || startNodeIndex.Item3 > grid.gridSizeZ - 1 ||
+            targetNodeIndex.Item1 > grid.gridSizeX - 1 || targetNodeIndex.Item2 > grid.gridSizeY - 1 || targetNodeIndex.Item3 > grid.gridSizeZ - 1)
         {
             return;
         }

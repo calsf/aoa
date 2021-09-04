@@ -39,7 +39,8 @@ public class NormalEnemy : Enemy
         {
             transform.LookAt(player.transform);
 
-            if (path != null)
+            // Get next path position
+            if (path != null) // Get next position from path
             {
                 // Reset if path was changed
                 if (pathChanged)
@@ -57,21 +58,23 @@ public class NormalEnemy : Enemy
                 {
                     nextPathPos = path[currPathPos].position;
                 }
+            }
+            else // No path, just try to move to player
+            {
+                nextPathPos = player.transform.position;
+            }
 
-                // Move to next path position
-                if (Vector3.Distance(transform.position, nextPathPos) > 1f || nextPathPos == player.transform.position)
-                {
-                    Vector3 moveDir = nextPathPos - transform.position;
-                    moveDir.Normalize();
+            // Move to next path position
+            if (Vector3.Distance(transform.position, nextPathPos) > 1f || nextPathPos == player.transform.position)
+            {
+                Vector3 moveDir = nextPathPos - transform.position;
+                moveDir.Normalize();
 
-                    rb.AddForce((moveDir * moveSpeedCurr) - rb.velocity, ForceMode.VelocityChange);
-                }
-                else
-                {
-                    // Set last valid position to the node that was successfully traversed in case start node is on an unwalkable node during PathFind
-                    lastValidPosition = path[currPathPos].position;
-                    currPathPos++;
-                }
+                rb.AddForce((moveDir * moveSpeedCurr) - rb.velocity, ForceMode.VelocityChange);
+            }
+            else
+            {
+                currPathPos++;
             }
         }
     }

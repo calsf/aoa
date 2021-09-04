@@ -14,7 +14,9 @@ public class Node : IComparable<Node>
     public bool isWalkable { get; set; } // If is walkable
 
     public Node parent { get; set; } // Parent node to travel from
-    public List<Node> neighbors { get; set; } // Neighbor nodes
+    public List<Node> cardinalNeighbors { get; set; } // Cardinal neighbor nodes
+
+    public List<Node> diagonalNeighbors { get; set; } // Diagonal neighbor nodes
 
     public int gCost { get; set; } // Cost to reach this node from start pos
     public int hCost { get; set; } // Cost from this node to target pos

@@ -11,16 +11,18 @@ public class PlayerWeaponController : MonoBehaviour
 
     void Start()
     {
-        weaponPrimary = weapons[1];
-        weaponSecondary = weapons[3];
+        weaponPrimary = weapons[2];
+        weaponSecondary = weapons[0];
 
         // Make sure to activate each weapon at start to avoid Aim issues when swapping
         weaponPrimary.gameObject.SetActive(true);
         weaponSecondary.gameObject.SetActive(true);
-
-        // Set active weapon and hide non active weapon
-        weaponActive = weaponPrimary;
+        weaponPrimary.gameObject.SetActive(false);
         weaponSecondary.gameObject.SetActive(false);
+
+        // Set active weapon
+        weaponActive = weaponPrimary;
+        weaponActive.gameObject.SetActive(true);
     }
 
     void Update()
