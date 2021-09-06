@@ -58,7 +58,7 @@ public class Weapon : MonoBehaviour
     protected float effectiveRange;
     protected float falloffModifer;
 
-    void Awake()
+    protected virtual void Awake()
     {
         crosshair = GameObject.FindGameObjectWithTag("Crosshair").GetComponent<RectTransform>();
 
@@ -242,7 +242,7 @@ public class Weapon : MonoBehaviour
                         damageDealt *= headshotMultiplier;
                     }
 
-                    hit.collider.gameObject.GetComponentInParent<Enemy>().Damaged(damageDealt);
+                    hit.collider.gameObject.GetComponentInParent<EnemyAir>().Damaged(damageDealt);
                 }
                 else if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall")) // Wall hit
                 {
@@ -300,7 +300,7 @@ public class Weapon : MonoBehaviour
                         damageDealt *= headshotMultiplier;
                     }
 
-                    hit.collider.gameObject.GetComponentInParent<Enemy>().Damaged(damageDealt);
+                    hit.collider.gameObject.GetComponentInParent<EnemyAir>().Damaged(damageDealt);
 
                     // Add this enemy object to list of hit objects so it does not get hit again
                     hitEnemies.Add(hit.collider.gameObject.transform.parent.gameObject);

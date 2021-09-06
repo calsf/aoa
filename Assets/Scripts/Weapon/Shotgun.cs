@@ -5,8 +5,9 @@ using UnityEngine.UI;
 
 public class Shotgun : Weapon
 {
-    void Start()
+    protected override void Awake()
     {
+        base.Awake();
         sizeDeltaModifier = 1600;
     }
 

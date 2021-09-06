@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class Handgun : Weapon
 {
-    void Start()
+    protected override void Awake()
     {
+        base.Awake();
         sizeDeltaModifier = 4500;
     }
 }
