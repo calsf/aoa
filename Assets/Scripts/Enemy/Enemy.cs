@@ -6,6 +6,7 @@ public abstract class Enemy : MonoBehaviour
 {
     [SerializeField] protected GameObject deathEffect;
 
+    protected Animator anim;
     protected GameObject player;
     protected PlayerMoveController playerMoveController;
     protected PlayerHealth playerHealth;
@@ -23,6 +24,7 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void Start()
     {
+        anim = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player");
         playerMoveController = player.GetComponent<PlayerMoveController>();
         playerHealth = player.GetComponent<PlayerHealth>();

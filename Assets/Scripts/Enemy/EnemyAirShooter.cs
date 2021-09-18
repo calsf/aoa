@@ -13,6 +13,7 @@ public class EnemyAirShooter : EnemyAir
 
     [SerializeField] protected Transform projectileSpawnPos;
     protected float nextShotTime;
+    protected bool isShooting;
 
     protected override void Start()
     {
@@ -31,14 +32,27 @@ public class EnemyAirShooter : EnemyAir
         {
             nextShotTime = Time.time + Random.Range(MIN_SHOOT_DELAY, MAX_SHOOT_DELAY);
         }
-        else if (Time.time > nextShotTime) // Is aggro, shoot
+        else if (Time.time > nextShotTime && !isShooting) // Is aggro and not already shooting, shoot
         {
-            nextShotTime = Time.time + Random.Range(MIN_SHOOT_DELAY, MAX_SHOOT_DELAY);
- 
-            canMove = false; // TEMP!!!!!!! Stop movement while shooting
-
-            ShootAtPlayer();
+            StartShooting();
         }
+    }
+
+    protected void StartShooting()
+    {
+        isShooting = true;
+        canMove = false; // Stop movement while shooting
+ 
+        anim.Play("Shoot"); // Shoot animation should have anim event to actually shoot
+    }
+
+    protected void FinishShooting()
+    {
+        isShooting = false;
+        canMove = true; // Resume movement after shooting
+
+        // Set next time to shoot
+        nextShotTime = Time.time + Random.Range(MIN_SHOOT_DELAY, MAX_SHOOT_DELAY);
     }
 
     protected void ShootAtPlayer()
@@ -53,8 +67,6 @@ public class EnemyAirShooter : EnemyAir
         Projectile projectile = obj.GetComponent<Projectile>();
         projectile.projectileDamage = damageCurr;
         projectile.projectileDir = (player.transform.position + (Vector3.up * 2) - transform.position).normalized; // Offset player position
-
-        canMove = true; // TEMP!!!!!!! Resume movement after shooting
     }
 
     protected GameObject GetFromPool(List<GameObject> pool)
