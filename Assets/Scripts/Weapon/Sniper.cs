@@ -9,8 +9,9 @@ public class Sniper : Weapon
 
     protected float overlayColorVelocity;
 
-    void Start()
+    protected override void Awake()
     {
+        base.Awake();
         sizeDeltaModifier = 1250;
     }
 

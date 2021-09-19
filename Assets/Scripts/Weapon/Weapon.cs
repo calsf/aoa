@@ -58,7 +58,7 @@ public class Weapon : MonoBehaviour
     protected float effectiveRange;
     protected float falloffModifer;
 
-    void Awake()
+    protected virtual void Awake()
     {
         crosshair = GameObject.FindGameObjectWithTag("Crosshair").GetComponent<RectTransform>();
 

@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class AssaultRifle : Weapon
 {
-    void Start()
+    protected override void Awake()
     {
+        base.Awake();
         sizeDeltaModifier = 2500;
     }
 }

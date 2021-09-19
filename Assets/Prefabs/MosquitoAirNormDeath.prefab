@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6316197988140700798}
   - component: {fileID: 6316197988140700797}
   m_Layer: 0
-  m_Name: MosquitoNormalDeath
+  m_Name: MosquitoAirNormDeath
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
