@@ -12,14 +12,13 @@ GameObject:
   - component: {fileID: 8984797070840338398}
   - component: {fileID: 8984797070840338397}
   - component: {fileID: 8984797070840338396}
-  - component: {fileID: 729215213350158662}
   - component: {fileID: 8984797070840338392}
   m_Layer: 7
   m_Name: WallBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 1
-  m_StaticEditorFlags: 119
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &8984797070840338387
 Transform:
@@ -97,22 +96,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!208 &729215213350158662
-NavMeshObstacle:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8984797070840338386}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
-  m_MoveThreshold: 0.1
-  m_Carve: 1
-  m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 0, z: 0}
-  m_TimeToStationary: 0.5
 --- !u!114 &8984797070840338392
 MonoBehaviour:
   m_ObjectHideFlags: 0

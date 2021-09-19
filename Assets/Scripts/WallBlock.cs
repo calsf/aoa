@@ -6,14 +6,16 @@ public class WallBlock : MonoBehaviour
 {
     [SerializeField] private GameObject destroyedFx;
     private MeshRenderer rend;
-    private Grid3D grid;
+    private Grid3D gridAir;
+    private Grid3D gridGround;
 
     private float healthMax;
     private float healthCurr;
 
     void Start()
     {
-        grid = GameObject.FindGameObjectWithTag("Grid").GetComponent<Grid3D>();
+        gridAir = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>();
+        gridGround = GameObject.FindGameObjectWithTag("GridGround").GetComponent<Grid3D>();
         rend = GetComponent<MeshRenderer>();
 
         healthMax = 500;
@@ -116,7 +118,13 @@ public class WallBlock : MonoBehaviour
 
         // Update the grid node isWalkable at this wall block's position
         gameObject.SetActive(false); // Set inactive before updating so grid won't see the block
-        grid.UpdateNodeWalkable(transform.position);
+        gridAir.UpdateNodeWalkable(transform.position);
+
+        // Only need to update ground grid if is a ground wall block
+        if (transform.position.y <= 5)
+        {
+            gridGround.UpdateNodeWalkable(transform.position);
+        }
 
         // Destroy this wall block
         Destroy(gameObject);

@@ -6,7 +6,7 @@ public class EnemyAir : Enemy
 {
     protected const int MAX_NODES_TO_LOOK = 10;
 
-    // General Enemy air pathfinding
+    // General Enemy pathfinding
     [SerializeField] protected float fCostLimit; // fCost limit for a path
 
     protected Grid3D grid;
@@ -30,7 +30,7 @@ public class EnemyAir : Enemy
     protected override void Start()
     {
         base.Start();
-        grid = GameObject.FindGameObjectWithTag("Grid").GetComponent<Grid3D>();
+        grid = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>(); // Use air grid
         rb = GetComponent<Rigidbody>();
 
         // Create copy of grid array for this enemy to use
@@ -67,7 +67,7 @@ public class EnemyAir : Enemy
     {
         if (grid == null)
         {
-            grid = GameObject.FindGameObjectWithTag("Grid").GetComponent<Grid3D>();
+            grid = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>();
         }
 
         // Update node walkable for this grid copy when original gets updated
