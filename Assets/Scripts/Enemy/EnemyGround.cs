@@ -111,7 +111,12 @@ public class EnemyGround : Enemy
         }
         else // Stop if cannot move
         {
-            rb.AddForce(Vector3.zero - rb.velocity, ForceMode.VelocityChange);
+            Vector3 velocity = Vector3.zero - rb.velocity;
+            velocity.Normalize();
+ 
+            velocity.y = 0; // Set y velocity to 0
+
+            rb.AddForce(velocity, ForceMode.VelocityChange);
         }
     }
 
@@ -147,7 +152,7 @@ public class EnemyGround : Enemy
             }
             else // No path, just try to move to player
             {
-                nextPathPos = player.transform.position;
+                nextPathPos = new Vector3(player.transform.position.x, transform.position.y, player.transform.position.z);
             }
 
             // Move to next path position
@@ -156,7 +161,10 @@ public class EnemyGround : Enemy
                 Vector3 moveDir = nextPathPos - transform.position;
                 moveDir.Normalize();
 
-                rb.AddForce((moveDir * moveSpeedCurr) - rb.velocity, ForceMode.VelocityChange);
+                Vector3 velocity = (moveDir * moveSpeedCurr) - rb.velocity;
+                velocity.y = 0; // Set y velocity to 0
+
+                rb.AddForce(velocity, ForceMode.VelocityChange);
             }
             else
             {

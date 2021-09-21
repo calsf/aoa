@@ -23,6 +23,8 @@ public class PlayerMoveController : MonoBehaviour
     public bool isSliding { get; set; }
     public bool isAiming { get; set; }
 
+    private bool isSlideJump;
+
     private int jumpMaxAvailable;
     private int jumpCurrAvailable;
 
@@ -70,10 +72,12 @@ public class PlayerMoveController : MonoBehaviour
         newMoveDir.Normalize();
 
         // Check is grounded
-        if (controller.isGrounded) // Reset velocityY if grounded
+        if (controller.isGrounded) // Reset values if grounded
         {
             jumpCurrAvailable = jumpMaxAvailable;
             currVelocityY = 0f;
+
+            isSlideJump = false;
 
             // Reset speed if is not sliding and is moving faster than max speed
             if (!isSliding && speedCurr > speedMax)
@@ -101,6 +105,7 @@ public class PlayerMoveController : MonoBehaviour
             if (isSliding)
             {
                 isSliding = false;
+                isSlideJump = true;
             }
 
             // Consume 1 available jump
@@ -111,7 +116,7 @@ public class PlayerMoveController : MonoBehaviour
         }
 
         // Apply movement and velocityY
-        if ((isSliding || !controller.isGrounded) && newMoveDir == Vector2.zero) // If no move input and is sliding or in air, do not apply movement
+        if ((isSliding || isSlideJump) && newMoveDir == Vector2.zero) // If no move input and is sliding or performed a slide jump cancel, maintain velocity and do not apply new movement
         {
             // Reset y velocity to 0
             velocity.y = 0;
