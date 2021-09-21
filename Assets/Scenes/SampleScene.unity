@@ -130741,6 +130741,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MosquitoAirSlow
       objectReference: {fileID: 0}
+    - target: {fileID: 3548138779357013356, guid: 6418d4e0d3d8c0f46b5621ac2a461351, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4212648816247881686, guid: 6418d4e0d3d8c0f46b5621ac2a461351, type: 3}
       propertyPath: m_RootOrder
       value: 16
@@ -130809,6 +130813,10 @@ PrefabInstance:
     - target: {fileID: 7248344241995368369, guid: db41ffc40a9da5b40a43e9fcab69bcea, type: 3}
       propertyPath: m_Name
       value: MosquitoAirNorm
+      objectReference: {fileID: 0}
+    - target: {fileID: 7248344241995368369, guid: db41ffc40a9da5b40a43e9fcab69bcea, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8060486774307265803, guid: db41ffc40a9da5b40a43e9fcab69bcea, type: 3}
       propertyPath: m_RootOrder
@@ -130910,6 +130918,10 @@ PrefabInstance:
     - target: {fileID: 5547325610236146949, guid: 26d16145fcc63ee4991c51a3edb01205, type: 3}
       propertyPath: m_Name
       value: MosquitoAirFast
+      objectReference: {fileID: 0}
+    - target: {fileID: 5547325610236146949, guid: 26d16145fcc63ee4991c51a3edb01205, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 26d16145fcc63ee4991c51a3edb01205, type: 3}

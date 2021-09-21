@@ -12,6 +12,7 @@ public class PlayerMoveController : MonoBehaviour
     private const float STRAFE_MODIFIER = .95f;
     private const float AIM_MOVE_MODIFIER_X = .5f;
     private const float AIM_MOVE_MODIFIER_Z = .7f;
+    private const float AIR_ACCEL_MODIFIER = 3.5f;
 
     // Movement
     CharacterController controller;
@@ -68,14 +69,14 @@ public class PlayerMoveController : MonoBehaviour
     private void Move()
     {
         // Get move direction
-        Vector2 newMoveDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        Vector3 newMoveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
         newMoveDir.Normalize();
 
         // Check is grounded
         if (controller.isGrounded) // Reset values if grounded
         {
             jumpCurrAvailable = jumpMaxAvailable;
-            currVelocityY = 0f;
+            currVelocityY = -1f;
 
             isSlideJump = false;
 
@@ -91,7 +92,7 @@ public class PlayerMoveController : MonoBehaviour
         }
 
         // Slide input, must be moving in a direction, grounded, and not already sliding
-        if (Input.GetButtonDown("Slide") && newMoveDir != Vector2.zero && controller.isGrounded && !isSliding)
+        if (Input.GetButtonDown("Slide") && newMoveDir != Vector3.zero && controller.isGrounded && !isSliding)
         {
             isSliding = true;
             
@@ -116,10 +117,18 @@ public class PlayerMoveController : MonoBehaviour
         }
 
         // Apply movement and velocityY
-        if ((isSliding || isSlideJump) && newMoveDir == Vector2.zero) // If no move input and is sliding or performed a slide jump cancel, maintain velocity and do not apply new movement
+        if (isSliding && newMoveDir == Vector3.zero) // For sliding, maintain velocity even if no input
         {
-            // Reset y velocity to 0
-            velocity.y = 0;
+            velocity.y = -1;
+        }
+        else if (!isSliding && !controller.isGrounded) // If in air and not sliding, apply move direction for air movement
+        {
+            // Have air acceleration be a multiplier of max speed
+            velocity += transform.TransformVector(newMoveDir) * (AIR_ACCEL_MODIFIER * speedMax) * Time.deltaTime;
+
+            Vector3 velocityHorizontal = Vector3.ProjectOnPlane(velocity, Vector3.up);
+            velocityHorizontal = Vector3.ClampMagnitude(velocityHorizontal, isSlideJump ? speedCurr : speedMax); // Use current speed as max if was a slide jump cancel
+            velocity = velocityHorizontal;
         }
         else // Else apply move direction input
         {
@@ -136,7 +145,7 @@ public class PlayerMoveController : MonoBehaviour
 
             velocity = (
                 (transform.right * newMoveDir.x) * (speedX * STRAFE_MODIFIER) 
-                + (transform.forward * newMoveDir.y) * (speedZ));
+                + (transform.forward * newMoveDir.z) * (speedZ));
         }
 
         // Apply curr Y velocity and gravity to velocity
