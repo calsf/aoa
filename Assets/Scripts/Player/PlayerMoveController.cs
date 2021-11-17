@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerMoveController : MonoBehaviour
 {
+    [SerializeField] private PlayerStateObject playerState;
+
     private const float MAX_Y = -90f;
     private const float MIN_Y = 90f;
     private const float GRAVITY = -9.81f * 2.5f;
@@ -40,15 +42,33 @@ public class PlayerMoveController : MonoBehaviour
 
         controller = GetComponent<CharacterController>();
 
-        jumpMaxAvailable = 3;
-        speedMax = SPEED_BASE;
+        jumpMaxAvailable = 3 + playerState.jumpBonus;
+        speedMax = SPEED_BASE + playerState.moveSpeedBonus;
         speedCurr = speedMax;
+    }
+
+    void OnEnable()
+    {
+        playerState.OnStateUpdate.AddListener(UpdatePlayerMoveState);
+    }
+
+    void OnDisable()
+    {
+        playerState.OnStateUpdate.RemoveListener(UpdatePlayerMoveState);
     }
 
     void Update()
     {
         Look();
         Move();
+    }
+
+    // Update player stats
+    private void UpdatePlayerMoveState()
+    {
+        jumpMaxAvailable = 3 + playerState.jumpBonus;
+        speedMax = SPEED_BASE + playerState.moveSpeedBonus;
+        speedCurr = speedMax;
     }
 
     private void Look()

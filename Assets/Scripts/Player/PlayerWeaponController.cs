@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerWeaponController : MonoBehaviour
 {
+    [SerializeField] private PlayerStateObject playerState;
+
     [SerializeField] private Weapon[] weapons;
     public Weapon weaponActive { get; set; }
     public Weapon weaponPrimary { get; set; }
@@ -11,8 +13,8 @@ public class PlayerWeaponController : MonoBehaviour
 
     void Start()
     {
-        weaponPrimary = weapons[2];
-        weaponSecondary = weapons[0];
+        weaponPrimary = weapons[playerState.selectedPrimary];
+        weaponSecondary = weapons[playerState.selectedSecondary];
 
         // Make sure to activate each weapon at start to avoid Aim issues when swapping
         weaponPrimary.gameObject.SetActive(true);
@@ -21,7 +23,7 @@ public class PlayerWeaponController : MonoBehaviour
         weaponSecondary.gameObject.SetActive(false);
 
         // Set active weapon
-        weaponActive = weaponPrimary;
+        weaponActive = playerState.selectedActive == 0 ? weaponPrimary : weaponSecondary;
         weaponActive.gameObject.SetActive(true);
     }
 
@@ -32,6 +34,7 @@ public class PlayerWeaponController : MonoBehaviour
         {
             weaponSecondary.StartCoroutine(weaponSecondary.SwapOutFor(weaponPrimary));
             weaponActive = weaponPrimary;
+            playerState.selectedActive = 0;
         }
 
         // Swap to secondary
@@ -39,6 +42,7 @@ public class PlayerWeaponController : MonoBehaviour
         {
             weaponPrimary.StartCoroutine(weaponPrimary.SwapOutFor(weaponSecondary));
             weaponActive = weaponSecondary;
+            playerState.selectedActive = 1;
         }
 
         // Swap to inactive weapon
@@ -48,11 +52,13 @@ public class PlayerWeaponController : MonoBehaviour
             {
                 weaponSecondary.StartCoroutine(weaponSecondary.SwapOutFor(weaponPrimary));
                 weaponActive = weaponPrimary;
+                playerState.selectedActive = 0;
             }
             else if (weaponActive == weaponPrimary && !weaponPrimary.isSwapping && !weaponSecondary.isSwapping)
             {
                 weaponPrimary.StartCoroutine(weaponPrimary.SwapOutFor(weaponSecondary));
                 weaponActive = weaponSecondary;
+                playerState.selectedActive = 1;
             }
         }
 

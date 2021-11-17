@@ -58,6 +58,8 @@ public class Weapon : MonoBehaviour
     protected float effectiveRange;
     protected float falloffModifer;
 
+    [SerializeField] private PlayerStateObject playerState;
+
     protected virtual void Awake()
     {
         crosshair = GameObject.FindGameObjectWithTag("Crosshair").GetComponent<RectTransform>();
@@ -85,21 +87,23 @@ public class Weapon : MonoBehaviour
             | 1 << LayerMask.NameToLayer("Ground")
             | 1 << LayerMask.NameToLayer("Wall"));
 
-        isEnemyPunchthrough = true;
-
-        reload = weapon.RELOAD_BASE;
-        fireRate = weapon.FIRE_RATE_BASE;
-        damage = weapon.DAMAGE_BASE;
-        headshotMultiplier = weapon.HEADSHOT_MULTIPLIER_BASE;
-        magSizeMax = weapon.MAG_SIZE_BASE;
+        // Weapon stats
+        reload = playerState.reloadMultiplier;
+        fireRate = playerState.fireRateMultiplier;
+        damage = weapon.DAMAGE_BASE + playerState.damageBonus;
+        headshotMultiplier = weapon.HEADSHOT_MULTIPLIER_BASE + playerState.headShotMultiplierBonus;
+        magSizeMax = weapon.MAG_SIZE_BASE * playerState.magSizeMaxMultiplier;
         magSizeCurr = magSizeMax;
-        aimTime = weapon.AIM_TIME_BASE;
+        aimTime = weapon.AIM_TIME_BASE - playerState.aimTimeReduction;
         inaccuracyMin = weapon.INACCURACY_MIN;
-        inaccuracyMax = weapon.INACCURACY_BASE;
+        inaccuracyMax = weapon.INACCURACY_BASE - playerState.inaccuracyReduction < inaccuracyMin ? inaccuracyMin : weapon.INACCURACY_BASE - playerState.inaccuracyReduction;
         inaccuracyCurr = inaccuracyMax;
         zoom = weapon.ZOOM_BASE;
-        effectiveRange = weapon.EFFECTIVE_RANGE_BASE;
+        effectiveRange = weapon.EFFECTIVE_RANGE_BASE + playerState.effectiveRangeBonus;
         falloffModifer = weapon.FALLOFF_MODIFIER_BASE;
+
+        // Weapon upgrades
+        isEnemyPunchthrough = playerState.punchThrough;
     }
 
     void OnEnable()
@@ -111,6 +115,30 @@ public class Weapon : MonoBehaviour
 
         crosshairCenter.enabled = true;
         crosshairCircle.enabled = false;
+
+        playerState.OnStateUpdate.AddListener(UpdateWeaponState);
+    }
+
+    void OnDisable()
+    {
+        playerState.OnStateUpdate.RemoveListener(UpdateWeaponState);
+    }
+
+    // Update weapon stats and upgrades
+    protected void UpdateWeaponState()
+    {
+        // Stats
+        reload = playerState.reloadMultiplier;
+        fireRate = playerState.fireRateMultiplier;
+        damage = weapon.DAMAGE_BASE + playerState.damageBonus;
+        headshotMultiplier = weapon.HEADSHOT_MULTIPLIER_BASE + playerState.headShotMultiplierBonus;
+        magSizeMax = weapon.MAG_SIZE_BASE * playerState.magSizeMaxMultiplier;
+        aimTime = weapon.AIM_TIME_BASE - playerState.aimTimeReduction;
+        inaccuracyMax = weapon.INACCURACY_BASE - playerState.inaccuracyReduction < inaccuracyMin ? inaccuracyMin : weapon.INACCURACY_BASE - playerState.inaccuracyReduction;
+        effectiveRange = weapon.EFFECTIVE_RANGE_BASE + playerState.effectiveRangeBonus;
+
+        // Upgrades
+        isEnemyPunchthrough = playerState.punchThrough;
     }
 
     protected void OnFinishShoot()

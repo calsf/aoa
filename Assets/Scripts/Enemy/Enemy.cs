@@ -4,12 +4,13 @@ using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour
 {
+    [SerializeField] private PlayerStateObject playerState;
+
     [SerializeField] protected GameObject deathEffect;
 
     protected Animator anim;
     protected GameObject player;
     protected PlayerMoveController playerMoveController;
-    protected PlayerHealth playerHealth;
 
     protected bool isAggro = false;
 
@@ -27,7 +28,6 @@ public abstract class Enemy : MonoBehaviour
         anim = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player");
         playerMoveController = player.GetComponent<PlayerMoveController>();
-        playerHealth = player.GetComponent<PlayerHealth>();
 
         moveSpeedMax = enemy.MOVE_SPEED_BASE;
         moveSpeedCurr = moveSpeedMax;
@@ -62,7 +62,7 @@ public abstract class Enemy : MonoBehaviour
         // Attempt to damage player
         if (other.gameObject == player)
         {
-            playerHealth.DamagePlayer(damageCurr);
+            playerState.DamagePlayer(damageCurr);
         }
     }
 

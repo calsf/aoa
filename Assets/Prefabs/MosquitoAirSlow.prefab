@@ -264,6 +264,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a252a5ab239d4a641ba5b97ada33ac6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
   deathEffect: {fileID: 6316197988140700793, guid: 3c9e9cd01bc28a045b85840e76ffb264, type: 3}
   enemy: {fileID: 11400000, guid: bfc2d45c79e9d644cb84196ac8ba02df, type: 2}
   fCostLimit: 8

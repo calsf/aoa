@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
+    [SerializeField] private PlayerStateObject playerState;
+
     private Rigidbody rb;
     private LayerMask collideLayerMask;
-    private PlayerHealth playerHealth;
 
     [SerializeField] protected float projectileSpeed;
     public Vector3 projectileDir { get; set; }
@@ -15,7 +16,6 @@ public class Projectile : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        playerHealth = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerHealth>();
 
         collideLayerMask = new LayerMask();
         collideLayerMask.value = (1 << LayerMask.NameToLayer("Player")
@@ -36,7 +36,7 @@ public class Projectile : MonoBehaviour
             // Damage player
             if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
             {
-                playerHealth.DamagePlayer(projectileDamage);
+                playerState.DamagePlayer(projectileDamage);
             }
 
             gameObject.SetActive(false);
