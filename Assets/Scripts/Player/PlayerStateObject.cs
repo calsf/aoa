@@ -28,16 +28,19 @@ public class PlayerStateObject : ScriptableObject
     public float healthMax;
     public float healthCurr;
 
+    // Implemented
     public bool aimGlide;
     public bool holsteredReload;
     public bool punchThrough;
+    public bool sacrificialShot;
+    public bool tacticalShot;
+
+    // TODO:
     public bool explosiveShot;
     public bool clonedShot;
-    public bool sacrificialShot;
     public bool coldShot;
     public bool stunShot;
     public bool crippleShot;
-    public bool heavyShot;
 
     public bool tempoShot;
     public bool loadedShot;
@@ -69,7 +72,7 @@ public class PlayerStateObject : ScriptableObject
 
     public void InitializeState()
     {
-        selectedPrimary = 1;
+        selectedPrimary = 0;
         selectedSecondary = 3;
         selectedActive = 0;
 
@@ -97,7 +100,7 @@ public class PlayerStateObject : ScriptableObject
         coldShot = false;
         stunShot = false;
         crippleShot = false;
-        heavyShot = false;
+        tacticalShot = false;
 
         tempoShot = false;
         loadedShot = false;

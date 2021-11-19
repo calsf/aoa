@@ -11,6 +11,10 @@ public class PlayerWeaponController : MonoBehaviour
     public Weapon weaponPrimary { get; set; }
     public Weapon weaponSecondary { get; set; }
 
+    private float holsteredReloadNextTime;
+    private const float HOLSTERED_RELOAD_DELAY = 2f; // Default delay
+    private const float HOLSTERED_RELOAD_PERCENT = .25f; // Percentage of mag max to reload each iteration
+
     void Start()
     {
         weaponPrimary = weapons[playerState.selectedPrimary];
@@ -25,6 +29,8 @@ public class PlayerWeaponController : MonoBehaviour
         // Set active weapon
         weaponActive = playerState.selectedActive == 0 ? weaponPrimary : weaponSecondary;
         weaponActive.gameObject.SetActive(true);
+
+        holsteredReloadNextTime = Time.time;
     }
 
     void Update()
@@ -77,5 +83,26 @@ public class PlayerWeaponController : MonoBehaviour
 
         // Aim
         weaponActive.Aim();
+
+        // Holstered Reload - reload the inactive weapon
+        if (playerState.holsteredReload)
+        {
+            Weapon weaponInactive = weaponActive == weaponPrimary ? weaponSecondary : weaponPrimary;
+
+            if (Time.time > holsteredReloadNextTime)
+            {
+                // Increase holstered reload time with the player's current reload multiplier
+                holsteredReloadNextTime = Time.time + (HOLSTERED_RELOAD_DELAY / playerState.reloadMultiplier);
+
+                // Reload percentage of weapon mag, min of 1 ammo reloaded
+                weaponInactive.magSizeCurr += (int)(weaponInactive.magSizeMax * HOLSTERED_RELOAD_PERCENT) <= 0 ? 1 : (int)(weaponInactive.magSizeMax * HOLSTERED_RELOAD_PERCENT);
+
+                // Check for mag overflow
+                if (weaponInactive.magSizeCurr > weaponInactive.magSizeMax)
+                {
+                    weaponInactive.magSizeCurr = weaponInactive.magSizeMax;
+                }
+            }
+        }
     }
 }

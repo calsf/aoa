@@ -8,7 +8,7 @@ public class PlayerMoveController : MonoBehaviour
 
     private const float MAX_Y = -90f;
     private const float MIN_Y = 90f;
-    private const float GRAVITY = -9.81f * 2.5f;
+    private const float GRAVITY = -9.81f * 3f;
     private const float SPEED_BASE = 15f;
     private const float JUMP_HEIGHT = 15f;
     private const float STRAFE_MODIFIER = .95f;
@@ -108,7 +108,14 @@ public class PlayerMoveController : MonoBehaviour
         }
         else // Apply gravity to velocityY if not grounded
         {
-            currVelocityY += GRAVITY * Time.deltaTime;
+            if (isAiming && playerState.aimGlide && !controller.isGrounded) // Aim glide - apply less gravity if in air and aiming
+            {
+                currVelocityY += (GRAVITY / 3) * Time.deltaTime;
+            }
+            else
+            {
+                currVelocityY += GRAVITY * Time.deltaTime;
+            }
         }
 
         // Slide input, must be moving in a direction, grounded, and not already sliding

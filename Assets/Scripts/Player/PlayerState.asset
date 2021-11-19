@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7dd6c026f5807b4dbcdfe1ab70fb3c1, type: 3}
   m_Name: PlayerState
   m_EditorClassIdentifier: 
+  selectedPrimary: 0
+  selectedSecondary: 3
+  selectedActive: 0
   reloadMultiplier: 1
   fireRateMultiplier: 1
   damageBonus: 0
@@ -20,20 +23,20 @@ MonoBehaviour:
   aimTimeReduction: 0
   inaccuracyReduction: 0
   effectiveRangeBonus: 0
-  moveSpeedBonus: 21
+  moveSpeedBonus: 0
   jumpBonus: 0
-  healthMax: 0
-  healthCurr: 150
-  aimGlide: 0
+  healthMax: 100
+  healthCurr: 85
+  aimGlide: 1
   holsteredReload: 0
   punchThrough: 0
+  sacrificialShot: 0
+  tacticalShot: 0
   explosiveShot: 0
   clonedShot: 0
-  sacrificialShot: 0
   coldShot: 0
   stunShot: 0
   crippleShot: 0
-  heavyShot: 0
   tempoShot: 0
   loadedShot: 0
   decoyShot: 0

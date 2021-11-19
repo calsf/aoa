@@ -52,6 +52,17 @@ public class Shotgun : Weapon
     }
     public override void Shoot()
     {
+        // Sacrificial shot - lose health on shot, gain double the amount lost on enemy hit, cannot fall below 1 health
+        // CALL FIRST ON SHOOT SO HEALTH GAIN OCCURS AFTER LOSS
+        if (playerState.sacrificialShot)
+        {
+            // Health to lose based on max health and max mag size of the gun
+            float healthToLose = playerState.healthMax / (magSizeMax / 2.5f);
+
+            // Lose health, always stay above 0 health
+            playerState.healthCurr = playerState.healthCurr - healthToLose <= 0 ? 1 : playerState.healthCurr - healthToLose;
+        }
+
         anim.Play("Shoot");
         isShooting = true;
         magSizeCurr -= 1;
@@ -81,7 +92,7 @@ public class Shotgun : Weapon
         // Shoot raycast in direction and check hit
         foreach (Vector3 dir in dirs)
         {
-            ShootRaycast(dir);
+            ShootRaycast(dir, (2.0f / 17.0f ) ); // Each 'pellet' should have its own separate sacrificial shot health gain
         }
     }
 }

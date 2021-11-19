@@ -34,13 +34,11 @@ public class Weapon : MonoBehaviour
     protected LayerMask shootLayerMask;
     protected bool isShooting;
     protected bool isReloading;
- 
+
     public bool isSwapping { get; set; }
 
     public bool canShoot { get { return !isShooting && !isReloading && magSizeCurr > 0 && !isSwapping; } }
     public bool canReload { get { return magSizeCurr != magSizeMax && !isReloading && !isSwapping; } }
-
-    public bool isEnemyPunchthrough { get; set; }
 
     // Weapon props
     [SerializeField] protected WeaponObject weapon;
@@ -48,8 +46,8 @@ public class Weapon : MonoBehaviour
     protected float fireRate; // Anim dependent
     protected float damage;
     protected float headshotMultiplier;
-    protected int magSizeMax;
-    protected int magSizeCurr;
+    public int magSizeMax { get; set; }
+    public int magSizeCurr { get; set; }
     protected float aimTime;
     protected float inaccuracyMin;
     protected float inaccuracyMax;
@@ -58,7 +56,7 @@ public class Weapon : MonoBehaviour
     protected float effectiveRange;
     protected float falloffModifer;
 
-    [SerializeField] private PlayerStateObject playerState;
+    [SerializeField] protected PlayerStateObject playerState;
 
     protected virtual void Awake()
     {
@@ -101,9 +99,6 @@ public class Weapon : MonoBehaviour
         zoom = weapon.ZOOM_BASE;
         effectiveRange = weapon.EFFECTIVE_RANGE_BASE + playerState.effectiveRangeBonus;
         falloffModifer = weapon.FALLOFF_MODIFIER_BASE;
-
-        // Weapon upgrades
-        isEnemyPunchthrough = playerState.punchThrough;
     }
 
     void OnEnable()
@@ -124,7 +119,7 @@ public class Weapon : MonoBehaviour
         playerState.OnStateUpdate.RemoveListener(UpdateWeaponState);
     }
 
-    // Update weapon stats and upgrades
+    // Update weapon state
     protected void UpdateWeaponState()
     {
         // Stats
@@ -136,9 +131,6 @@ public class Weapon : MonoBehaviour
         aimTime = weapon.AIM_TIME_BASE - playerState.aimTimeReduction;
         inaccuracyMax = weapon.INACCURACY_BASE - playerState.inaccuracyReduction < inaccuracyMin ? inaccuracyMin : weapon.INACCURACY_BASE - playerState.inaccuracyReduction;
         effectiveRange = weapon.EFFECTIVE_RANGE_BASE + playerState.effectiveRangeBonus;
-
-        // Upgrades
-        isEnemyPunchthrough = playerState.punchThrough;
     }
 
     protected void OnFinishShoot()
@@ -231,6 +223,17 @@ public class Weapon : MonoBehaviour
 
     public virtual void Shoot()
     {
+        // Sacrificial shot - lose health on shot, gain double the amount lost on enemy hit, cannot fall below 1 health
+        // CALL FIRST ON SHOOT SO HEALTH GAIN OCCURS AFTER LOSS
+        if (playerState.sacrificialShot)
+        {
+            // Health to lose based on max health and max mag size of the gun
+            float healthToLose = playerState.healthMax / (magSizeMax / 2.5f);
+
+            // Lose health, always stay above 0 health
+            playerState.healthCurr = playerState.healthCurr - healthToLose <= 0 ? 1 : playerState.healthCurr - healthToLose;
+        }
+
         anim.Play("Shoot");
         isShooting = true;
         magSizeCurr -= 1;
@@ -245,9 +248,9 @@ public class Weapon : MonoBehaviour
         ShootRaycast(dir);
     }
 
-    protected void ShootRaycast(Vector3 dir)
+    protected void ShootRaycast(Vector3 dir, float healthGainMultiplier = 2)
     {
-        if (!isEnemyPunchthrough) // No enemy punchthrough
+        if (!playerState.punchThrough) // No enemy punchthrough
         {
             RaycastHit hit;
             bool hasHit = Physics.Raycast(cam.transform.position, dir, out hit, Mathf.Infinity, shootLayerMask);
@@ -271,6 +274,15 @@ public class Weapon : MonoBehaviour
                     }
 
                     hit.collider.gameObject.GetComponentInParent<Enemy>().Damaged(damageDealt);
+
+                    // Sacrificial shot - gain back health on hit
+                    if (playerState.sacrificialShot)
+                    {
+                        // Gain back double health lost from shooting, healthToLose * 2
+                        float healthToGain = (playerState.healthMax / (magSizeMax / 2.5f)) * healthGainMultiplier;
+
+                        playerState.healthCurr = playerState.healthCurr + healthToGain > playerState.healthMax ? playerState.healthMax : playerState.healthCurr + healthToGain;
+                    }
                 }
                 else if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall")) // Wall hit
                 {
@@ -278,6 +290,13 @@ public class Weapon : MonoBehaviour
                     // Use base damage and base weapon falloff modifier for hits on wall
                     float damageDealt = hit.distance > effectiveRange ? weapon.DAMAGE_BASE * weapon.FALLOFF_MODIFIER_BASE : weapon.DAMAGE_BASE;
 
+                    // Tactical shot - destroy wall with one shot if within effective range
+                    if (playerState.tacticalShot && hit.distance < effectiveRange)
+                    {
+                        damageDealt = 500;
+                    }
+
+                    // Deal damage to wall block
                     hit.collider.gameObject.GetComponent<WallBlock>().Damaged(damageDealt);
                 }
             }
@@ -294,6 +313,12 @@ public class Weapon : MonoBehaviour
             {
                 // Check for distance and apply falloff to damage if necessary (Use base damage and base weapon falloff modifier for hits on wall)
                 float damageDealt = allHit[0].distance > effectiveRange ? weapon.DAMAGE_BASE * weapon.FALLOFF_MODIFIER_BASE : weapon.DAMAGE_BASE;
+
+                // Tactical shot - destroy wall with one shot if within effective range
+                if (playerState.tacticalShot && allHit[0].distance < effectiveRange)
+                {
+                    damageDealt = 500;
+                }
 
                 allHit[0].collider.gameObject.GetComponent<WallBlock>().Damaged(damageDealt);
 
@@ -332,6 +357,15 @@ public class Weapon : MonoBehaviour
 
                     // Add this enemy object to list of hit objects so it does not get hit again
                     hitEnemies.Add(hit.collider.gameObject.transform.parent.gameObject);
+
+                    // Sacrificial shot - gain back health on hit
+                    if (playerState.sacrificialShot)
+                    {
+                        // Gain back double health lost from shooting, healthToLose * 2
+                        float healthToGain = (playerState.healthMax / (magSizeMax / 2.5f)) * healthGainMultiplier;
+
+                        playerState.healthCurr = playerState.healthCurr + healthToGain > playerState.healthMax ? playerState.healthMax : playerState.healthCurr + healthToGain;
+                    }
                 }
                 else if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall")) // Wall hit
                 {
