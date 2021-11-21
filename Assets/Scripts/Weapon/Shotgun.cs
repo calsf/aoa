@@ -92,7 +92,8 @@ public class Shotgun : Weapon
         // Shoot raycast in direction and check hit
         foreach (Vector3 dir in dirs)
         {
-            ShootRaycast(dir, (2.0f / 17.0f ) ); // Each 'pellet' should have its own separate sacrificial shot health gain
+            ShootRaycast(dir, cam.transform.position, (2.0f / 17.0f ) ); // Each 'pellet' should have its own separate sacrificial shot health gain
+            ClonedShot(dir);
         }
     }
 }

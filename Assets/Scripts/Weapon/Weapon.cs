@@ -62,6 +62,8 @@ public class Weapon : MonoBehaviour
     protected const float COLD_SHOT_SLOW_TIME = 2.5f;
     protected const float WEAKENING_SHOT_MULTIPLIER = .3f;
     protected const float WEAKENING_SHOT_TIME = 3f;
+    protected const float CLONED_SHOT_OFFSET = 1.5f;
+    protected const float CLONED_SHOT_DMG_MULTIPLIER = .08f;
 
     protected virtual void Awake()
     {
@@ -249,15 +251,17 @@ public class Weapon : MonoBehaviour
         dir.Normalize();
 
         // Shoot raycast in direction and check hit
-        ShootRaycast(dir);
+        ShootRaycast(dir, cam.transform.position);
+
+        ClonedShot(dir);
     }
 
-    protected void ShootRaycast(Vector3 dir, float healthGainMultiplier = 2)
+    protected void ShootRaycast(Vector3 dir, Vector3 raycastOrigin, float healthGainMultiplier = 2, float damageDealtMultiplier = 1)
     {
         if (!playerState.punchThrough) // No enemy punchthrough
         {
             RaycastHit hit;
-            bool hasHit = Physics.Raycast(cam.transform.position, dir, out hit, Mathf.Infinity, shootLayerMask);
+            bool hasHit = Physics.Raycast(raycastOrigin, dir, out hit, Mathf.Infinity, shootLayerMask);
 
             if (hasHit && hit.collider != null)
             {
@@ -289,6 +293,7 @@ public class Weapon : MonoBehaviour
                         damageDealt += playerState.tempoShotExtraDmg;
                     }
 
+                    damageDealt *= damageDealtMultiplier; // Apply damage dealt multiplier
                     hit.collider.gameObject.GetComponentInParent<Enemy>().Damaged(damageDealt);
 
                     SacrificialShotGain(healthGainMultiplier);
@@ -307,6 +312,8 @@ public class Weapon : MonoBehaviour
                         damageDealt = 500;
                     }
 
+                    damageDealt *= damageDealtMultiplier; // Apply damage dealt multiplier
+
                     // Deal damage to wall block
                     hit.collider.gameObject.GetComponent<WallBlock>().Damaged(damageDealt);
                 }
@@ -318,7 +325,7 @@ public class Weapon : MonoBehaviour
         }
         else // Apply enemy punchthrough, only hits wall if wall is first
         {
-            RaycastHit[] allHit = Physics.RaycastAll(cam.transform.position, dir, Mathf.Infinity, shootLayerMask);
+            RaycastHit[] allHit = Physics.RaycastAll(raycastOrigin, dir, Mathf.Infinity, shootLayerMask);
 
             // Sort hit in ascending order
             System.Array.Sort(allHit, (hit1, hit2) => hit1.distance.CompareTo(hit2.distance));
@@ -334,6 +341,8 @@ public class Weapon : MonoBehaviour
                 {
                     damageDealt = 500;
                 }
+
+                damageDealt *= damageDealtMultiplier; // Apply damage dealt multiplier
 
                 allHit[0].collider.gameObject.GetComponent<WallBlock>().Damaged(damageDealt);
 
@@ -382,6 +391,7 @@ public class Weapon : MonoBehaviour
                         damageDealt += playerState.tempoShotExtraDmg;
                     }
 
+                    damageDealt *= damageDealtMultiplier; // Apply damage dealt multiplier
                     hit.collider.gameObject.GetComponentInParent<Enemy>().Damaged(damageDealt);
 
                     // Add this enemy object to list of hit objects so it does not get hit again
@@ -462,6 +472,25 @@ public class Weapon : MonoBehaviour
             {
                 playerState.tempoShotExtraDmg = 0;
             }
+        }
+    }
+
+    protected void ClonedShot(Vector3 dir)
+    {
+        // Shoot additional shots, offset from the cam position and deals reduced damage, DOES NOT APPLY HEALTH GAIN FROM SACRIFICIAL
+        if (playerState.clonedShot)
+        {
+            ShootRaycast(dir, cam.transform.position + Vector3.left * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER);
+            ShootRaycast(dir, cam.transform.position + Vector3.right * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER);
+
+            ShootRaycast(dir, cam.transform.position + Vector3.down * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER);
+            ShootRaycast(dir, cam.transform.position + Vector3.up * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER);
+
+            ShootRaycast(dir, cam.transform.position + (Vector3.down * CLONED_SHOT_OFFSET + Vector3.left * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER);
+            ShootRaycast(dir, cam.transform.position + (Vector3.up * CLONED_SHOT_OFFSET + Vector3.left * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER);
+
+            ShootRaycast(dir, cam.transform.position + (Vector3.down * CLONED_SHOT_OFFSET + Vector3.right * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER);
+            ShootRaycast(dir, cam.transform.position + (Vector3.up * CLONED_SHOT_OFFSET + Vector3.right * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER);
         }
     }
 }

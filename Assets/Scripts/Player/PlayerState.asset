@@ -21,25 +21,25 @@ MonoBehaviour:
   headShotMultiplierBonus: 0
   magSizeMaxMultiplier: 1
   aimTimeReduction: 0
-  inaccuracyReduction: 2
+  inaccuracyReduction: 0
   effectiveRangeBonus: 0
   moveSpeedBonus: 21
   jumpBonus: 0
   healthMax: 100
-  healthCurr: 30
+  healthCurr: 0
   aimGlide: 1
   holsteredReload: 0
   punchThrough: 0
   sacrificialShot: 0
-  tacticalShot: 1
+  tacticalShot: 0
   coldShot: 0
   weakeningShot: 0
   tempoShot: 0
   peakOfSurvival: 0
   steadyRegen: 0
-  luckyShot: 0
   explosiveShot: 1
-  clonedShot: 0
+  luckyShot: 0
+  clonedShot: 1
   loadedShot: 0
   decoyShot: 0
   OnStateUpdate:

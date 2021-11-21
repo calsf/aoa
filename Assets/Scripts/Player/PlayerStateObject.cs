@@ -42,11 +42,11 @@ public class PlayerStateObject : ScriptableObject
     public bool tempoShot;
     public bool peakOfSurvival;
     public bool steadyRegen;
+    public bool explosiveShot;
+    public bool clonedShot;
 
     // TODO:
     public bool luckyShot;
-    public bool explosiveShot;
-    public bool clonedShot;
 
     public bool loadedShot;
     public bool decoyShot;
