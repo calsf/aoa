@@ -16178,6 +16178,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
+  enemies:
+  - {fileID: 919132147996412075}
+  - {fileID: 1595465280}
+  - {fileID: 1686845055}
+  - {fileID: 1315331845}
+  - {fileID: 1151479741}
 --- !u!4 &315359051
 Transform:
   m_ObjectHideFlags: 0
@@ -71061,6 +71067,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
   deathEffect: {fileID: 6316197988140700793, guid: 3c9e9cd01bc28a045b85840e76ffb264, type: 3}
+  explosiveShotEffect: {fileID: 5731187654371204382, guid: 998e41ace26ba1e48a16bb137968a4f2, type: 3}
   enemy: {fileID: 11400000, guid: 5f0b8f35e350c4947adc99b30d91cc3e, type: 2}
   fCostLimit: 8
   projectile: {fileID: 651268312}
@@ -79949,6 +79956,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
   deathEffect: {fileID: 6316197988140700793, guid: 3c9e9cd01bc28a045b85840e76ffb264, type: 3}
+  explosiveShotEffect: {fileID: 5731187654371204382, guid: 998e41ace26ba1e48a16bb137968a4f2, type: 3}
   enemy: {fileID: 11400000, guid: 04cbb63f57fba5149b2b0b7bdfc3a61c, type: 2}
   fCostLimit: 8
 --- !u!1 &1315908134
@@ -96229,6 +96237,17 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1595465280 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4466705214173898257, guid: 6418d4e0d3d8c0f46b5621ac2a461351, type: 3}
+  m_PrefabInstance: {fileID: 6172974683829716107}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a252a5ab239d4a641ba5b97ada33ac6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1596627737
 GameObject:
   m_ObjectHideFlags: 0
@@ -107260,6 +107279,17 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1686845055 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4628968767679493752, guid: 26d16145fcc63ee4991c51a3edb01205, type: 3}
+  m_PrefabInstance: {fileID: 9061675845502740461}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a252a5ab239d4a641ba5b97ada33ac6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1689867853
 GameObject:
   m_ObjectHideFlags: 0
@@ -120413,7 +120443,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 83621cc621a341f42b21b9d5d9051b83, type: 3}
+  m_Sprite: {fileID: 21300000, guid: fd4784bae431c5341a7bd6a16431bbd8, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -131199,6 +131229,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7248344241995368369, guid: db41ffc40a9da5b40a43e9fcab69bcea, type: 3}
   m_PrefabInstance: {fileID: 7518235655623020315}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &919132147996412075 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7518235654355240140, guid: db41ffc40a9da5b40a43e9fcab69bcea, type: 3}
+  m_PrefabInstance: {fileID: 7518235655623020315}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132147996412074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a252a5ab239d4a641ba5b97ada33ac6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6172974683829716107
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -131254,6 +131295,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4466705214173898257, guid: 6418d4e0d3d8c0f46b5621ac2a461351, type: 3}
+      propertyPath: explosiveShotEffect
+      value: 
+      objectReference: {fileID: 5731187654371204382, guid: 998e41ace26ba1e48a16bb137968a4f2, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6418d4e0d3d8c0f46b5621ac2a461351, type: 3}
 --- !u!1001 &7518235655623020315
@@ -131267,6 +131312,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MosquitoAirNorm
       objectReference: {fileID: 0}
+    - target: {fileID: 7518235654355240140, guid: db41ffc40a9da5b40a43e9fcab69bcea, type: 3}
+      propertyPath: explosiveShotEffect
+      value: 
+      objectReference: {fileID: 5731187654371204382, guid: 998e41ace26ba1e48a16bb137968a4f2, type: 3}
     - target: {fileID: 8060486774307265803, guid: db41ffc40a9da5b40a43e9fcab69bcea, type: 3}
       propertyPath: m_RootOrder
       value: 16
@@ -131415,6 +131464,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4628968767679493752, guid: 26d16145fcc63ee4991c51a3edb01205, type: 3}
+      propertyPath: explosiveShotEffect
+      value: 
+      objectReference: {fileID: 5731187654371204382, guid: 998e41ace26ba1e48a16bb137968a4f2, type: 3}
     - target: {fileID: 5167845306317746111, guid: 26d16145fcc63ee4991c51a3edb01205, type: 3}
       propertyPath: m_RootOrder
       value: 18

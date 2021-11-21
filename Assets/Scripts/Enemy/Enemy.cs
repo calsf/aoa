@@ -7,6 +7,10 @@ public abstract class Enemy : MonoBehaviour
     [SerializeField] private PlayerStateObject playerState;
 
     [SerializeField] protected GameObject deathEffect;
+    [SerializeField] protected GameObject explosiveShotEffect;
+    protected GameObject deathEffectObj;
+    protected GameObject explosiveShotEffectObj;
+    protected const float EXPLOSIVE_DMG_MULTIPLIER = .25f;
 
     protected Animator anim;
     protected GameObject player;
@@ -41,6 +45,15 @@ public abstract class Enemy : MonoBehaviour
         healthCurr = healthMax;
         damageMax = enemy.DAMAGE_BASE;
         damageCurr = damageMax;
+
+        deathEffectObj = Instantiate(deathEffect);
+        deathEffectObj.SetActive(false);
+
+        explosiveShotEffectObj = Instantiate(explosiveShotEffect);
+        Explosion explo = explosiveShotEffectObj.GetComponent<Explosion>();
+        explo.SetSize(enemy.EXPLO_SIZE);    // Set explo size
+        explo.damage = (healthMax * EXPLOSIVE_DMG_MULTIPLIER) + playerState.damageBonus; // Explo dmg based on % enemy max health and player bonus dmg
+        explosiveShotEffectObj.SetActive(false);
     }
 
     protected abstract void Move();
@@ -57,7 +70,20 @@ public abstract class Enemy : MonoBehaviour
 
             if (healthCurr <= 0)
             {
-                GameObject obj = Instantiate(deathEffect, transform.position, Quaternion.identity);
+                deathEffectObj.transform.position = transform.position;
+                deathEffectObj.SetActive(true);
+
+                // Explosive shot - create explosion on death
+                if (playerState.explosiveShot)
+                {
+                    explosiveShotEffectObj.transform.position = transform.position;
+                    explosiveShotEffectObj.SetActive(true);
+                }
+                else
+                {
+                    Destroy(explosiveShotEffectObj);
+                }
+
                 Destroy(gameObject);
             }
         }

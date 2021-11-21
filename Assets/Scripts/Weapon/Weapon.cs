@@ -93,11 +93,14 @@ public class Weapon : MonoBehaviour
         // Weapon stats
         reload = playerState.reloadMultiplier;
         fireRate = playerState.fireRateMultiplier;
+        anim.SetFloat("ReloadSpeed", reload);
+        anim.SetFloat("ShootSpeed", fireRate);
+
         damage = weapon.DAMAGE_BASE + playerState.damageBonus;
         headshotMultiplier = weapon.HEADSHOT_MULTIPLIER_BASE + playerState.headShotMultiplierBonus;
         magSizeMax = weapon.MAG_SIZE_BASE * playerState.magSizeMaxMultiplier;
         magSizeCurr = magSizeMax;
-        aimTime = weapon.AIM_TIME_BASE - playerState.aimTimeReduction;
+        aimTime = weapon.AIM_TIME_BASE - playerState.aimTimeReduction <= 0 ? .03f : weapon.AIM_TIME_BASE - playerState.aimTimeReduction; // Have a min aim time
         inaccuracyMin = weapon.INACCURACY_MIN;
         inaccuracyMax = weapon.INACCURACY_BASE - playerState.inaccuracyReduction < inaccuracyMin ? inaccuracyMin : weapon.INACCURACY_BASE - playerState.inaccuracyReduction;
         inaccuracyCurr = inaccuracyMax;
@@ -117,6 +120,8 @@ public class Weapon : MonoBehaviour
         crosshairCircle.enabled = false;
 
         playerState.OnStateUpdate.AddListener(UpdateWeaponState);
+
+        UpdateWeaponState();
     }
 
     void OnDisable()
@@ -130,10 +135,13 @@ public class Weapon : MonoBehaviour
         // Stats
         reload = playerState.reloadMultiplier;
         fireRate = playerState.fireRateMultiplier;
+        anim.SetFloat("ReloadSpeed", reload);
+        anim.SetFloat("ShootSpeed", fireRate);
+
         damage = weapon.DAMAGE_BASE + playerState.damageBonus;
         headshotMultiplier = weapon.HEADSHOT_MULTIPLIER_BASE + playerState.headShotMultiplierBonus;
         magSizeMax = weapon.MAG_SIZE_BASE * playerState.magSizeMaxMultiplier;
-        aimTime = weapon.AIM_TIME_BASE - playerState.aimTimeReduction;
+        aimTime = weapon.AIM_TIME_BASE - playerState.aimTimeReduction <= 0 ? .03f : weapon.AIM_TIME_BASE - playerState.aimTimeReduction; // Have a min aim time
         inaccuracyMax = weapon.INACCURACY_BASE - playerState.inaccuracyReduction < inaccuracyMin ? inaccuracyMin : weapon.INACCURACY_BASE - playerState.inaccuracyReduction;
         effectiveRange = weapon.EFFECTIVE_RANGE_BASE + playerState.effectiveRangeBonus;
     }

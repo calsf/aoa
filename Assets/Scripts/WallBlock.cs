@@ -12,6 +12,8 @@ public class WallBlock : MonoBehaviour
     private float healthMax;
     private float healthCurr;
 
+    private GameObject wallDestroyedObj;
+
     void Start()
     {
         gridAir = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>();
@@ -20,6 +22,8 @@ public class WallBlock : MonoBehaviour
 
         healthMax = 500;
         healthCurr = healthMax;
+
+        wallDestroyedObj = Instantiate(destroyedFx);
     }
 
     public void Damaged(float dmg)
@@ -112,9 +116,9 @@ public class WallBlock : MonoBehaviour
             yield return null;
         }
 
-        // Create destroyed effect
-        GameObject obj = Instantiate(destroyedFx, transform.position, Quaternion.identity);
-        obj.SetActive(true);
+        // Activate destroyed effect
+        wallDestroyedObj.transform.position = transform.position;
+        wallDestroyedObj.SetActive(true);
 
         // Update the grid node isWalkable at this wall block's position
         gameObject.SetActive(false); // Set inactive before updating so grid won't see the block

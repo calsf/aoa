@@ -15,33 +15,33 @@ MonoBehaviour:
   selectedPrimary: 1
   selectedSecondary: 3
   selectedActive: 0
-  reloadMultiplier: 1
-  fireRateMultiplier: 1
+  reloadMultiplier: 3
+  fireRateMultiplier: 3
   damageBonus: 0
   headShotMultiplierBonus: 0
   magSizeMaxMultiplier: 1
   aimTimeReduction: 0
-  inaccuracyReduction: 0
+  inaccuracyReduction: 2
   effectiveRangeBonus: 0
-  moveSpeedBonus: 0
+  moveSpeedBonus: 21
   jumpBonus: 0
   healthMax: 100
-  healthCurr: 100
-  aimGlide: 0
+  healthCurr: 30
+  aimGlide: 1
   holsteredReload: 0
   punchThrough: 0
   sacrificialShot: 0
-  tacticalShot: 0
+  tacticalShot: 1
   coldShot: 0
   weakeningShot: 0
   tempoShot: 0
   peakOfSurvival: 0
-  explosiveShot: 0
+  steadyRegen: 0
+  luckyShot: 0
+  explosiveShot: 1
   clonedShot: 0
   loadedShot: 0
   decoyShot: 0
-  luckyShot: 0
-  steadyRegen: 1
   OnStateUpdate:
     m_PersistentCalls:
       m_Calls: []

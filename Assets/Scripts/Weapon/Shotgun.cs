@@ -20,6 +20,15 @@ public class Shotgun : Weapon
 
         crosshairCenter.enabled = true;
         crosshairCircle.enabled = true;
+
+        playerState.OnStateUpdate.AddListener(UpdateWeaponState);
+
+        UpdateWeaponState();
+    }
+
+    void OnDisable()
+    {
+        playerState.OnStateUpdate.RemoveListener(UpdateWeaponState);
     }
 
     // Override aim to change scope circle size
