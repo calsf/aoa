@@ -9,6 +9,9 @@ public class PlayerStateObject : ScriptableObject
     private const float INVULN_TIME = 1f;
     private float nextDamagedTime;
 
+    public float tempoShotExtraDmg { get; set; }
+    public bool peakOfSurvivalActive { get; set; }
+
     public int selectedPrimary;
     public int selectedSecondary;
     public int selectedActive; // Selected active weapon, 0 for primary, 1 for secondary
@@ -34,19 +37,19 @@ public class PlayerStateObject : ScriptableObject
     public bool punchThrough;
     public bool sacrificialShot;
     public bool tacticalShot;
+    public bool coldShot;
+    public bool weakeningShot;
+    public bool tempoShot;
+    public bool peakOfSurvival;
+    public bool steadyRegen;
 
     // TODO:
+    public bool luckyShot;
     public bool explosiveShot;
     public bool clonedShot;
-    public bool coldShot;
-    public bool stunShot;
-    public bool crippleShot;
 
-    public bool tempoShot;
     public bool loadedShot;
     public bool decoyShot;
-    public bool luckyShot;
-    public bool peakOfSurvival;
 
     // Objects that need to be updated should listen for this event to be invoked
     public UnityEvent OnStateUpdate;
@@ -56,14 +59,14 @@ public class PlayerStateObject : ScriptableObject
 
     public void DamagePlayer(float damage)
     {
-        // Return if player is still invulnerable from previous damaged
-        if (Time.time < nextDamagedTime)
+        // Return if player is still invulnerable from previous damaged or is invincible
+        if (Time.time < nextDamagedTime || peakOfSurvivalActive)
         {
             return;
         }
 
         nextDamagedTime = Time.time + INVULN_TIME;
-        healthCurr -= damage;
+        healthCurr = healthCurr - damage < 0 ? 0 : healthCurr - damage;
 
         Debug.Log("OUCH! Health: " + healthCurr.ToString());
 
@@ -72,7 +75,7 @@ public class PlayerStateObject : ScriptableObject
 
     public void InitializeState()
     {
-        selectedPrimary = 0;
+        selectedPrimary = 1;
         selectedSecondary = 3;
         selectedActive = 0;
 
@@ -91,6 +94,8 @@ public class PlayerStateObject : ScriptableObject
         healthMax = 100;
         healthCurr = healthMax;
 
+        tempoShotExtraDmg = 0;
+
         aimGlide = false;
         holsteredReload = false;
         punchThrough = false;
@@ -98,8 +103,7 @@ public class PlayerStateObject : ScriptableObject
         clonedShot = false;
         sacrificialShot = false;
         coldShot = false;
-        stunShot = false;
-        crippleShot = false;
+        weakeningShot = false;
         tacticalShot = false;
 
         tempoShot = false;
@@ -107,6 +111,7 @@ public class PlayerStateObject : ScriptableObject
         decoyShot = false;
         luckyShot = false;
         peakOfSurvival = false;
+        steadyRegen = false;
 
         nextDamagedTime = Time.time;
 

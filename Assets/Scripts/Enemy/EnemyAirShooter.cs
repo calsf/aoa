@@ -36,6 +36,9 @@ public class EnemyAirShooter : EnemyAir
         {
             StartShooting();
         }
+
+        CheckColdShot();
+        CheckWeakeningShot();
     }
 
     protected void StartShooting()

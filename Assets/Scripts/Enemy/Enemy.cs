@@ -23,6 +23,12 @@ public abstract class Enemy : MonoBehaviour
     protected float damageMax;
     protected float damageCurr;
 
+    protected bool isColdShotted;
+    protected float coldShotOffTime;
+
+    protected bool isWeakenShotted;
+    protected float weakenShotOffTime;
+
     protected virtual void Start()
     {
         anim = GetComponent<Animator>();
@@ -69,5 +75,37 @@ public abstract class Enemy : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         OnTriggerEnter(other);
+    }
+
+    public void ApplyColdShot(float slowMultiplier, float delay)
+    {
+        moveSpeedCurr *= slowMultiplier;
+        coldShotOffTime = Time.time + delay;
+        isColdShotted = true;
+    }
+
+    protected void CheckColdShot()
+    {
+        if (isColdShotted && Time.time > coldShotOffTime)
+        {
+            isColdShotted = false;
+            moveSpeedCurr = moveSpeedMax;
+        }
+    }
+
+    public void ApplyWeakeningShot(float weakenMultiplier, float delay)
+    {
+        damageCurr *= weakenMultiplier;
+        weakenShotOffTime = Time.time + delay;
+        isWeakenShotted = true;
+    }
+
+    protected void CheckWeakeningShot()
+    {
+        if (isWeakenShotted && Time.time > weakenShotOffTime)
+        {
+            isWeakenShotted = false;
+            damageCurr = damageMax;
+        }
     }
 }

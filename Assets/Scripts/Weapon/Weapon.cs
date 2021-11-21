@@ -56,7 +56,12 @@ public class Weapon : MonoBehaviour
     protected float effectiveRange;
     protected float falloffModifer;
 
+    // Player state props
     [SerializeField] protected PlayerStateObject playerState;
+    protected const float COLD_SHOT_SLOW_MULTIPLIER = .3f;
+    protected const float COLD_SHOT_SLOW_TIME = 2.5f;
+    protected const float WEAKENING_SHOT_MULTIPLIER = .3f;
+    protected const float WEAKENING_SHOT_TIME = 3f;
 
     protected virtual void Awake()
     {
@@ -223,16 +228,7 @@ public class Weapon : MonoBehaviour
 
     public virtual void Shoot()
     {
-        // Sacrificial shot - lose health on shot, gain double the amount lost on enemy hit, cannot fall below 1 health
-        // CALL FIRST ON SHOOT SO HEALTH GAIN OCCURS AFTER LOSS
-        if (playerState.sacrificialShot)
-        {
-            // Health to lose based on max health and max mag size of the gun
-            float healthToLose = playerState.healthMax / (magSizeMax / 2.5f);
-
-            // Lose health, always stay above 0 health
-            playerState.healthCurr = playerState.healthCurr - healthToLose <= 0 ? 1 : playerState.healthCurr - healthToLose;
-        }
+        SacrificialShotLoss();
 
         anim.Play("Shoot");
         isShooting = true;
@@ -260,7 +256,7 @@ public class Weapon : MonoBehaviour
                 // TEMP!!!
                 GameObject obj = Instantiate(placeholder);
                 obj.transform.position = hit.point;
-                Debug.Log(hit.collider.tag + "DISTANCE " + hit.distance);
+                //Debug.Log(hit.collider.tag + "DISTANCE " + hit.distance);
 
                 if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy")) // Enemy hit
                 {
@@ -271,18 +267,25 @@ public class Weapon : MonoBehaviour
                     if (hit.collider.gameObject.tag == "EnemyHead")
                     {
                         damageDealt *= headshotMultiplier;
+
+                        TempoShot(true);
+                    }
+                    else
+                    {
+                        TempoShot(false);
+                    }
+
+                    // Tempo shot - apply extra damage if applies
+                    if (playerState.tempoShot)
+                    {
+                        damageDealt += playerState.tempoShotExtraDmg;
                     }
 
                     hit.collider.gameObject.GetComponentInParent<Enemy>().Damaged(damageDealt);
 
-                    // Sacrificial shot - gain back health on hit
-                    if (playerState.sacrificialShot)
-                    {
-                        // Gain back double health lost from shooting, healthToLose * 2
-                        float healthToGain = (playerState.healthMax / (magSizeMax / 2.5f)) * healthGainMultiplier;
-
-                        playerState.healthCurr = playerState.healthCurr + healthToGain > playerState.healthMax ? playerState.healthMax : playerState.healthCurr + healthToGain;
-                    }
+                    SacrificialShotGain(healthGainMultiplier);
+                    ColdShot(hit.collider.gameObject);
+                    WeakeningShot(hit.collider.gameObject);
                 }
                 else if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall")) // Wall hit
                 {
@@ -298,6 +301,10 @@ public class Weapon : MonoBehaviour
 
                     // Deal damage to wall block
                     hit.collider.gameObject.GetComponent<WallBlock>().Damaged(damageDealt);
+                }
+                else // Else hit nothing
+                {
+                    TempoShot(false);
                 }
             }
         }
@@ -328,12 +335,13 @@ public class Weapon : MonoBehaviour
 
             // Apply hit on all hit or until wall is hit
             List<GameObject> hitEnemies = new List<GameObject>();
+            bool hasHeadshotOnce = false;
             foreach (RaycastHit hit in allHit)
             {
                 // TEMP!!!
                 GameObject obj = Instantiate(placeholder);
                 obj.transform.position = hit.point;
-                Debug.Log(hit.collider.tag + "DISTANCE " + hit.distance);
+                //Debug.Log(hit.collider.tag + "DISTANCE " + hit.distance);
 
                 if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy")) // Enemy hit
                 {
@@ -351,6 +359,19 @@ public class Weapon : MonoBehaviour
                     if (hit.collider.gameObject.tag == "EnemyHead")
                     {
                         damageDealt *= headshotMultiplier;
+
+                        TempoShot(true);
+                        hasHeadshotOnce = true; // Set headshot as already having hit since punchthrough
+                    }
+                    else if (!hasHeadshotOnce) // Do not penalize on punchthrough miss
+                    {
+                        TempoShot(false);
+                    }
+
+                    // Tempo shot - apply extra damage if applies
+                    if (playerState.tempoShot)
+                    {
+                        damageDealt += playerState.tempoShotExtraDmg;
                     }
 
                     hit.collider.gameObject.GetComponentInParent<Enemy>().Damaged(damageDealt);
@@ -358,20 +379,80 @@ public class Weapon : MonoBehaviour
                     // Add this enemy object to list of hit objects so it does not get hit again
                     hitEnemies.Add(hit.collider.gameObject.transform.parent.gameObject);
 
-                    // Sacrificial shot - gain back health on hit
-                    if (playerState.sacrificialShot)
-                    {
-                        // Gain back double health lost from shooting, healthToLose * 2
-                        float healthToGain = (playerState.healthMax / (magSizeMax / 2.5f)) * healthGainMultiplier;
-
-                        playerState.healthCurr = playerState.healthCurr + healthToGain > playerState.healthMax ? playerState.healthMax : playerState.healthCurr + healthToGain;
-                    }
+                    SacrificialShotGain(healthGainMultiplier);
+                    ColdShot(hit.collider.gameObject);
+                    WeakeningShot(hit.collider.gameObject);
                 }
                 else if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall")) // Wall hit
                 {
                     // Punchthrough should stop after hitting a wall, do not apply damage
                     return;
                 }
+                else if (!hasHeadshotOnce) // Hit nothing, but do not penalize on punchthrough miss
+                {
+                    TempoShot(false);
+                }
+            }
+        }
+    }
+
+    protected void SacrificialShotLoss()
+    {
+        // Sacrificial shot - lose health on shot, gain double the amount lost on enemy hit, cannot fall below 1 health
+        // CALL FIRST ON SHOOT SO HEALTH GAIN OCCURS AFTER LOSS
+        if (playerState.sacrificialShot)
+        {
+            // Health to lose based on max health and max mag size of the gun
+            float healthToLose = playerState.healthMax / (magSizeMax / 2.5f);
+
+            // Lose health, always stay above 0 health
+            playerState.healthCurr = playerState.healthCurr - healthToLose <= 0 ? 1 : playerState.healthCurr - healthToLose;
+        }
+    }
+
+    protected void SacrificialShotGain(float healthGainMultiplier)
+    {
+        // Sacrificial shot - gain back health on hit
+        if (playerState.sacrificialShot)
+        {
+            // Gain back double health lost from shooting, healthToLose * 2
+            float healthToGain = (playerState.healthMax / (magSizeMax / 2.5f)) * healthGainMultiplier;
+
+            playerState.healthCurr = playerState.healthCurr + healthToGain > playerState.healthMax ? playerState.healthMax : playerState.healthCurr + healthToGain;
+        }
+    }
+
+    protected void ColdShot(GameObject hit)
+    {
+        // Slow enemy on hit, resets timer on consecutive hits
+        if (playerState.coldShot)
+        {
+            hit.GetComponentInParent<Enemy>().ApplyColdShot(COLD_SHOT_SLOW_MULTIPLIER, COLD_SHOT_SLOW_TIME);
+        }
+    }
+
+    protected void WeakeningShot(GameObject hit)
+    {
+        // Lower enemy damage on hit, resets timer on consecutive hits
+        if (playerState.weakeningShot)
+        {
+            hit.GetComponentInParent<Enemy>().ApplyWeakeningShot(WEAKENING_SHOT_MULTIPLIER, WEAKENING_SHOT_TIME);
+        }
+    }
+
+    protected void TempoShot(bool isHeadshot)
+    {
+        // Add extra dmg on consecutive headshots, reset to 0 on miss (should not reset on wall hit)
+        if (playerState.tempoShot)
+        {
+            if (isHeadshot)
+            {
+                float extraDmg = damage * .2f;
+                playerState.tempoShotExtraDmg += extraDmg;
+            }
+            else
+            {
+                playerState.tempoShotExtraDmg = 0;
             }
         }
     }

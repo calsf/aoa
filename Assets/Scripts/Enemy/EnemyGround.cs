@@ -85,6 +85,12 @@ public class EnemyGround : Enemy
         gridArrayCopy[nodeIndex.Item1, nodeIndex.Item2, nodeIndex.Item3].isWalkable = grid.grid[nodeIndex.Item1, nodeIndex.Item2, nodeIndex.Item3].isWalkable;
     }
 
+    void Update()
+    {
+        CheckColdShot();
+        CheckWeakeningShot();
+    }
+
     void FixedUpdate()
     {
         // Check for and update last valid start node position for enemy

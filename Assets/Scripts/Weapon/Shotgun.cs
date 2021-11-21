@@ -52,16 +52,7 @@ public class Shotgun : Weapon
     }
     public override void Shoot()
     {
-        // Sacrificial shot - lose health on shot, gain double the amount lost on enemy hit, cannot fall below 1 health
-        // CALL FIRST ON SHOOT SO HEALTH GAIN OCCURS AFTER LOSS
-        if (playerState.sacrificialShot)
-        {
-            // Health to lose based on max health and max mag size of the gun
-            float healthToLose = playerState.healthMax / (magSizeMax / 2.5f);
-
-            // Lose health, always stay above 0 health
-            playerState.healthCurr = playerState.healthCurr - healthToLose <= 0 ? 1 : playerState.healthCurr - healthToLose;
-        }
+        SacrificialShotLoss();
 
         anim.Play("Shoot");
         isShooting = true;
