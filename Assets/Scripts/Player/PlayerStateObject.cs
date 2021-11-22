@@ -44,11 +44,10 @@ public class PlayerStateObject : ScriptableObject
     public bool steadyRegen;
     public bool explosiveShot;
     public bool clonedShot;
+    public bool defiantReload;
 
     // TODO:
     public bool luckyShot;
-
-    public bool loadedShot;
     public bool decoyShot;
 
     // Objects that need to be updated should listen for this event to be invoked
@@ -105,9 +104,9 @@ public class PlayerStateObject : ScriptableObject
         coldShot = false;
         weakeningShot = false;
         tacticalShot = false;
+        defiantReload = false;
 
         tempoShot = false;
-        loadedShot = false;
         decoyShot = false;
         luckyShot = false;
         peakOfSurvival = false;

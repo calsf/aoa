@@ -58,6 +58,7 @@ public class Weapon : MonoBehaviour
 
     // Player state props
     [SerializeField] protected PlayerStateObject playerState;
+    [SerializeField] protected DefiantReload defiantReloadEffect;
     protected const float COLD_SHOT_SLOW_MULTIPLIER = .3f;
     protected const float COLD_SHOT_SLOW_TIME = 2.5f;
     protected const float WEAKENING_SHOT_MULTIPLIER = .3f;
@@ -109,6 +110,8 @@ public class Weapon : MonoBehaviour
         zoom = weapon.ZOOM_BASE;
         effectiveRange = weapon.EFFECTIVE_RANGE_BASE + playerState.effectiveRangeBonus;
         falloffModifer = weapon.FALLOFF_MODIFIER_BASE;
+
+        defiantReloadEffect.gameObject.SetActive(false);
     }
 
     void OnEnable()
@@ -211,6 +214,9 @@ public class Weapon : MonoBehaviour
     {
         isReloading = true;
         anim.Play("Reload");
+
+        defiantReloadEffect.Reset();
+        DefiantReload();
     }
 
     public virtual void Aim()
@@ -491,6 +497,16 @@ public class Weapon : MonoBehaviour
 
             ShootRaycast(dir, cam.transform.position + (Vector3.down * CLONED_SHOT_OFFSET + Vector3.right * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER);
             ShootRaycast(dir, cam.transform.position + (Vector3.up * CLONED_SHOT_OFFSET + Vector3.right * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER);
+        }
+    }
+
+    protected void DefiantReload()
+    {
+        // Knock back enemies upon reloading
+        if (playerState.defiantReload)
+        {
+            defiantReloadEffect.Reset();
+            defiantReloadEffect.gameObject.SetActive(true);
         }
     }
 }

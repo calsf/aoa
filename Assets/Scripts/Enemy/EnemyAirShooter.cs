@@ -32,7 +32,7 @@ public class EnemyAirShooter : EnemyAir
         {
             nextShotTime = Time.time + Random.Range(MIN_SHOOT_DELAY, MAX_SHOOT_DELAY);
         }
-        else if (Time.time > nextShotTime && !isShooting) // Is aggro and not already shooting, shoot
+        else if (Time.time > nextShotTime && !isShooting && canMove) // Is aggro and not already shooting and can move, shoot
         {
             StartShooting();
         }

@@ -23,8 +23,6 @@ public class EnemyAir : Enemy
     protected float nextPathfind;
     protected int pathfindDelay;
 
-    protected bool canMove;
-
     protected Rigidbody rb;
 
     protected override void Start()
@@ -116,7 +114,10 @@ public class EnemyAir : Enemy
         }
         else // Stop if cannot move
         {
-            rb.AddForce(Vector3.zero - rb.velocity, ForceMode.VelocityChange);
+            rb.AddForce((Vector3.zero - rb.velocity).normalized, ForceMode.VelocityChange);
+            
+            // Keep looking at player
+            transform.LookAt(player.transform);
         }
     }
 

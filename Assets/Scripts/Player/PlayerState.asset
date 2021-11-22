@@ -23,11 +23,11 @@ MonoBehaviour:
   aimTimeReduction: 0
   inaccuracyReduction: 0
   effectiveRangeBonus: 0
-  moveSpeedBonus: 21
+  moveSpeedBonus: 0
   jumpBonus: 0
   healthMax: 100
   healthCurr: 0
-  aimGlide: 1
+  aimGlide: 0
   holsteredReload: 0
   punchThrough: 0
   sacrificialShot: 0
@@ -37,9 +37,10 @@ MonoBehaviour:
   tempoShot: 0
   peakOfSurvival: 0
   steadyRegen: 0
-  explosiveShot: 1
-  luckyShot: 0
+  explosiveShot: 0
   clonedShot: 1
+  defiantReload: 1
+  luckyShot: 0
   loadedShot: 0
   decoyShot: 0
   OnStateUpdate:

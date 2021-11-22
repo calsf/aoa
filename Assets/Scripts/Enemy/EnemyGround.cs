@@ -24,8 +24,6 @@ public class EnemyGround : Enemy
     protected float nextPathfind;
     protected int pathfindDelay;
 
-    protected bool canMove;
-
     protected Rigidbody rb;
 
     protected override void Start()
@@ -123,6 +121,9 @@ public class EnemyGround : Enemy
             velocity.y = 0; // Set y velocity to 0
 
             rb.AddForce(velocity, ForceMode.VelocityChange);
+
+            // Keep looking at player
+            transform.LookAt(player.transform);
         }
     }
 

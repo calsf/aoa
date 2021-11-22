@@ -18,6 +18,8 @@ public abstract class Enemy : MonoBehaviour
 
     protected bool isAggro = false;
 
+    public bool canMove { get; set; }
+
     // Enemy props
     [SerializeField] protected EnemyObject enemy;
     protected float moveSpeedMax;
