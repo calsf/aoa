@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class PlayerMoveController : MonoBehaviour
 {
+    [SerializeField] private PlayerStateObject playerState;
+
     private const float MAX_Y = -90f;
     private const float MIN_Y = 90f;
-    private const float GRAVITY = -9.81f * 2.5f;
+    private const float GRAVITY = -9.81f * 3f;
     private const float SPEED_BASE = 15f;
     private const float JUMP_HEIGHT = 15f;
     private const float STRAFE_MODIFIER = .95f;
@@ -40,15 +42,33 @@ public class PlayerMoveController : MonoBehaviour
 
         controller = GetComponent<CharacterController>();
 
-        jumpMaxAvailable = 3;
-        speedMax = SPEED_BASE;
+        jumpMaxAvailable = 3 + playerState.jumpBonus;
+        speedMax = SPEED_BASE + playerState.moveSpeedBonus;
         speedCurr = speedMax;
+    }
+
+    void OnEnable()
+    {
+        playerState.OnStateUpdate.AddListener(UpdatePlayerMoveState);
+    }
+
+    void OnDisable()
+    {
+        playerState.OnStateUpdate.RemoveListener(UpdatePlayerMoveState);
     }
 
     void Update()
     {
         Look();
         Move();
+    }
+
+    // Update player stats
+    private void UpdatePlayerMoveState()
+    {
+        jumpMaxAvailable = 3 + playerState.jumpBonus;
+        speedMax = SPEED_BASE + playerState.moveSpeedBonus;
+        speedCurr = speedMax;
     }
 
     private void Look()
@@ -88,7 +108,14 @@ public class PlayerMoveController : MonoBehaviour
         }
         else // Apply gravity to velocityY if not grounded
         {
-            currVelocityY += GRAVITY * Time.deltaTime;
+            if (isAiming && playerState.aimGlide && !controller.isGrounded) // Aim glide - apply less gravity if in air and aiming
+            {
+                currVelocityY += (GRAVITY / 3) * Time.deltaTime;
+            }
+            else
+            {
+                currVelocityY += GRAVITY * Time.deltaTime;
+            }
         }
 
         // Slide input, must be moving in a direction, grounded, and not already sliding

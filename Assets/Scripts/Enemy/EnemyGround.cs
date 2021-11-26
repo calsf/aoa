@@ -24,8 +24,6 @@ public class EnemyGround : Enemy
     protected float nextPathfind;
     protected int pathfindDelay;
 
-    protected bool canMove;
-
     protected Rigidbody rb;
 
     protected override void Start()
@@ -85,6 +83,12 @@ public class EnemyGround : Enemy
         gridArrayCopy[nodeIndex.Item1, nodeIndex.Item2, nodeIndex.Item3].isWalkable = grid.grid[nodeIndex.Item1, nodeIndex.Item2, nodeIndex.Item3].isWalkable;
     }
 
+    void Update()
+    {
+        CheckColdShot();
+        CheckWeakeningShot();
+    }
+
     void FixedUpdate()
     {
         // Check for and update last valid start node position for enemy
@@ -105,7 +109,11 @@ public class EnemyGround : Enemy
         }
 
         // Move
-        if (canMove)
+        if (isTaunted)
+        {
+            Taunted();
+        }
+        else if (canMove)
         {
             Move();
         }
@@ -117,6 +125,9 @@ public class EnemyGround : Enemy
             velocity.y = 0; // Set y velocity to 0
 
             rb.AddForce(velocity, ForceMode.VelocityChange);
+
+            // Keep looking at player
+            transform.LookAt(currTarget);
         }
     }
 
@@ -128,7 +139,7 @@ public class EnemyGround : Enemy
         }
         else if (isAggro) // Aggro on player
         {
-            transform.LookAt(new Vector3(player.transform.position.x, transform.position.y, player.transform.position.z));
+            transform.LookAt(new Vector3(currTarget.position.x, transform.position.y, currTarget.position.z));
 
             // Get next path position
             if (path != null) // Get next position from path
@@ -171,6 +182,20 @@ public class EnemyGround : Enemy
                 currPathPos++;
             }
         }
+    }
+
+    // Movement when taunted by decoy shot
+    protected void Taunted()
+    {
+        transform.LookAt(new Vector3(currTarget.position.x, transform.position.y, currTarget.position.z));
+
+        Vector3 moveDir = currTarget.position - transform.position;
+        moveDir.Normalize();
+
+        Vector3 velocity = (moveDir * moveSpeedCurr) - rb.velocity;
+        velocity.y = 0; // Set y velocity to 0
+
+        rb.AddForce(velocity, ForceMode.VelocityChange);
     }
 
     // --- Pathfinding ---

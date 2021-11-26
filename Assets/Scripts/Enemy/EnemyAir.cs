@@ -23,8 +23,6 @@ public class EnemyAir : Enemy
     protected float nextPathfind;
     protected int pathfindDelay;
 
-    protected bool canMove;
-
     protected Rigidbody rb;
 
     protected override void Start()
@@ -84,6 +82,12 @@ public class EnemyAir : Enemy
         gridArrayCopy[nodeIndex.Item1, nodeIndex.Item2, nodeIndex.Item3].isWalkable = grid.grid[nodeIndex.Item1, nodeIndex.Item2, nodeIndex.Item3].isWalkable;
     }
 
+    void Update()
+    {
+        CheckColdShot();
+        CheckWeakeningShot();
+    }
+
     void FixedUpdate()
     {
         // Check for and update last valid start node position for enemy
@@ -104,13 +108,20 @@ public class EnemyAir : Enemy
         }
 
         // Move
-        if (canMove)
+        if (isTaunted)
+        {
+            Taunted();
+        }
+        else if (canMove)
         {
             Move();
         }
         else // Stop if cannot move
         {
-            rb.AddForce(Vector3.zero - rb.velocity, ForceMode.VelocityChange);
+            rb.AddForce((Vector3.zero - rb.velocity).normalized, ForceMode.VelocityChange);
+            
+            // Keep looking at player
+            transform.LookAt(currTarget);
         }
     }
 
@@ -122,7 +133,7 @@ public class EnemyAir : Enemy
         }
         else if (isAggro) // Aggro on player
         {
-            transform.LookAt(player.transform);
+            transform.LookAt(currTarget);
 
             // Get next path position
             if (path != null) // Get next position from path
@@ -162,6 +173,17 @@ public class EnemyAir : Enemy
                 currPathPos++;
             }
         }
+    }
+
+    // Movement when taunted by decoy shot
+    protected void Taunted()
+    {
+        transform.LookAt(currTarget);
+
+        Vector3 moveDir = currTarget.position - transform.position;
+        moveDir.Normalize();
+
+        rb.AddForce((moveDir * moveSpeedCurr) - rb.velocity, ForceMode.VelocityChange);
     }
 
     // --- Pathfinding ---

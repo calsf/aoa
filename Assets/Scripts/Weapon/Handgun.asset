@@ -12,8 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a476abc145d14f4395c1f8beeb8fa0f, type: 3}
   m_Name: Handgun
   m_EditorClassIdentifier: 
-  RELOAD_BASE: 1
-  FIRE_RATE_BASE: 1
   DAMAGE_BASE: 100
   HEADSHOT_MULTIPLIER_BASE: 1.5
   MAG_SIZE_BASE: 10
@@ -22,4 +20,4 @@ MonoBehaviour:
   INACCURACY_BASE: 0.02
   ZOOM_BASE: 65
   EFFECTIVE_RANGE_BASE: 100
-  FALLOFF_MODIFIER_BASE: 0
+  FALLOFF_MODIFIER_BASE: 0.5

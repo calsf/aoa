@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class Weapon : MonoBehaviour
 {
+    protected const int PROJECTILE_POOL_NUM = 10;
+
     // TEMP!!!!
     [SerializeField] protected GameObject placeholder;
 
@@ -34,13 +36,11 @@ public class Weapon : MonoBehaviour
     protected LayerMask shootLayerMask;
     protected bool isShooting;
     protected bool isReloading;
- 
+
     public bool isSwapping { get; set; }
 
     public bool canShoot { get { return !isShooting && !isReloading && magSizeCurr > 0 && !isSwapping; } }
     public bool canReload { get { return magSizeCurr != magSizeMax && !isReloading && !isSwapping; } }
-
-    public bool isEnemyPunchthrough { get; set; }
 
     // Weapon props
     [SerializeField] protected WeaponObject weapon;
@@ -48,8 +48,8 @@ public class Weapon : MonoBehaviour
     protected float fireRate; // Anim dependent
     protected float damage;
     protected float headshotMultiplier;
-    protected int magSizeMax;
-    protected int magSizeCurr;
+    public int magSizeMax { get; set; }
+    public int magSizeCurr { get; set; }
     protected float aimTime;
     protected float inaccuracyMin;
     protected float inaccuracyMax;
@@ -57,6 +57,19 @@ public class Weapon : MonoBehaviour
     protected float zoom;
     protected float effectiveRange;
     protected float falloffModifer;
+
+    // Player state props
+    [SerializeField] protected PlayerStateObject playerState;
+    [SerializeField] protected DefiantReload defiantReloadEffect;
+    [SerializeField] protected GameObject decoyShotEffect;
+    protected const float COLD_SHOT_SLOW_MULTIPLIER = .3f;
+    protected const float COLD_SHOT_SLOW_TIME = 2.5f;
+    protected const float WEAKENING_SHOT_MULTIPLIER = .3f;
+    protected const float WEAKENING_SHOT_TIME = 3f;
+    protected const float CLONED_SHOT_OFFSET = 1.5f;
+    protected const float CLONED_SHOT_DMG_MULTIPLIER = .08f;
+
+    protected List<GameObject> decoyShotPool;
 
     protected virtual void Awake()
     {
@@ -85,21 +98,33 @@ public class Weapon : MonoBehaviour
             | 1 << LayerMask.NameToLayer("Ground")
             | 1 << LayerMask.NameToLayer("Wall"));
 
-        isEnemyPunchthrough = true;
+        // Weapon stats
+        reload = playerState.reloadMultiplier;
+        fireRate = playerState.fireRateMultiplier;
+        anim.SetFloat("ReloadSpeed", reload);
+        anim.SetFloat("ShootSpeed", fireRate);
 
-        reload = weapon.RELOAD_BASE;
-        fireRate = weapon.FIRE_RATE_BASE;
-        damage = weapon.DAMAGE_BASE;
-        headshotMultiplier = weapon.HEADSHOT_MULTIPLIER_BASE;
-        magSizeMax = weapon.MAG_SIZE_BASE;
+        damage = weapon.DAMAGE_BASE + playerState.damageBonus;
+        headshotMultiplier = weapon.HEADSHOT_MULTIPLIER_BASE + playerState.headShotMultiplierBonus;
+        magSizeMax = weapon.MAG_SIZE_BASE * playerState.magSizeMaxMultiplier;
         magSizeCurr = magSizeMax;
-        aimTime = weapon.AIM_TIME_BASE;
+        aimTime = weapon.AIM_TIME_BASE - playerState.aimTimeReduction <= 0 ? .03f : weapon.AIM_TIME_BASE - playerState.aimTimeReduction; // Have a min aim time
         inaccuracyMin = weapon.INACCURACY_MIN;
-        inaccuracyMax = weapon.INACCURACY_BASE;
+        inaccuracyMax = weapon.INACCURACY_BASE - playerState.inaccuracyReduction < inaccuracyMin ? inaccuracyMin : weapon.INACCURACY_BASE - playerState.inaccuracyReduction;
         inaccuracyCurr = inaccuracyMax;
         zoom = weapon.ZOOM_BASE;
-        effectiveRange = weapon.EFFECTIVE_RANGE_BASE;
+        effectiveRange = weapon.EFFECTIVE_RANGE_BASE + playerState.effectiveRangeBonus;
         falloffModifer = weapon.FALLOFF_MODIFIER_BASE;
+
+        defiantReloadEffect.gameObject.SetActive(false);
+
+        // Init decoy shot obj pool
+        decoyShotPool = new List<GameObject>();
+        for (int i = 0; i < PROJECTILE_POOL_NUM; i++)
+        {
+            decoyShotPool.Add(Instantiate(decoyShotEffect, Vector3.zero, Quaternion.identity));
+            decoyShotPool[i].SetActive(false);
+        }
     }
 
     void OnEnable()
@@ -111,6 +136,32 @@ public class Weapon : MonoBehaviour
 
         crosshairCenter.enabled = true;
         crosshairCircle.enabled = false;
+
+        playerState.OnStateUpdate.AddListener(UpdateWeaponState);
+
+        UpdateWeaponState();
+    }
+
+    void OnDisable()
+    {
+        playerState.OnStateUpdate.RemoveListener(UpdateWeaponState);
+    }
+
+    // Update weapon state
+    protected void UpdateWeaponState()
+    {
+        // Stats
+        reload = playerState.reloadMultiplier;
+        fireRate = playerState.fireRateMultiplier;
+        anim.SetFloat("ReloadSpeed", reload);
+        anim.SetFloat("ShootSpeed", fireRate);
+
+        damage = weapon.DAMAGE_BASE + playerState.damageBonus;
+        headshotMultiplier = weapon.HEADSHOT_MULTIPLIER_BASE + playerState.headShotMultiplierBonus;
+        magSizeMax = weapon.MAG_SIZE_BASE * playerState.magSizeMaxMultiplier;
+        aimTime = weapon.AIM_TIME_BASE - playerState.aimTimeReduction <= 0 ? .03f : weapon.AIM_TIME_BASE - playerState.aimTimeReduction; // Have a min aim time
+        inaccuracyMax = weapon.INACCURACY_BASE - playerState.inaccuracyReduction < inaccuracyMin ? inaccuracyMin : weapon.INACCURACY_BASE - playerState.inaccuracyReduction;
+        effectiveRange = weapon.EFFECTIVE_RANGE_BASE + playerState.effectiveRangeBonus;
     }
 
     protected void OnFinishShoot()
@@ -176,6 +227,9 @@ public class Weapon : MonoBehaviour
     {
         isReloading = true;
         anim.Play("Reload");
+
+        defiantReloadEffect.Reset();
+        DefiantReload();
     }
 
     public virtual void Aim()
@@ -203,6 +257,8 @@ public class Weapon : MonoBehaviour
 
     public virtual void Shoot()
     {
+        SacrificialShotLoss();
+
         anim.Play("Shoot");
         isShooting = true;
         magSizeCurr -= 1;
@@ -214,22 +270,30 @@ public class Weapon : MonoBehaviour
         dir.Normalize();
 
         // Shoot raycast in direction and check hit
-        ShootRaycast(dir);
+        ShootRaycast(dir, cam.transform.position);
+
+        ClonedShot(dir);
     }
 
-    protected void ShootRaycast(Vector3 dir)
+    protected void ShootRaycast(Vector3 dir, Vector3 raycastOrigin, float healthGainMultiplier = 2, float damageDealtMultiplier = 1, bool isDecoy = true)
     {
-        if (!isEnemyPunchthrough) // No enemy punchthrough
+        if (!playerState.punchThrough) // No enemy punchthrough
         {
             RaycastHit hit;
-            bool hasHit = Physics.Raycast(cam.transform.position, dir, out hit, Mathf.Infinity, shootLayerMask);
+            bool hasHit = Physics.Raycast(raycastOrigin, dir, out hit, Mathf.Infinity, shootLayerMask);
 
             if (hasHit && hit.collider != null)
             {
                 // TEMP!!!
                 GameObject obj = Instantiate(placeholder);
                 obj.transform.position = hit.point;
-                Debug.Log(hit.collider.tag + "DISTANCE " + hit.distance);
+                //Debug.Log(hit.collider.tag + "DISTANCE " + hit.distance);
+
+                // Decoy shot first hit
+                if (isDecoy)
+                {
+                    DecoyShot(hit.point);
+                }
 
                 if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy")) // Enemy hit
                 {
@@ -240,9 +304,26 @@ public class Weapon : MonoBehaviour
                     if (hit.collider.gameObject.tag == "EnemyHead")
                     {
                         damageDealt *= headshotMultiplier;
+
+                        TempoShot(true);
+                    }
+                    else
+                    {
+                        TempoShot(false);
                     }
 
+                    // Tempo shot - apply extra damage if applies
+                    if (playerState.tempoShot)
+                    {
+                        damageDealt += playerState.tempoShotExtraDmg;
+                    }
+
+                    damageDealt *= damageDealtMultiplier; // Apply damage dealt multiplier
                     hit.collider.gameObject.GetComponentInParent<Enemy>().Damaged(damageDealt);
+
+                    SacrificialShotGain(healthGainMultiplier);
+                    ColdShot(hit.collider.gameObject);
+                    WeakeningShot(hit.collider.gameObject);
                 }
                 else if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall")) // Wall hit
                 {
@@ -250,22 +331,49 @@ public class Weapon : MonoBehaviour
                     // Use base damage and base weapon falloff modifier for hits on wall
                     float damageDealt = hit.distance > effectiveRange ? weapon.DAMAGE_BASE * weapon.FALLOFF_MODIFIER_BASE : weapon.DAMAGE_BASE;
 
+                    // Tactical shot - destroy wall with one shot if within effective range
+                    if (playerState.tacticalShot && hit.distance < effectiveRange)
+                    {
+                        damageDealt = 500;
+                    }
+
+                    damageDealt *= damageDealtMultiplier; // Apply damage dealt multiplier
+
+                    // Deal damage to wall block
                     hit.collider.gameObject.GetComponent<WallBlock>().Damaged(damageDealt);
+                }
+                else // Else hit nothing
+                {
+                    TempoShot(false);
                 }
             }
         }
         else // Apply enemy punchthrough, only hits wall if wall is first
         {
-            RaycastHit[] allHit = Physics.RaycastAll(cam.transform.position, dir, Mathf.Infinity, shootLayerMask);
+            RaycastHit[] allHit = Physics.RaycastAll(raycastOrigin, dir, Mathf.Infinity, shootLayerMask);
 
             // Sort hit in ascending order
             System.Array.Sort(allHit, (hit1, hit2) => hit1.distance.CompareTo(hit2.distance));
+
+            // Decoy shot first hit
+            if (isDecoy && allHit.Length > 0)
+            {
+                DecoyShot(allHit[0].point);
+            }
 
             // Check if first hit was a wall, if so, apply damage and do not apply any further punchthrough
             if (allHit.Length > 0 && allHit[0].collider.gameObject.layer == LayerMask.NameToLayer("Wall"))
             {
                 // Check for distance and apply falloff to damage if necessary (Use base damage and base weapon falloff modifier for hits on wall)
                 float damageDealt = allHit[0].distance > effectiveRange ? weapon.DAMAGE_BASE * weapon.FALLOFF_MODIFIER_BASE : weapon.DAMAGE_BASE;
+
+                // Tactical shot - destroy wall with one shot if within effective range
+                if (playerState.tacticalShot && allHit[0].distance < effectiveRange)
+                {
+                    damageDealt = 500;
+                }
+
+                damageDealt *= damageDealtMultiplier; // Apply damage dealt multiplier
 
                 allHit[0].collider.gameObject.GetComponent<WallBlock>().Damaged(damageDealt);
 
@@ -275,12 +383,13 @@ public class Weapon : MonoBehaviour
 
             // Apply hit on all hit or until wall is hit
             List<GameObject> hitEnemies = new List<GameObject>();
+            bool hasHeadshotOnce = false;
             foreach (RaycastHit hit in allHit)
             {
                 // TEMP!!!
                 GameObject obj = Instantiate(placeholder);
                 obj.transform.position = hit.point;
-                Debug.Log(hit.collider.tag + "DISTANCE " + hit.distance);
+                //Debug.Log(hit.collider.tag + "DISTANCE " + hit.distance);
 
                 if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy")) // Enemy hit
                 {
@@ -298,19 +407,158 @@ public class Weapon : MonoBehaviour
                     if (hit.collider.gameObject.tag == "EnemyHead")
                     {
                         damageDealt *= headshotMultiplier;
+
+                        TempoShot(true);
+                        hasHeadshotOnce = true; // Set headshot as already having hit since punchthrough
+                    }
+                    else if (!hasHeadshotOnce) // Do not penalize on punchthrough miss
+                    {
+                        TempoShot(false);
                     }
 
+                    // Tempo shot - apply extra damage if applies
+                    if (playerState.tempoShot)
+                    {
+                        damageDealt += playerState.tempoShotExtraDmg;
+                    }
+
+                    damageDealt *= damageDealtMultiplier; // Apply damage dealt multiplier
                     hit.collider.gameObject.GetComponentInParent<Enemy>().Damaged(damageDealt);
 
                     // Add this enemy object to list of hit objects so it does not get hit again
                     hitEnemies.Add(hit.collider.gameObject.transform.parent.gameObject);
+
+                    SacrificialShotGain(healthGainMultiplier);
+                    ColdShot(hit.collider.gameObject);
+                    WeakeningShot(hit.collider.gameObject);
                 }
                 else if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall")) // Wall hit
                 {
                     // Punchthrough should stop after hitting a wall, do not apply damage
                     return;
                 }
+                else if (!hasHeadshotOnce) // Hit nothing, but do not penalize on punchthrough miss
+                {
+                    TempoShot(false);
+                }
             }
         }
+    }
+
+    protected void SacrificialShotLoss()
+    {
+        // Sacrificial shot - lose health on shot, gain double the amount lost on enemy hit, cannot fall below 1 health
+        // CALL FIRST ON SHOOT SO HEALTH GAIN OCCURS AFTER LOSS
+        if (playerState.sacrificialShot)
+        {
+            // Health to lose based on max health and max mag size of the gun
+            float healthToLose = playerState.healthMax / (magSizeMax / 2.5f);
+
+            // Lose health, always stay above 0 health
+            playerState.healthCurr = playerState.healthCurr - healthToLose <= 0 ? 1 : playerState.healthCurr - healthToLose;
+        }
+    }
+
+    protected void SacrificialShotGain(float healthGainMultiplier)
+    {
+        // Sacrificial shot - gain back health on hit
+        if (playerState.sacrificialShot)
+        {
+            // Gain back double health lost from shooting, healthToLose * 2
+            float healthToGain = (playerState.healthMax / (magSizeMax / 2.5f)) * healthGainMultiplier;
+
+            playerState.healthCurr = playerState.healthCurr + healthToGain > playerState.healthMax ? playerState.healthMax : playerState.healthCurr + healthToGain;
+        }
+    }
+
+    protected void ColdShot(GameObject hit)
+    {
+        // Slow enemy on hit, resets timer on consecutive hits
+        if (playerState.coldShot)
+        {
+            hit.GetComponentInParent<Enemy>().ApplyColdShot(COLD_SHOT_SLOW_MULTIPLIER, COLD_SHOT_SLOW_TIME);
+        }
+    }
+
+    protected void WeakeningShot(GameObject hit)
+    {
+        // Lower enemy damage on hit, resets timer on consecutive hits
+        if (playerState.weakeningShot)
+        {
+            hit.GetComponentInParent<Enemy>().ApplyWeakeningShot(WEAKENING_SHOT_MULTIPLIER, WEAKENING_SHOT_TIME);
+        }
+    }
+
+    protected void TempoShot(bool isHeadshot)
+    {
+        // Add extra dmg on consecutive headshots, reset to 0 on miss (should not reset on wall hit)
+        if (playerState.tempoShot)
+        {
+            if (isHeadshot)
+            {
+                float extraDmg = damage * .2f;
+                playerState.tempoShotExtraDmg += extraDmg;
+            }
+            else
+            {
+                playerState.tempoShotExtraDmg = 0;
+            }
+        }
+    }
+
+    protected void ClonedShot(Vector3 dir)
+    {
+        // Shoot additional shots, offset from the cam position and deals reduced damage, DOES NOT APPLY HEALTH GAIN FROM SACRIFICIAL
+        if (playerState.clonedShot)
+        {
+            ShootRaycast(dir, cam.transform.position + Vector3.left * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
+            ShootRaycast(dir, cam.transform.position + Vector3.right * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
+
+            ShootRaycast(dir, cam.transform.position + Vector3.down * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
+            ShootRaycast(dir, cam.transform.position + Vector3.up * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
+
+            ShootRaycast(dir, cam.transform.position + (Vector3.down * CLONED_SHOT_OFFSET + Vector3.left * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
+            ShootRaycast(dir, cam.transform.position + (Vector3.up * CLONED_SHOT_OFFSET + Vector3.left * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
+
+            ShootRaycast(dir, cam.transform.position + (Vector3.down * CLONED_SHOT_OFFSET + Vector3.right * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
+            ShootRaycast(dir, cam.transform.position + (Vector3.up * CLONED_SHOT_OFFSET + Vector3.right * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
+        }
+    }
+
+    protected void DefiantReload()
+    {
+        // Knock back enemies upon reloading
+        if (playerState.defiantReload)
+        {
+            defiantReloadEffect.Reset();
+            defiantReloadEffect.gameObject.SetActive(true);
+        }
+    }
+
+    protected void DecoyShot(Vector3 pos)
+    {
+        // Spawn decoy at position if last shot of mag
+        if (playerState.decoyShot && magSizeCurr == 0)
+        {
+            GameObject obj = GetFromPool(decoyShotPool, decoyShotEffect);
+            obj.transform.position = pos;
+            obj.SetActive(true);
+        }
+    }
+
+    protected GameObject GetFromPool(List<GameObject> pool, GameObject obj)
+    {
+        for (int i = 0; i < pool.Count; i++)
+        {
+            if (!pool[i].activeInHierarchy)
+            {
+                return pool[i];
+            }
+        }
+
+        // If no object in the pool is available, create a new object and add to the pool
+        GameObject newObj = Instantiate(obj, Vector3.zero, Quaternion.identity);
+        pool.Add(obj);
+        return obj;
     }
 }

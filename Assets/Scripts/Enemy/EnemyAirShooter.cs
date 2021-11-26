@@ -32,10 +32,13 @@ public class EnemyAirShooter : EnemyAir
         {
             nextShotTime = Time.time + Random.Range(MIN_SHOOT_DELAY, MAX_SHOOT_DELAY);
         }
-        else if (Time.time > nextShotTime && !isShooting) // Is aggro and not already shooting, shoot
+        else if (Time.time > nextShotTime && !isShooting && canMove) // Is aggro and not already shooting and can move, shoot
         {
             StartShooting();
         }
+
+        CheckColdShot();
+        CheckWeakeningShot();
     }
 
     protected void StartShooting()
@@ -66,7 +69,7 @@ public class EnemyAirShooter : EnemyAir
         // Set projectile damage and direction
         Projectile projectile = obj.GetComponent<Projectile>();
         projectile.projectileDamage = damageCurr;
-        projectile.projectileDir = (player.transform.position + (Vector3.up * 2) - transform.position).normalized; // Offset player position
+        projectile.projectileDir = (currTarget.position + (Vector3.up * 2) - transform.position).normalized; // Offset player position
     }
 
     protected GameObject GetFromPool(List<GameObject> pool)

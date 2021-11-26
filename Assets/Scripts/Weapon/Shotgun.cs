@@ -20,6 +20,15 @@ public class Shotgun : Weapon
 
         crosshairCenter.enabled = true;
         crosshairCircle.enabled = true;
+
+        playerState.OnStateUpdate.AddListener(UpdateWeaponState);
+
+        UpdateWeaponState();
+    }
+
+    void OnDisable()
+    {
+        playerState.OnStateUpdate.RemoveListener(UpdateWeaponState);
     }
 
     // Override aim to change scope circle size
@@ -52,6 +61,8 @@ public class Shotgun : Weapon
     }
     public override void Shoot()
     {
+        SacrificialShotLoss();
+
         anim.Play("Shoot");
         isShooting = true;
         magSizeCurr -= 1;
@@ -79,9 +90,11 @@ public class Shotgun : Weapon
         dirs[16] = (cam.transform.forward + (inaccuracyCurr * cam.transform.right)).normalized;
 
         // Shoot raycast in direction and check hit
-        foreach (Vector3 dir in dirs)
+        ShootRaycast(dirs[0], cam.transform.position, (2.0f / 17.0f)); // Only middle shot should apply any special effects e.g decoy shot
+        for (int i = 1; i < dirs.Length; i++)
         {
-            ShootRaycast(dir);
+            ShootRaycast(dirs[i], cam.transform.position, (2.0f / 17.0f ), 1, false); // Each 'pellet' should have its own separate sacrificial shot health gain
+            ClonedShot(dirs[i]);
         }
     }
 }
