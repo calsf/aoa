@@ -108,7 +108,11 @@ public class EnemyAir : Enemy
         }
 
         // Move
-        if (canMove)
+        if (isTaunted)
+        {
+            Taunted();
+        }
+        else if (canMove)
         {
             Move();
         }
@@ -117,7 +121,7 @@ public class EnemyAir : Enemy
             rb.AddForce((Vector3.zero - rb.velocity).normalized, ForceMode.VelocityChange);
             
             // Keep looking at player
-            transform.LookAt(player.transform);
+            transform.LookAt(currTarget);
         }
     }
 
@@ -129,7 +133,7 @@ public class EnemyAir : Enemy
         }
         else if (isAggro) // Aggro on player
         {
-            transform.LookAt(player.transform);
+            transform.LookAt(currTarget);
 
             // Get next path position
             if (path != null) // Get next position from path
@@ -169,6 +173,17 @@ public class EnemyAir : Enemy
                 currPathPos++;
             }
         }
+    }
+
+    // Movement when taunted by decoy shot
+    protected void Taunted()
+    {
+        transform.LookAt(currTarget);
+
+        Vector3 moveDir = currTarget.position - transform.position;
+        moveDir.Normalize();
+
+        rb.AddForce((moveDir * moveSpeedCurr) - rb.velocity, ForceMode.VelocityChange);
     }
 
     // --- Pathfinding ---

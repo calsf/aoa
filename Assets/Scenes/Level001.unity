@@ -29123,6 +29123,7 @@ MonoBehaviour:
   weapon: {fileID: 11400000, guid: d3d8d03476ba5334da3827192eb02307, type: 2}
   playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
   defiantReloadEffect: {fileID: 380096613}
+  decoyShotEffect: {fileID: 7871083199539436161, guid: 99224b3f48d8d164182d55ada24f5585, type: 3}
 --- !u!95 &515182646
 Animator:
   serializedVersion: 3
@@ -33537,6 +33538,7 @@ MonoBehaviour:
   weapon: {fileID: 11400000, guid: 926ac0a1738723648b03c7cb17137515, type: 2}
   playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
   defiantReloadEffect: {fileID: 380096613}
+  decoyShotEffect: {fileID: 7871083199539436161, guid: 99224b3f48d8d164182d55ada24f5585, type: 3}
 --- !u!95 &600001195
 Animator:
   serializedVersion: 3
@@ -44943,6 +44945,7 @@ MonoBehaviour:
   weapon: {fileID: 11400000, guid: 3cad1b4046673394f8f9eae17594e416, type: 2}
   playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
   defiantReloadEffect: {fileID: 380096613}
+  decoyShotEffect: {fileID: 7871083199539436161, guid: 99224b3f48d8d164182d55ada24f5585, type: 3}
 --- !u!1 &781264496
 GameObject:
   m_ObjectHideFlags: 0
@@ -74216,6 +74219,7 @@ MonoBehaviour:
   weapon: {fileID: 11400000, guid: 8bee4e15bfdf83e4b91c9eaf1a676f1a, type: 2}
   playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
   defiantReloadEffect: {fileID: 380096613}
+  decoyShotEffect: {fileID: 7871083199539436161, guid: 99224b3f48d8d164182d55ada24f5585, type: 3}
   scopeOverlay: {fileID: 924631978}
 --- !u!95 &1215877676
 Animator:

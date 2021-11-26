@@ -69,7 +69,7 @@ public class EnemyAirShooter : EnemyAir
         // Set projectile damage and direction
         Projectile projectile = obj.GetComponent<Projectile>();
         projectile.projectileDamage = damageCurr;
-        projectile.projectileDir = (player.transform.position + (Vector3.up * 2) - transform.position).normalized; // Offset player position
+        projectile.projectileDir = (currTarget.position + (Vector3.up * 2) - transform.position).normalized; // Offset player position
     }
 
     protected GameObject GetFromPool(List<GameObject> pool)

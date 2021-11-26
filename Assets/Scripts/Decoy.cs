@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DefiantReload : MonoBehaviour
+public class Decoy : MonoBehaviour
 {
+    [SerializeField] private ParticleSystem particles;
+
     private List<GameObject> hitEnemiesObj;
     private List<Enemy> hitEnemies;
 
@@ -13,16 +15,24 @@ public class DefiantReload : MonoBehaviour
         hitEnemies = new List<Enemy>();
     }
 
+    void LateUpdate()
+    {
+        if (particles.particleCount <= 0)
+        {
+            Reset();
+        }
+    }
+
     public void Reset()
     {
         hitEnemiesObj.Clear();
 
-        // Reset enemy movement
+        // Reset enemy target and isTaunted state
         foreach (Enemy e in hitEnemies)
         {
             if (e != null && e.gameObject != null)
             {
-                e.canMove = true;
+                e.RemoveTaunt();
             }
         }
 
@@ -35,16 +45,23 @@ public class DefiantReload : MonoBehaviour
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Enemy") && !hitEnemiesObj.Contains(other.gameObject))
         {
+            Enemy enemy = other.GetComponentInParent<Enemy>();
+            
+            if (enemy.isTaunted) // Ignore if its already taunted
+            {
+                return;
+            }
+
             hitEnemiesObj.Add(other.gameObject);
 
-            // Stop their movement
-            Enemy enemy = other.GetComponentInParent<Enemy>();
-            enemy.canMove = false;
             hitEnemies.Add(enemy);
-
-            // Apply force
-            Rigidbody rb = other.GetComponentInParent<Rigidbody>();
-            rb.AddForce((rb.transform.position - transform.position).normalized * 50, ForceMode.VelocityChange);
+            enemy.isTaunted = true;
+            enemy.currTarget = transform;
         }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        OnTriggerEnter(other);
     }
 }

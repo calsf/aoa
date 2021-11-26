@@ -90,10 +90,11 @@ public class Shotgun : Weapon
         dirs[16] = (cam.transform.forward + (inaccuracyCurr * cam.transform.right)).normalized;
 
         // Shoot raycast in direction and check hit
-        foreach (Vector3 dir in dirs)
+        ShootRaycast(dirs[0], cam.transform.position, (2.0f / 17.0f)); // Only middle shot should apply any special effects e.g decoy shot
+        for (int i = 1; i < dirs.Length; i++)
         {
-            ShootRaycast(dir, cam.transform.position, (2.0f / 17.0f ) ); // Each 'pellet' should have its own separate sacrificial shot health gain
-            ClonedShot(dir);
+            ShootRaycast(dirs[i], cam.transform.position, (2.0f / 17.0f ), 1, false); // Each 'pellet' should have its own separate sacrificial shot health gain
+            ClonedShot(dirs[i]);
         }
     }
 }

@@ -29,7 +29,7 @@ MonoBehaviour:
   healthCurr: 0
   aimGlide: 0
   holsteredReload: 0
-  punchThrough: 0
+  punchThrough: 1
   sacrificialShot: 0
   tacticalShot: 0
   coldShot: 0
@@ -41,8 +41,7 @@ MonoBehaviour:
   clonedShot: 1
   defiantReload: 1
   luckyShot: 0
-  loadedShot: 0
-  decoyShot: 0
+  decoyShot: 1
   OnStateUpdate:
     m_PersistentCalls:
       m_Calls: []

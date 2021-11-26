@@ -35,6 +35,9 @@ public abstract class Enemy : MonoBehaviour
     protected bool isWeakenShotted;
     protected float weakenShotOffTime;
 
+    public bool isTaunted { get; set; }
+    public Transform currTarget { get; set; }
+
     protected virtual void Start()
     {
         anim = GetComponent<Animator>();
@@ -56,6 +59,8 @@ public abstract class Enemy : MonoBehaviour
         explo.SetSize(enemy.EXPLO_SIZE);    // Set explo size
         explo.damage = (healthMax * EXPLOSIVE_DMG_MULTIPLIER) + playerState.damageBonus; // Explo dmg based on % enemy max health and player bonus dmg
         explosiveShotEffectObj.SetActive(false);
+
+        currTarget = player.transform;
     }
 
     protected abstract void Move();
@@ -135,5 +140,11 @@ public abstract class Enemy : MonoBehaviour
             isWeakenShotted = false;
             damageCurr = damageMax;
         }
+    }
+
+    public void RemoveTaunt()
+    {
+        isTaunted = false;
+        currTarget = player.transform;
     }
 }

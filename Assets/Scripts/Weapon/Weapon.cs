@@ -59,6 +59,7 @@ public class Weapon : MonoBehaviour
     // Player state props
     [SerializeField] protected PlayerStateObject playerState;
     [SerializeField] protected DefiantReload defiantReloadEffect;
+    [SerializeField] protected GameObject decoyShotEffect;
     protected const float COLD_SHOT_SLOW_MULTIPLIER = .3f;
     protected const float COLD_SHOT_SLOW_TIME = 2.5f;
     protected const float WEAKENING_SHOT_MULTIPLIER = .3f;
@@ -262,7 +263,7 @@ public class Weapon : MonoBehaviour
         ClonedShot(dir);
     }
 
-    protected void ShootRaycast(Vector3 dir, Vector3 raycastOrigin, float healthGainMultiplier = 2, float damageDealtMultiplier = 1)
+    protected void ShootRaycast(Vector3 dir, Vector3 raycastOrigin, float healthGainMultiplier = 2, float damageDealtMultiplier = 1, bool isDecoy = true)
     {
         if (!playerState.punchThrough) // No enemy punchthrough
         {
@@ -275,6 +276,12 @@ public class Weapon : MonoBehaviour
                 GameObject obj = Instantiate(placeholder);
                 obj.transform.position = hit.point;
                 //Debug.Log(hit.collider.tag + "DISTANCE " + hit.distance);
+
+                // Decoy shot first hit
+                if (isDecoy)
+                {
+                    DecoyShot(hit.point);
+                }
 
                 if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy")) // Enemy hit
                 {
@@ -335,6 +342,12 @@ public class Weapon : MonoBehaviour
 
             // Sort hit in ascending order
             System.Array.Sort(allHit, (hit1, hit2) => hit1.distance.CompareTo(hit2.distance));
+
+            // Decoy shot first hit
+            if (isDecoy && allHit.Length > 0)
+            {
+                DecoyShot(allHit[0].point);
+            }
 
             // Check if first hit was a wall, if so, apply damage and do not apply any further punchthrough
             if (allHit.Length > 0 && allHit[0].collider.gameObject.layer == LayerMask.NameToLayer("Wall"))
@@ -486,17 +499,17 @@ public class Weapon : MonoBehaviour
         // Shoot additional shots, offset from the cam position and deals reduced damage, DOES NOT APPLY HEALTH GAIN FROM SACRIFICIAL
         if (playerState.clonedShot)
         {
-            ShootRaycast(dir, cam.transform.position + Vector3.left * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER);
-            ShootRaycast(dir, cam.transform.position + Vector3.right * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER);
+            ShootRaycast(dir, cam.transform.position + Vector3.left * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
+            ShootRaycast(dir, cam.transform.position + Vector3.right * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
 
-            ShootRaycast(dir, cam.transform.position + Vector3.down * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER);
-            ShootRaycast(dir, cam.transform.position + Vector3.up * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER);
+            ShootRaycast(dir, cam.transform.position + Vector3.down * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
+            ShootRaycast(dir, cam.transform.position + Vector3.up * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
 
-            ShootRaycast(dir, cam.transform.position + (Vector3.down * CLONED_SHOT_OFFSET + Vector3.left * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER);
-            ShootRaycast(dir, cam.transform.position + (Vector3.up * CLONED_SHOT_OFFSET + Vector3.left * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER);
+            ShootRaycast(dir, cam.transform.position + (Vector3.down * CLONED_SHOT_OFFSET + Vector3.left * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
+            ShootRaycast(dir, cam.transform.position + (Vector3.up * CLONED_SHOT_OFFSET + Vector3.left * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
 
-            ShootRaycast(dir, cam.transform.position + (Vector3.down * CLONED_SHOT_OFFSET + Vector3.right * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER);
-            ShootRaycast(dir, cam.transform.position + (Vector3.up * CLONED_SHOT_OFFSET + Vector3.right * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER);
+            ShootRaycast(dir, cam.transform.position + (Vector3.down * CLONED_SHOT_OFFSET + Vector3.right * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
+            ShootRaycast(dir, cam.transform.position + (Vector3.up * CLONED_SHOT_OFFSET + Vector3.right * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
         }
     }
 
@@ -507,6 +520,16 @@ public class Weapon : MonoBehaviour
         {
             defiantReloadEffect.Reset();
             defiantReloadEffect.gameObject.SetActive(true);
+        }
+    }
+
+    protected void DecoyShot(Vector3 pos)
+    {
+        // Spawn decoy at position if last shot of mag
+        if (playerState.decoyShot && magSizeCurr == 0)
+        {
+            GameObject obj = Instantiate(decoyShotEffect, pos, Quaternion.identity);
+            decoyShotEffect.SetActive(true);
         }
     }
 }
