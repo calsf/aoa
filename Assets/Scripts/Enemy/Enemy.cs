@@ -10,7 +10,7 @@ public abstract class Enemy : MonoBehaviour
     [SerializeField] protected GameObject explosiveShotEffect;
     protected GameObject deathEffectObj;
     protected GameObject explosiveShotEffectObj;
-    protected const float EXPLOSIVE_DMG_MULTIPLIER = .25f;
+    protected const float EXPLOSIVE_DMG_MULTIPLIER = .2f;
 
     protected Animator anim;
     protected GameObject player;

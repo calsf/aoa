@@ -17,7 +17,8 @@ public class Decoy : MonoBehaviour
 
     void LateUpdate()
     {
-        if (particles.particleCount <= 0)
+        // Reset and set inactive after particle duration is over
+        if (particles.isStopped)
         {
             Reset();
         }

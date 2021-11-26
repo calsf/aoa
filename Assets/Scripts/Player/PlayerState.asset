@@ -37,7 +37,7 @@ MonoBehaviour:
   tempoShot: 0
   peakOfSurvival: 0
   steadyRegen: 0
-  explosiveShot: 0
+  explosiveShot: 1
   clonedShot: 1
   defiantReload: 1
   luckyShot: 0

@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class Weapon : MonoBehaviour
 {
+    protected const int PROJECTILE_POOL_NUM = 10;
+
     // TEMP!!!!
     [SerializeField] protected GameObject placeholder;
 
@@ -67,6 +69,8 @@ public class Weapon : MonoBehaviour
     protected const float CLONED_SHOT_OFFSET = 1.5f;
     protected const float CLONED_SHOT_DMG_MULTIPLIER = .08f;
 
+    protected List<GameObject> decoyShotPool;
+
     protected virtual void Awake()
     {
         crosshair = GameObject.FindGameObjectWithTag("Crosshair").GetComponent<RectTransform>();
@@ -113,6 +117,14 @@ public class Weapon : MonoBehaviour
         falloffModifer = weapon.FALLOFF_MODIFIER_BASE;
 
         defiantReloadEffect.gameObject.SetActive(false);
+
+        // Init decoy shot obj pool
+        decoyShotPool = new List<GameObject>();
+        for (int i = 0; i < PROJECTILE_POOL_NUM; i++)
+        {
+            decoyShotPool.Add(Instantiate(decoyShotEffect, Vector3.zero, Quaternion.identity));
+            decoyShotPool[i].SetActive(false);
+        }
     }
 
     void OnEnable()
@@ -528,8 +540,25 @@ public class Weapon : MonoBehaviour
         // Spawn decoy at position if last shot of mag
         if (playerState.decoyShot && magSizeCurr == 0)
         {
-            GameObject obj = Instantiate(decoyShotEffect, pos, Quaternion.identity);
-            decoyShotEffect.SetActive(true);
+            GameObject obj = GetFromPool(decoyShotPool, decoyShotEffect);
+            obj.transform.position = pos;
+            obj.SetActive(true);
         }
+    }
+
+    protected GameObject GetFromPool(List<GameObject> pool, GameObject obj)
+    {
+        for (int i = 0; i < pool.Count; i++)
+        {
+            if (!pool[i].activeInHierarchy)
+            {
+                return pool[i];
+            }
+        }
+
+        // If no object in the pool is available, create a new object and add to the pool
+        GameObject newObj = Instantiate(obj, Vector3.zero, Quaternion.identity);
+        pool.Add(obj);
+        return obj;
     }
 }
