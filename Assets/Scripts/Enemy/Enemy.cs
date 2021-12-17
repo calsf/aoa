@@ -4,12 +4,14 @@ using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour
 {
+    protected const int POOL_NUM = 3;
+
     [SerializeField] private PlayerStateObject playerState;
 
     [SerializeField] protected GameObject deathEffect;
     [SerializeField] protected GameObject explosiveShotEffect;
-    protected GameObject deathEffectObj;
-    protected GameObject explosiveShotEffectObj;
+    protected List<GameObject> deathEffectPool;
+    protected List<GameObject> explosiveShotEffectPool;
     protected const float EXPLOSIVE_DMG_MULTIPLIER = .2f;
 
     protected Animator anim;
@@ -17,6 +19,7 @@ public abstract class Enemy : MonoBehaviour
     protected PlayerMoveController playerMoveController;
 
     protected bool isAggro = false;
+    protected Quaternion origRot;
 
     public bool canMove { get; set; }
 
@@ -44,6 +47,8 @@ public abstract class Enemy : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         playerMoveController = player.GetComponent<PlayerMoveController>();
 
+        origRot = transform.rotation;
+
         moveSpeedMax = enemy.MOVE_SPEED_BASE;
         moveSpeedCurr = moveSpeedMax;
         healthMax = enemy.HEALTH_BASE;
@@ -51,14 +56,26 @@ public abstract class Enemy : MonoBehaviour
         damageMax = enemy.DAMAGE_BASE;
         damageCurr = damageMax;
 
-        deathEffectObj = Instantiate(deathEffect);
-        deathEffectObj.SetActive(false);
+        // Initialize pool of death effects, these are in the (very rare) case an enemy is reused and killed again while previous death effect was still active
+        deathEffectPool = new List<GameObject>();
+        for (int i = 0; i < POOL_NUM; i++)
+        {
+            deathEffectPool.Add(Instantiate(deathEffect, Vector3.zero, Quaternion.identity));
+            deathEffectPool[i].SetActive(false);
+        }
 
-        explosiveShotEffectObj = Instantiate(explosiveShotEffect);
-        Explosion explo = explosiveShotEffectObj.GetComponent<Explosion>();
-        explo.SetSize(enemy.EXPLO_SIZE);    // Set explo size
-        explo.damage = (healthMax * EXPLOSIVE_DMG_MULTIPLIER) + playerState.damageBonus; // Explo dmg based on % enemy max health and player bonus dmg
-        explosiveShotEffectObj.SetActive(false);
+        // Initialize pool of explosive shot effects, these are in the (very rare) case an enemy is reused and killed again while previous explo shot effect was still active
+        explosiveShotEffectPool = new List<GameObject>();
+        for (int i = 0; i < POOL_NUM; i++)
+        {
+            explosiveShotEffectPool.Add(Instantiate(explosiveShotEffect, Vector3.zero, Quaternion.identity));
+            
+            Explosion explo = explosiveShotEffectPool[i].GetComponent<Explosion>();
+            explo.SetSize(enemy.EXPLO_SIZE);    // Set explo size
+            explo.damage = (healthMax * EXPLOSIVE_DMG_MULTIPLIER) + playerState.damageBonus;    // Set explo dmg based on % enemy max health and player bonus dmg
+
+            explosiveShotEffectPool[i].SetActive(false);
+        }
 
         currTarget = player.transform;
     }
@@ -77,23 +94,41 @@ public abstract class Enemy : MonoBehaviour
 
             if (healthCurr <= 0)
             {
-                deathEffectObj.transform.position = transform.position;
-                deathEffectObj.SetActive(true);
+                // Death effect
+                GameObject deathObj = GetFromPool(deathEffectPool, deathEffect);
+                deathObj.transform.position = transform.position;
+                deathObj.SetActive(true);
 
                 // Explosive shot - create explosion on death
                 if (playerState.explosiveShot)
                 {
-                    explosiveShotEffectObj.transform.position = transform.position;
-                    explosiveShotEffectObj.SetActive(true);
-                }
-                else
-                {
-                    Destroy(explosiveShotEffectObj);
+                    GameObject exploObj = GetFromPool(explosiveShotEffectPool, explosiveShotEffect);
+                    exploObj.transform.position = transform.position;
+                    exploObj.SetActive(true);
                 }
 
-                Destroy(gameObject);
+                // Deactivate and reset enemy object
+                ResetEnemy();
+                gameObject.SetActive(false);
             }
         }
+    }
+
+    // Reset enemy values
+    protected virtual void ResetEnemy()
+    {
+        transform.rotation = origRot;
+        
+        moveSpeedCurr = moveSpeedMax;
+        healthCurr = healthMax;
+        damageCurr = damageMax;
+
+        isAggro = false;
+        canMove = true;
+        isTaunted = false;
+        isColdShotted = false;
+        isWeakenShotted = false;
+        currTarget = player.transform;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -146,5 +181,21 @@ public abstract class Enemy : MonoBehaviour
     {
         isTaunted = false;
         currTarget = player.transform;
+    }
+
+    protected GameObject GetFromPool(List<GameObject> pool, GameObject obj)
+    {
+        for (int i = 0; i < pool.Count; i++)
+        {
+            if (!pool[i].activeInHierarchy)
+            {
+                return pool[i];
+            }
+        }
+
+        // If no object in the pool is available, create a new object and add to the pool
+        GameObject newObj = Instantiate(obj, Vector3.zero, Quaternion.identity);
+        pool.Add(newObj);
+        return newObj;
     }
 }

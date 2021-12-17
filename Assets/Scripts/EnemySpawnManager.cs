@@ -9,6 +9,7 @@ public class EnemySpawnManager : MonoBehaviour
 
     [SerializeField] private int startNum;
     [SerializeField] private GameObject enemy;
+    protected List<GameObject> enemyPool;
     [SerializeField] private bool isGrounded; // If true, spawn at original object y position
     private Grid3D grid;
 
@@ -25,6 +26,14 @@ public class EnemySpawnManager : MonoBehaviour
         objectMask = new LayerMask();
         objectMask = (1 << LayerMask.NameToLayer("Enemy")
             | 1 << LayerMask.NameToLayer("Wall"));
+
+        // Initialize pool of enemies
+        enemyPool = new List<GameObject>();
+        for (int i = 0; i < startNum * 2; i++)
+        {
+            enemyPool.Add(Instantiate(enemy, Vector3.zero, Quaternion.identity));
+            enemyPool[i].SetActive(false);
+        }
 
         // Spawn enemies within grid bounds
         for (int i = 0; i < startNum; i++)
@@ -46,8 +55,26 @@ public class EnemySpawnManager : MonoBehaviour
 
             } while (Physics.CheckSphere(spawnPos, OBJECT_SEPARATION, objectMask) || Physics.CheckSphere(spawnPos, PLAYER_SEPARATION, playerMask)); // Keep certain distance between objects and player
 
-            GameObject newEnemy = Instantiate(enemy, spawnPos, Quaternion.identity);
+            // Get unused enemy and set position
+            GameObject newEnemy = GetFromPool(enemyPool, enemy);
+            newEnemy.transform.position = spawnPos;
+            newEnemy.SetActive(true);
+        }
+    }
+
+    protected GameObject GetFromPool(List<GameObject> pool, GameObject obj)
+    {
+        for (int i = 0; i < pool.Count; i++)
+        {
+            if (!pool[i].activeInHierarchy)
+            {
+                return pool[i];
+            }
         }
 
+        // If no object in the pool is available, create a new object and add to the pool
+        GameObject newObj = Instantiate(obj, Vector3.zero, Quaternion.identity);
+        pool.Add(newObj);
+        return newObj;
     }
 }

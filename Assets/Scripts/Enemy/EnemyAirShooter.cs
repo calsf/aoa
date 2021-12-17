@@ -60,31 +60,15 @@ public class EnemyAirShooter : EnemyAir
 
     protected void ShootAtPlayer()
     {
-        GameObject obj = GetFromPool(projectilePool);
+        GameObject obj = GetFromPool(projectilePool, projectile);
 
         obj.transform.rotation = projectileSpawnPos.transform.rotation;
         obj.transform.position = projectileSpawnPos.transform.position;
         obj.SetActive(true);
 
         // Set projectile damage and direction
-        Projectile projectile = obj.GetComponent<Projectile>();
-        projectile.projectileDamage = damageCurr;
-        projectile.projectileDir = (currTarget.position + (Vector3.up * 2) - transform.position).normalized; // Offset player position
-    }
-
-    protected GameObject GetFromPool(List<GameObject> pool)
-    {
-        for (int i = 0; i < pool.Count; i++)
-        {
-            if (!pool[i].activeInHierarchy)
-            {
-                return pool[i];
-            }
-        }
-
-        // If no object in the pool is available, create a new object and add to the pool
-        GameObject newProjectile = Instantiate(projectile, Vector3.zero, Quaternion.identity);
-        projectilePool.Add(newProjectile);
-        return newProjectile;
+        Projectile newProjectile = obj.GetComponent<Projectile>();
+        newProjectile.projectileDamage = damageCurr;
+        newProjectile.projectileDir = (currTarget.position + (Vector3.up * 2) - transform.position).normalized; // Offset player position
     }
 }

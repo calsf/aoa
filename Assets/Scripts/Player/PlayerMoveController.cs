@@ -17,6 +17,10 @@ public class PlayerMoveController : MonoBehaviour
     private const float AIR_ACCEL_MODIFIER = 3.5f;
 
     // Movement
+    [SerializeField] private ParticleSystem slideEffectForward;
+    [SerializeField] private ParticleSystem slideEffectBackward;
+    [SerializeField] private ParticleSystem slideEffectLeft;
+    [SerializeField] private ParticleSystem slideEffectRight;
     CharacterController controller;
     private float speedMax;
     private float speedCurr;
@@ -119,8 +123,33 @@ public class PlayerMoveController : MonoBehaviour
         }
 
         // Slide input, must be moving in a direction, grounded, and not already sliding
-        if (Input.GetButtonDown("Slide") && newMoveDir != Vector3.zero && controller.isGrounded && !isSliding)
+        if (Input.GetButtonDown("Slide") && newMoveDir != Vector3.zero && !isSliding)
         {
+            // If player is not grounded and does not have Air Slide, do not allow slide
+            // Must be grounded OR have Air Slide which will let player slide mid air
+            if (!playerState.airSlide && !controller.isGrounded)
+            {
+                return;
+            }
+
+            // Play slide effect based on initial move direction (prioritize forward or backwards effects unless no forward/backward input)
+            else if (newMoveDir.z > 0) // Forward
+            {
+                slideEffectForward.Play();
+            }
+            else if (newMoveDir.z < 0) // Backward
+            {
+                slideEffectBackward.Play();
+            }
+            else if (newMoveDir.x > 0) // Right
+            {
+                slideEffectRight.Play();
+            }
+            else if (newMoveDir.x < 0) // Left
+            {
+                slideEffectLeft.Play();
+            }
+
             isSliding = true;
             
             StartCoroutine(Slide());
@@ -177,6 +206,13 @@ public class PlayerMoveController : MonoBehaviour
 
         // Apply curr Y velocity and gravity to velocity
         velocity.y += currVelocityY + GRAVITY * Time.deltaTime;
+
+        // Reset y velocity values if sliding
+        if (isSliding)
+        {
+            currVelocityY = 0;
+            velocity.y = 0;
+        }
 
         controller.Move(velocity * Time.deltaTime);
     }

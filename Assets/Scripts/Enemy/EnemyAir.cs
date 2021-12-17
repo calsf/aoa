@@ -59,27 +59,33 @@ public class EnemyAir : Enemy
 
         lastValidStartPos = transform.position;
         canMove = true;
-    }
-
-    void OnEnable()
-    {
-        if (grid == null)
-        {
-            grid = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>();
-        }
 
         // Update node walkable for this grid copy when original gets updated
         grid.OnNodeWalkableUpdate.AddListener((nodeIndex) => UpdateNodeWalkable(nodeIndex));
     }
 
-    void OnDisable()
+    void OnDestroy()
     {
-        grid.OnNodeWalkableUpdate.RemoveListener((nodeIndex) => UpdateNodeWalkable(nodeIndex));
+        if (grid != null)
+        {
+            grid.OnNodeWalkableUpdate.RemoveListener((nodeIndex) => UpdateNodeWalkable(nodeIndex));
+        }
     }
 
     protected void UpdateNodeWalkable((int, int, int) nodeIndex)
     {
         gridArrayCopy[nodeIndex.Item1, nodeIndex.Item2, nodeIndex.Item3].isWalkable = grid.grid[nodeIndex.Item1, nodeIndex.Item2, nodeIndex.Item3].isWalkable;
+    }
+
+    // Reset enemy values
+    protected override void ResetEnemy()
+    {
+        base.ResetEnemy();
+
+        // Reset rigidbody and path values
+        rb.angularVelocity = Vector3.zero;
+        rb.velocity = Vector3.zero;
+        path = null;
     }
 
     void Update()

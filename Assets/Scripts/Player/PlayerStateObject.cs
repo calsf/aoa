@@ -45,10 +45,11 @@ public class PlayerStateObject : ScriptableObject
     public bool explosiveShot;
     public bool clonedShot;
     public bool defiantReload;
+    public bool decoyShot;
+    public bool airSlide;
 
     // TODO:
     public bool luckyShot;
-    public bool decoyShot;
 
     // Objects that need to be updated should listen for this event to be invoked
     public UnityEvent OnStateUpdate;

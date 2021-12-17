@@ -19,7 +19,7 @@ public class Explosion : MonoBehaviour
     {
         if (mainParticles.particleCount <= 0)
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 

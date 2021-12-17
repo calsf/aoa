@@ -37,11 +37,12 @@ MonoBehaviour:
   tempoShot: 0
   peakOfSurvival: 0
   steadyRegen: 0
-  explosiveShot: 1
+  explosiveShot: 0
   clonedShot: 1
   defiantReload: 1
-  luckyShot: 0
   decoyShot: 1
+  airSlide: 0
+  luckyShot: 0
   OnStateUpdate:
     m_PersistentCalls:
       m_Calls: []

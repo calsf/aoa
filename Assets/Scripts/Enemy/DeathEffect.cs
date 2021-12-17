@@ -4,18 +4,24 @@ using UnityEngine;
 
 public class DeathEffect : MonoBehaviour
 {
-    ParticleSystem particles;
+    private ParticleSystem particles;
 
-    private void Start()
+    private void Awake()
     {
         particles = GetComponent<ParticleSystem>();
     }
 
+    private void OnEnable()
+    {
+        particles.Play();
+    }
+
     void LateUpdate()
     {
-        if (particles.particleCount <= 0)
+        if (particles.isPlaying && particles.particleCount <= 0)
         {
-            Destroy(gameObject);
+            particles.Stop();
+            gameObject.SetActive(false);
         }
     }
 }
