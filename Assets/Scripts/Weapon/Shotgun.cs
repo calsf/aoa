@@ -5,10 +5,28 @@ using UnityEngine.UI;
 
 public class Shotgun : Weapon
 {
+    private float totalDamage;
+    private bool hasHeadshot;
+    private bool hasDisplayPos;
+    private Vector3 displayPos;
+
+    private float[] totalDamageClones;
+    private bool[] hasHeadshotClones;
+    private bool[] hasDisplayPosClones;
+    private Vector3[] displayPosClones;
+
+    private int currCloneIndex;
+
+
     protected override void Awake()
     {
         base.Awake();
         sizeDeltaModifier = 1600;
+
+        totalDamageClones = new float[8];
+        hasHeadshotClones = new bool[8];
+        hasDisplayPosClones = new bool[8];
+        displayPosClones = new Vector3[8];
     }
 
     void OnEnable()
@@ -89,12 +107,122 @@ public class Shotgun : Weapon
         dirs[15] = (cam.transform.forward + (-inaccuracyCurr * cam.transform.right)).normalized;
         dirs[16] = (cam.transform.forward + (inaccuracyCurr * cam.transform.right)).normalized;
 
-        // Shoot raycast in direction and check hit
+
+        // Reset values before shoot raycasts
+        totalDamage = 0;
+        hasHeadshot = false;
+        hasDisplayPos = false;
+
+        // Reset values for cloned shotgun shots
+        for (int i = 0; i < totalDamageClones.Length; i++)
+        {
+            totalDamageClones[i] = 0;
+            hasHeadshotClones[i] = false;
+            hasDisplayPosClones[i] = false;
+        }
+
+        // Shoot raycasts in direction and check hit
+        ClonedShotShotgun(dirs[0]);
         ShootRaycast(dirs[0], cam.transform.position, (2.0f / 17.0f)); // Only middle shot should apply any special effects e.g decoy shot
         for (int i = 1; i < dirs.Length; i++)
         {
+            ClonedShotShotgun(dirs[i]);
             ShootRaycast(dirs[i], cam.transform.position, (2.0f / 17.0f ), 1, false); // Each 'pellet' should have its own separate sacrificial shot health gain
-            ClonedShot(dirs[i]);
+        }
+
+        OnShotgunHit();
+    }
+
+    // Shotgun specific version of Weapon.cs ClonedShot
+    protected void ClonedShotShotgun(Vector3 dir)
+    {
+        // Shoot additional shots, offset from the cam position and deals reduced damage, DOES NOT APPLY HEALTH GAIN FROM SACRIFICIAL and CANNOT DECOY
+        if (playerState.clonedShot)
+        {
+            ShootRaycastCloned(dir, cam.transform.position + Vector3.left * CLONED_SHOT_OFFSET, 0);
+
+            ShootRaycastCloned(dir, cam.transform.position + Vector3.right * CLONED_SHOT_OFFSET, 1);
+
+            ShootRaycastCloned(dir, cam.transform.position + Vector3.down * CLONED_SHOT_OFFSET, 2);
+
+            ShootRaycastCloned(dir, cam.transform.position + Vector3.up * CLONED_SHOT_OFFSET, 3);
+
+            ShootRaycastCloned(dir, cam.transform.position + (Vector3.down * CLONED_SHOT_OFFSET + Vector3.left * CLONED_SHOT_OFFSET).normalized, 4);
+
+            ShootRaycastCloned(dir, cam.transform.position + (Vector3.up * CLONED_SHOT_OFFSET + Vector3.left * CLONED_SHOT_OFFSET).normalized, 5);
+
+            ShootRaycastCloned(dir, cam.transform.position + (Vector3.down * CLONED_SHOT_OFFSET + Vector3.right * CLONED_SHOT_OFFSET).normalized, 6);
+
+            ShootRaycastCloned(dir, cam.transform.position + (Vector3.up * CLONED_SHOT_OFFSET + Vector3.right * CLONED_SHOT_OFFSET).normalized, 7);
+        }
+    }
+
+    // ShootRaycast as cloned shot in given direction and with given offset, also sets clone index to use for accumulating damage
+    protected void ShootRaycastCloned(Vector3 dir, Vector3 raycastOrigin, int cloneIndex)
+    {
+        // Shoot raycast in direction and check hit
+        ShootRaycast(dir, raycastOrigin, 0, CLONED_SHOT_DMG_MULTIPLIER, false, true);
+
+        // Set curr clone index so OnShootRaycastHit uses separate set of values for each group of cloned shot raycasts
+        currCloneIndex = cloneIndex;
+    }
+
+    // Override to accumulate damage from all ShootRaycast and display one number at first hit position
+    protected override void OnShootRaycastHit(float damage, Vector3 hitPos, bool isHeadshot, bool isClonedShot)
+    {
+        if (isClonedShot) // Handle cloned shots using the array of clone values
+        {
+            totalDamageClones[currCloneIndex] += damage;
+
+            // If has headshot at least once, set to true
+            if (!hasHeadshotClones[currCloneIndex] && isHeadshot)
+            {
+                hasHeadshotClones[currCloneIndex] = true;
+            }
+
+            // Only set display position once, which will be set to first hit position
+            if (!hasDisplayPosClones[currCloneIndex])
+            {
+                hasDisplayPosClones[currCloneIndex] = true;
+                displayPosClones[currCloneIndex] = hitPos;
+            }
+        }
+        else // Original shots
+        {
+            totalDamage += damage;
+
+            // If has headshot at least once, set to true
+            if (!hasHeadshot && isHeadshot)
+            {
+                hasHeadshot = true;
+            }
+
+            // Only set display position once, which will be set to first hit position
+            if (!hasDisplayPos)
+            {
+                hasDisplayPos = true;
+                displayPos = hitPos;
+            }
+        }
+    }
+
+    protected void OnShotgunHit()
+    {
+        // Display for cloned shotgun shots first so original shot numbers appear first
+        for (int i = 0; i < totalDamageClones.Length; i++)
+        {
+            if (totalDamageClones[i] != 0 && hasDisplayPosClones[i])
+            {
+                // Display accumulated damage from all 'pellets'
+                damageNumberManager.GetDamageNumberAndDisplay(totalDamageClones[i], displayPosClones[i], hasHeadshotClones[i], true);
+            }
+        }
+
+        // Only display if did damage and obtained hit position (0 damage or no hit position was obtained, means every 'pellet' missed)
+        if (totalDamage != 0 && hasDisplayPos)
+        {
+            // Display accumulated damage from all 'pellets'
+            damageNumberManager.GetDamageNumberAndDisplay(totalDamage, displayPos, hasHeadshot, false);
         }
     }
 }

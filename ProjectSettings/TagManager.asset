@@ -13,6 +13,7 @@ TagManager:
   - CrosshairLine
   - GridAir
   - GridGround
+  - DamageNumberManager
   layers:
   - Default
   - TransparentFX

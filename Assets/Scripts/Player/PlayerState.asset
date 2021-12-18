@@ -29,7 +29,7 @@ MonoBehaviour:
   healthCurr: 0
   aimGlide: 0
   holsteredReload: 0
-  punchThrough: 1
+  punchThrough: 0
   sacrificialShot: 0
   tacticalShot: 0
   coldShot: 0
@@ -37,7 +37,7 @@ MonoBehaviour:
   tempoShot: 0
   peakOfSurvival: 0
   steadyRegen: 0
-  explosiveShot: 0
+  explosiveShot: 1
   clonedShot: 1
   defiantReload: 1
   decoyShot: 1

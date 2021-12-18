@@ -6,6 +6,7 @@ public class Explosion : MonoBehaviour
 {
     private List<GameObject> hitEnemies; // Keep track of enemies hit by this explosion
     private ParticleSystem mainParticles;
+    private DamageNumberManager damageNumberManager;
 
     public float damage { get; set; }
 
@@ -13,6 +14,7 @@ public class Explosion : MonoBehaviour
     {
         hitEnemies = new List<GameObject>();
         mainParticles = GetComponent<ParticleSystem>();
+        damageNumberManager = GameObject.FindGameObjectWithTag("DamageNumberManager").GetComponent<DamageNumberManager>();
     }
 
     void LateUpdate()
@@ -41,6 +43,8 @@ public class Explosion : MonoBehaviour
 
             Enemy enemy = other.GetComponentInParent<Enemy>();
             enemy.Damaged(damage);
+
+            damageNumberManager.GetDamageNumberAndDisplay(damage, enemy.transform.position, false, false, true);
         }
     }
 }

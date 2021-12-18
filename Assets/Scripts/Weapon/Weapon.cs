@@ -7,9 +7,6 @@ public class Weapon : MonoBehaviour
 {
     protected const int PROJECTILE_POOL_NUM = 10;
 
-    // TEMP!!!!
-    [SerializeField] protected GameObject placeholder;
-
     protected PlayerMoveController playerMoveControl;
 
     protected Camera cam;
@@ -36,6 +33,8 @@ public class Weapon : MonoBehaviour
     protected LayerMask shootLayerMask;
     protected bool isShooting;
     protected bool isReloading;
+
+    protected DamageNumberManager damageNumberManager;
 
     public bool isSwapping { get; set; }
 
@@ -97,6 +96,8 @@ public class Weapon : MonoBehaviour
         shootLayerMask.value = (1 << LayerMask.NameToLayer("Enemy") 
             | 1 << LayerMask.NameToLayer("Ground")
             | 1 << LayerMask.NameToLayer("Wall"));
+
+        damageNumberManager = GameObject.FindGameObjectWithTag("DamageNumberManager").GetComponent<DamageNumberManager>();
 
         // Weapon stats
         reload = playerState.reloadMultiplier;
@@ -269,13 +270,14 @@ public class Weapon : MonoBehaviour
         dir += Random.Range(-inaccuracyCurr, inaccuracyCurr) * cam.transform.right;
         dir.Normalize();
 
+        // Cloned shot first so damage numbers show behind
+        ClonedShot(dir);
+
         // Shoot raycast in direction and check hit
         ShootRaycast(dir, cam.transform.position);
-
-        ClonedShot(dir);
     }
 
-    protected void ShootRaycast(Vector3 dir, Vector3 raycastOrigin, float healthGainMultiplier = 2, float damageDealtMultiplier = 1, bool isDecoy = true)
+    protected void ShootRaycast(Vector3 dir, Vector3 raycastOrigin, float healthGainMultiplier = 2, float damageDealtMultiplier = 1, bool canDecoy = true, bool isClonedShot = false)
     {
         if (!playerState.punchThrough) // No enemy punchthrough
         {
@@ -284,13 +286,10 @@ public class Weapon : MonoBehaviour
 
             if (hasHit && hit.collider != null)
             {
-                // TEMP!!!
-                GameObject obj = Instantiate(placeholder);
-                obj.transform.position = hit.point;
                 //Debug.Log(hit.collider.tag + "DISTANCE " + hit.distance);
 
                 // Decoy shot first hit
-                if (isDecoy)
+                if (canDecoy)
                 {
                     DecoyShot(hit.point);
                 }
@@ -324,6 +323,8 @@ public class Weapon : MonoBehaviour
                     SacrificialShotGain(healthGainMultiplier);
                     ColdShot(hit.collider.gameObject);
                     WeakeningShot(hit.collider.gameObject);
+
+                    OnShootRaycastHit(damageDealt, hit.point, hit.collider.gameObject.tag == "EnemyHead", isClonedShot);
                 }
                 else if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall")) // Wall hit
                 {
@@ -341,6 +342,8 @@ public class Weapon : MonoBehaviour
 
                     // Deal damage to wall block
                     hit.collider.gameObject.GetComponent<WallBlock>().Damaged(damageDealt);
+
+                    OnShootRaycastHit(damageDealt, hit.point, false, isClonedShot);
                 }
                 else // Else hit nothing
                 {
@@ -356,7 +359,7 @@ public class Weapon : MonoBehaviour
             System.Array.Sort(allHit, (hit1, hit2) => hit1.distance.CompareTo(hit2.distance));
 
             // Decoy shot first hit
-            if (isDecoy && allHit.Length > 0)
+            if (canDecoy && allHit.Length > 0)
             {
                 DecoyShot(allHit[0].point);
             }
@@ -377,6 +380,8 @@ public class Weapon : MonoBehaviour
 
                 allHit[0].collider.gameObject.GetComponent<WallBlock>().Damaged(damageDealt);
 
+                OnShootRaycastHit(damageDealt, allHit[0].point, false, isClonedShot);
+
                 // Do not punch through wall
                 return;
             }
@@ -386,9 +391,6 @@ public class Weapon : MonoBehaviour
             bool hasHeadshotOnce = false;
             foreach (RaycastHit hit in allHit)
             {
-                // TEMP!!!
-                GameObject obj = Instantiate(placeholder);
-                obj.transform.position = hit.point;
                 //Debug.Log(hit.collider.tag + "DISTANCE " + hit.distance);
 
                 if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy")) // Enemy hit
@@ -431,6 +433,8 @@ public class Weapon : MonoBehaviour
                     SacrificialShotGain(healthGainMultiplier);
                     ColdShot(hit.collider.gameObject);
                     WeakeningShot(hit.collider.gameObject);
+
+                    OnShootRaycastHit(damageDealt, allHit[0].point, allHit[0].collider.gameObject.tag == "EnemyHead", isClonedShot);
                 }
                 else if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall")) // Wall hit
                 {
@@ -443,6 +447,12 @@ public class Weapon : MonoBehaviour
                 }
             }
         }
+    }
+
+    // Called when ShootRaycast hits something
+    protected virtual void OnShootRaycastHit(float damage, Vector3 hitPos, bool isHeadshot, bool isClonedShot)
+    {
+        damageNumberManager.GetDamageNumberAndDisplay(damage, hitPos, isHeadshot, isClonedShot);
     }
 
     protected void SacrificialShotLoss()
@@ -508,20 +518,20 @@ public class Weapon : MonoBehaviour
 
     protected void ClonedShot(Vector3 dir)
     {
-        // Shoot additional shots, offset from the cam position and deals reduced damage, DOES NOT APPLY HEALTH GAIN FROM SACRIFICIAL
+        // Shoot additional shots, offset from the cam position and deals reduced damage, DOES NOT APPLY HEALTH GAIN FROM SACRIFICIAL and CANNOT DECOY
         if (playerState.clonedShot)
         {
-            ShootRaycast(dir, cam.transform.position + Vector3.left * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
-            ShootRaycast(dir, cam.transform.position + Vector3.right * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
+            ShootRaycast(dir, cam.transform.position + Vector3.left * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false, true);
+            ShootRaycast(dir, cam.transform.position + Vector3.right * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false, true);
 
-            ShootRaycast(dir, cam.transform.position + Vector3.down * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
-            ShootRaycast(dir, cam.transform.position + Vector3.up * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
+            ShootRaycast(dir, cam.transform.position + Vector3.down * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false, true);
+            ShootRaycast(dir, cam.transform.position + Vector3.up * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false, true);
 
-            ShootRaycast(dir, cam.transform.position + (Vector3.down * CLONED_SHOT_OFFSET + Vector3.left * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
-            ShootRaycast(dir, cam.transform.position + (Vector3.up * CLONED_SHOT_OFFSET + Vector3.left * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
+            ShootRaycast(dir, cam.transform.position + (Vector3.down * CLONED_SHOT_OFFSET + Vector3.left * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER, false, true);
+            ShootRaycast(dir, cam.transform.position + (Vector3.up * CLONED_SHOT_OFFSET + Vector3.left * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER, false, true);
 
-            ShootRaycast(dir, cam.transform.position + (Vector3.down * CLONED_SHOT_OFFSET + Vector3.right * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
-            ShootRaycast(dir, cam.transform.position + (Vector3.up * CLONED_SHOT_OFFSET + Vector3.right * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER, false);
+            ShootRaycast(dir, cam.transform.position + (Vector3.down * CLONED_SHOT_OFFSET + Vector3.right * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER, false, true);
+            ShootRaycast(dir, cam.transform.position + (Vector3.up * CLONED_SHOT_OFFSET + Vector3.right * CLONED_SHOT_OFFSET).normalized, 0, CLONED_SHOT_DMG_MULTIPLIER, false, true);
         }
     }
 

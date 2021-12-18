@@ -14692,6 +14692,55 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &281614650
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 281614651}
+  - component: {fileID: 281614652}
+  m_Layer: 5
+  m_Name: DamageNumberManager
+  m_TagString: DamageNumberManager
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &281614651
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 281614650}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1462570342}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &281614652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 281614650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a2398fccf5f4334182a1561b9be0029, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageNumber: {fileID: 5388785556372536855, guid: 40990b3cba16ac246a5e1d6588acce41, type: 3}
 --- !u!1 &283704239
 GameObject:
   m_ObjectHideFlags: 0
@@ -38843,7 +38892,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d6cea1dd8082ac46acc52d97b434e45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  placeholder: {fileID: 1354850444}
   weapon: {fileID: 11400000, guid: d3d8d03476ba5334da3827192eb02307, type: 2}
   playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
   defiantReloadEffect: {fileID: 380096613}
@@ -43258,7 +43306,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a20a2f2fd3d616e4496adcee8e5daccc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  placeholder: {fileID: 1354850444}
   weapon: {fileID: 11400000, guid: 926ac0a1738723648b03c7cb17137515, type: 2}
   playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
   defiantReloadEffect: {fileID: 380096613}
@@ -50927,7 +50974,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e90c4301de8be4347850894ed6c21988, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startNum: 2
+  startNum: 45
   enemy: {fileID: 919132147996412074}
   isGrounded: 0
 --- !u!1 &716315063
@@ -54665,7 +54712,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca4e6881a37e7f749867df2a71f8101b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  placeholder: {fileID: 1354850444}
   weapon: {fileID: 11400000, guid: 3cad1b4046673394f8f9eae17594e416, type: 2}
   playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
   defiantReloadEffect: {fileID: 380096613}
@@ -82159,7 +82205,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1091361334
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88805,7 +88851,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e123b57386b33f49ad1d15bb116c8c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  placeholder: {fileID: 1354850444}
   weapon: {fileID: 11400000, guid: 8bee4e15bfdf83e4b91c9eaf1a676f1a, type: 2}
   playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
   defiantReloadEffect: {fileID: 380096613}
@@ -102433,6 +102478,7 @@ RectTransform:
   - {fileID: 1708223552}
   - {fileID: 818335976}
   - {fileID: 1403092605}
+  - {fileID: 281614651}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
