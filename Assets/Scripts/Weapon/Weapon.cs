@@ -35,6 +35,7 @@ public class Weapon : MonoBehaviour
     protected bool isReloading;
 
     protected DamageNumberManager damageNumberManager;
+    protected Hitmarker hitmarker;
 
     public bool isSwapping { get; set; }
 
@@ -98,6 +99,7 @@ public class Weapon : MonoBehaviour
             | 1 << LayerMask.NameToLayer("Wall"));
 
         damageNumberManager = GameObject.FindGameObjectWithTag("DamageNumberManager").GetComponent<DamageNumberManager>();
+        hitmarker = GameObject.FindGameObjectWithTag("Hitmarker").GetComponent<Hitmarker>();
 
         // Weapon stats
         reload = playerState.reloadMultiplier;
@@ -452,7 +454,18 @@ public class Weapon : MonoBehaviour
     // Called when ShootRaycast hits something
     protected virtual void OnShootRaycastHit(float damage, Vector3 hitPos, bool isHeadshot, bool isClonedShot)
     {
+        // Damage numbers
         damageNumberManager.GetDamageNumberAndDisplay(damage, hitPos, isHeadshot, isClonedShot);
+
+        // Hitmarkers
+        if (isHeadshot)
+        {
+            hitmarker.OnHeadShot();
+        }
+        else
+        {
+            hitmarker.OnBodyShot();
+        }
     }
 
     protected void SacrificialShotLoss()

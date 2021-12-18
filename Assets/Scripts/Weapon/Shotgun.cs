@@ -208,6 +208,8 @@ public class Shotgun : Weapon
 
     protected void OnShotgunHit()
     {
+        bool hasHitAny = false;
+
         // Display for cloned shotgun shots first so original shot numbers appear first
         for (int i = 0; i < totalDamageClones.Length; i++)
         {
@@ -215,6 +217,8 @@ public class Shotgun : Weapon
             {
                 // Display accumulated damage from all 'pellets'
                 damageNumberManager.GetDamageNumberAndDisplay(totalDamageClones[i], displayPosClones[i], hasHeadshotClones[i], true);
+
+                hasHitAny = true;
             }
         }
 
@@ -223,6 +227,37 @@ public class Shotgun : Weapon
         {
             // Display accumulated damage from all 'pellets'
             damageNumberManager.GetDamageNumberAndDisplay(totalDamage, displayPos, hasHeadshot, false);
+
+            hasHitAny = true;
+        }
+
+        // Only proceed if landed a hit at all
+        if (hasHitAny)
+        {
+            // Hitmarkers (If ANY shot was a headshot, hitmarker should show as headshot)
+            bool hasHeadShotAny = hasHeadshot;
+
+            // Check if cloned shots were headshot at all
+            if (!hasHeadShotAny)
+            {
+                foreach (bool cloneHeadshot in hasHeadshotClones)
+                {
+                    if (cloneHeadshot)
+                    {
+                        hasHeadShotAny = true;
+                        break;
+                    }
+                }
+            }
+
+            if (hasHeadShotAny)
+            {
+                hitmarker.OnHeadShot();
+            }
+            else
+            {
+                hitmarker.OnBodyShot();
+            }
         }
     }
 }

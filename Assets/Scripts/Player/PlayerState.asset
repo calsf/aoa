@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7dd6c026f5807b4dbcdfe1ab70fb3c1, type: 3}
   m_Name: PlayerState
   m_EditorClassIdentifier: 
-  selectedPrimary: 1
+  selectedPrimary: 2
   selectedSecondary: 3
-  selectedActive: 0
-  reloadMultiplier: 3
-  fireRateMultiplier: 3
+  selectedActive: 1
+  reloadMultiplier: 2
+  fireRateMultiplier: 2
   damageBonus: 0
   headShotMultiplierBonus: 0
   magSizeMaxMultiplier: 1
