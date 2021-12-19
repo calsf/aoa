@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class PlayerMoveController : MonoBehaviour
 {
+    private const float SENS_SPEED = 5;
+
     [SerializeField] private PlayerStateObject playerState;
+
+    private Settings settings;
 
     private const float MAX_Y = -90f;
     private const float MIN_Y = 90f;
@@ -37,14 +41,20 @@ public class PlayerMoveController : MonoBehaviour
 
     // Looking
     [SerializeField] private Transform cam;
-    private float mouseSens = 1.5f;
+    private float mouseSens;
     private float cameraY = 0f;
+
+    void Awake()
+    {
+        settings = GameObject.FindGameObjectWithTag("Settings").GetComponent<Settings>();
+    }
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
 
         controller = GetComponent<CharacterController>();
+        UpdateSensitivity();
 
         jumpMaxAvailable = 3 + playerState.jumpBonus;
         speedMax = SPEED_BASE + playerState.moveSpeedBonus;
@@ -54,15 +64,23 @@ public class PlayerMoveController : MonoBehaviour
     void OnEnable()
     {
         playerState.OnStateUpdate.AddListener(UpdatePlayerMoveState);
+        settings.OnSettingsSaved.AddListener(UpdateSensitivity);
     }
 
     void OnDisable()
     {
         playerState.OnStateUpdate.RemoveListener(UpdatePlayerMoveState);
+        settings.OnSettingsSaved.RemoveListener(UpdateSensitivity);
     }
 
     void Update()
     {
+        // Do not run if timescale is 0
+        if (Time.timeScale == 0)
+        {
+            return;
+        }
+
         Look();
         Move();
     }
@@ -73,6 +91,18 @@ public class PlayerMoveController : MonoBehaviour
         jumpMaxAvailable = 3 + playerState.jumpBonus;
         speedMax = SPEED_BASE + playerState.moveSpeedBonus;
         speedCurr = speedMax;
+    }
+
+    // Update mouse sensitivity
+    private void UpdateSensitivity()
+    {
+        mouseSens = PlayerPrefs.GetFloat("Sensitivity", .3f) * SENS_SPEED;
+        
+        // Have a min mouse sen
+        if (mouseSens <= .05f)
+        {
+            mouseSens = .05f;
+        }
     }
 
     private void Look()

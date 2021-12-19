@@ -35,6 +35,12 @@ public class PlayerWeaponController : MonoBehaviour
 
     void Update()
     {
+        // Do not run if timescale is 0
+        if (Time.timeScale == 0)
+        {
+            return;
+        }
+
         // Swap to primary
         if (Input.GetButtonDown("Primary") && weaponActive != weaponPrimary && !weaponPrimary.isSwapping && !weaponSecondary.isSwapping)
         {
