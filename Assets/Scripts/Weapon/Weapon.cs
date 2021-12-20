@@ -15,9 +15,9 @@ public class Weapon : MonoBehaviour
 
     // Shooting
     protected RectTransform crosshair;
-    protected Image[] crosshairLines;
-    protected Image crosshairCenter;
-    protected Image crosshairCircle;
+    protected Image[] crosshairLines;   // Crosshair images include Crosshair preview in Settings
+    protected Image[] crosshairCenters;
+    protected Image[] crosshairCircles;
     protected RectTransform crosshairCircleRect;
     protected float sizeDeltaModifier;
 
@@ -75,6 +75,7 @@ public class Weapon : MonoBehaviour
     {
         crosshair = GameObject.FindGameObjectWithTag("Crosshair").GetComponent<RectTransform>();
 
+        // Get all crosshair lines (including ones for Crosshair Color preview)
         GameObject[] lineObj = GameObject.FindGameObjectsWithTag("CrosshairLine");
         crosshairLines = new Image[lineObj.Length];
         for (int i = 0; i < crosshairLines.Length; i++)
@@ -82,9 +83,28 @@ public class Weapon : MonoBehaviour
             crosshairLines[i] = lineObj[i].GetComponent<Image>();
         }
 
-        crosshairCenter = GameObject.FindGameObjectWithTag("CrosshairCenter").GetComponent<Image>();
-        crosshairCircle = GameObject.FindGameObjectWithTag("CrosshairCircle").GetComponent<Image>();
-        crosshairCircleRect = crosshairCircle.GetComponent<RectTransform>();
+        // Get all crosshair centers (including ones for Crosshair Color preview)
+        GameObject[] centerObj = GameObject.FindGameObjectsWithTag("CrosshairCenter");
+        crosshairCenters = new Image[centerObj.Length];
+        for (int i = 0; i < crosshairCenters.Length; i++)
+        {
+            crosshairCenters[i] = centerObj[i].GetComponent<Image>();
+        }
+
+        // Get all crosshair circles (including ones for Crosshair Color preview)
+        GameObject[] circleObj = GameObject.FindGameObjectsWithTag("CrosshairCircle");
+        crosshairCircles = new Image[circleObj.Length];
+        for (int i = 0; i < crosshairCircles.Length; i++)
+        {
+            crosshairCircles[i] = circleObj[i].GetComponent<Image>();
+        }
+
+        // Only change the main in-game crosshair
+        crosshairCircleRect = crosshairCircles[0].GetComponent<RectTransform>();
+        if (crosshairCircleRect.parent.tag != "Crosshair") // Main one should have parent tag of "Crosshair", the preview for Crosshair Color should have no tag
+        {
+            crosshairCircles[1].GetComponent<RectTransform>();
+        }
 
         playerMoveControl = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMoveController>();
         cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
@@ -137,8 +157,15 @@ public class Weapon : MonoBehaviour
             crosshairLine.enabled = true;
         }
 
-        crosshairCenter.enabled = true;
-        crosshairCircle.enabled = false;
+        foreach (Image center in crosshairCenters)
+        {
+            center.enabled = true;
+        }
+
+        foreach (Image circle in crosshairCircles)
+        {
+            circle.enabled = false;
+        }
 
         playerState.OnStateUpdate.AddListener(UpdateWeaponState);
 

@@ -36,8 +36,15 @@ public class Shotgun : Weapon
             crosshairLine.enabled = false;
         }
 
-        crosshairCenter.enabled = true;
-        crosshairCircle.enabled = true;
+        foreach (Image center in crosshairCenters)
+        {
+            center.enabled = true;
+        }
+
+        foreach (Image circle in crosshairCircles)
+        {
+            circle.enabled = true;
+        }
 
         playerState.OnStateUpdate.AddListener(UpdateWeaponState);
 
