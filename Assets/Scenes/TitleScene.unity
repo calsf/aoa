@@ -1211,6 +1211,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   settingsScreen: {fileID: 0}
   controlsScreen: {fileID: 0}
+  playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
 --- !u!1 &1588439947
 GameObject:
   m_ObjectHideFlags: 0
