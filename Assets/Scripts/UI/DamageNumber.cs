@@ -29,6 +29,12 @@ public class DamageNumber : MonoBehaviour
     {
         // Keep updating parent rect's screen point position based on world position so it stays in correct position while child text object moves
         parentRect.position = cam.WorldToScreenPoint(worldPosition);
+
+        // Need to avoid having damage number that is behind the player showing up in front of the camera/screen
+        if (parentRect.position.z < 0)
+        {
+            parentRect.position *= -1;
+        }
     }
 
     public void Display(float damage, Vector3 hitPos, bool isHeadshot, bool isClonedShot, bool isOther)

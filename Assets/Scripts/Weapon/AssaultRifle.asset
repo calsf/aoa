@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a476abc145d14f4395c1f8beeb8fa0f, type: 3}
   m_Name: AssaultRifle
   m_EditorClassIdentifier: 
+  ICON: {fileID: 21300000, guid: 2ed7306a1fd4d92479a8f60e787b5086, type: 3}
   DAMAGE_BASE: 50
   HEADSHOT_MULTIPLIER_BASE: 1.5
   MAG_SIZE_BASE: 50

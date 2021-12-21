@@ -7,6 +7,7 @@ public class PauseMenu : MonoBehaviour
 {
     [SerializeField] private CanvasGroup settingsScreen;
     [SerializeField] private CanvasGroup controlsScreen;
+    [SerializeField] private UpgradesDisplay upgradesDisplay;
 
     private CanvasGroup pauseScreen;
     private bool isPaused = false;
@@ -33,6 +34,8 @@ public class PauseMenu : MonoBehaviour
         {
             if (!isPaused)
             {
+                upgradesDisplay.HideDisplay(); // Hide display first
+
                 Pause();
             }
             else

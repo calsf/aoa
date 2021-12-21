@@ -43,7 +43,7 @@ public class Weapon : MonoBehaviour
     public bool canReload { get { return magSizeCurr != magSizeMax && !isReloading && !isSwapping; } }
 
     // Weapon props
-    [SerializeField] protected WeaponObject weapon;
+    public WeaponObject weapon;
     protected float reload; // Anim dependent
     protected float fireRate; // Anim dependent
     protected float damage;

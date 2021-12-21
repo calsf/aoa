@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedPrimary: 2
   selectedSecondary: 3
-  selectedActive: 1
+  selectedActive: 0
   reloadMultiplier: 2
   fireRateMultiplier: 2
   damageBonus: 0
@@ -26,7 +26,7 @@ MonoBehaviour:
   moveSpeedBonus: 0
   jumpBonus: 0
   healthMax: 100
-  healthCurr: 100
+  healthCurr: 70
   aimGlide: 0
   holsteredReload: 0
   punchThrough: 0
@@ -40,7 +40,7 @@ MonoBehaviour:
   explosiveShot: 1
   clonedShot: 1
   defiantReload: 1
-  decoyShot: 1
+  decoyShot: 0
   airSlide: 0
   luckyShot: 0
   OnStateUpdate:

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a476abc145d14f4395c1f8beeb8fa0f, type: 3}
   m_Name: Sniper
   m_EditorClassIdentifier: 
+  ICON: {fileID: 21300000, guid: b2b17aaf058c3124bab8e393b31caa65, type: 3}
   DAMAGE_BASE: 150
   HEADSHOT_MULTIPLIER_BASE: 2
   MAG_SIZE_BASE: 5

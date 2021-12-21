@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Weapon", menuName = "Weapon")]
 public class WeaponObject : ScriptableObject
 {
+    public Sprite ICON;
     public float DAMAGE_BASE;
     public float HEADSHOT_MULTIPLIER_BASE;
     public int MAG_SIZE_BASE;
