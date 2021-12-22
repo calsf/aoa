@@ -8,6 +8,7 @@ public class PlayerStateObject : ScriptableObject
 {
     private const float INVULN_TIME = 1f;
     private float nextDamagedTime;
+    public float START_HEALTH = 100;
 
     public float tempoShotExtraDmg { get; set; }
     public bool peakOfSurvivalActive { get; set; }
@@ -91,7 +92,7 @@ public class PlayerStateObject : ScriptableObject
         moveSpeedBonus = 0;
         jumpBonus = 0;
 
-        healthMax = 100;
+        healthMax = START_HEALTH;
         healthCurr = healthMax;
 
         tempoShotExtraDmg = 0;

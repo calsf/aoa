@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7dd6c026f5807b4dbcdfe1ab70fb3c1, type: 3}
   m_Name: PlayerState
   m_EditorClassIdentifier: 
+  START_HEALTH: 100
   selectedPrimary: 2
   selectedSecondary: 3
-  selectedActive: 0
+  selectedActive: 1
   reloadMultiplier: 2
   fireRateMultiplier: 2
   damageBonus: 0
@@ -24,7 +25,7 @@ MonoBehaviour:
   inaccuracyReduction: 0
   effectiveRangeBonus: 0
   moveSpeedBonus: 0
-  jumpBonus: 0
+  jumpBonus: 3
   healthMax: 100
   healthCurr: 70
   aimGlide: 0
