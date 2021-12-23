@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7dd6c026f5807b4dbcdfe1ab70fb3c1, type: 3}
   m_Name: PlayerState
   m_EditorClassIdentifier: 
-  selectedPrimary: 2
+  START_HEALTH: 100
+  selectedPrimary: 1
   selectedSecondary: 3
   selectedActive: 1
-  reloadMultiplier: 2
-  fireRateMultiplier: 2
+  reloadMultiplier: 1
+  fireRateMultiplier: 1
   damageBonus: 0
   headShotMultiplierBonus: 0
   magSizeMaxMultiplier: 1
@@ -26,23 +27,24 @@ MonoBehaviour:
   moveSpeedBonus: 0
   jumpBonus: 0
   healthMax: 100
-  healthCurr: 0
-  aimGlide: 0
-  holsteredReload: 0
-  punchThrough: 0
-  sacrificialShot: 0
-  tacticalShot: 0
-  coldShot: 0
-  weakeningShot: 0
-  tempoShot: 0
-  peakOfSurvival: 0
-  steadyRegen: 0
-  explosiveShot: 1
-  clonedShot: 1
-  defiantReload: 1
-  decoyShot: 1
-  airSlide: 0
-  luckyShot: 0
+  healthCurr: 4.6764708
+  armor: 0
+  aimGlideIcon: {fileID: 21300000, guid: 4fadecabcc8898d419fff4f23b105304, type: 3}
+  holsteredReloadIcon: {fileID: 21300000, guid: 76759283a4168a447a3ae9f01ff39e6e, type: 3}
+  punchThroughIcon: {fileID: 21300000, guid: f709825304cd96447990d0ad2079afe1, type: 3}
+  sacrificialShotIcon: {fileID: 21300000, guid: dd9b6aaf42e9b2c439e7fbfcc9059864, type: 3}
+  tacticalShotIcon: {fileID: 21300000, guid: 2dc27d6cde2bbb64a98e65af3e860ad8, type: 3}
+  coldShotIcon: {fileID: 21300000, guid: c235ca1183ba47942abe4dcd066f226b, type: 3}
+  weakeningShotIcon: {fileID: 21300000, guid: e86e8e5d4eef8b045accaa4f70ac4820, type: 3}
+  tempoShotIcon: {fileID: 21300000, guid: 59432813f04d705498c9d0f17f95c6b6, type: 3}
+  peakOfSurvivalIcon: {fileID: 21300000, guid: ceeef63ef51eb014ca8b70d767c4fcb4, type: 3}
+  steadyRegenIcon: {fileID: 21300000, guid: fca94dff8fa1f6a42a0f3a50b8cfd385, type: 3}
+  explosiveShotIcon: {fileID: 21300000, guid: b5bae7edd0f3534429521ae62bccc180, type: 3}
+  clonedShotIcon: {fileID: 21300000, guid: 3c7d9e47370ee1148b06115e05e230aa, type: 3}
+  defiantReloadIcon: {fileID: 21300000, guid: 2220f0ee6e7d31b45b50c6b16d607ab4, type: 3}
+  decoyShotIcon: {fileID: 21300000, guid: 652fb8edaf60cdf44ac1fdb437d5c198, type: 3}
+  airSlideIcon: {fileID: 21300000, guid: c2850783dd18f8f45be86eb57d4b51b7, type: 3}
+  luckyShotIcon: {fileID: 21300000, guid: c2850783dd18f8f45be86eb57d4b51b7, type: 3}
   OnStateUpdate:
     m_PersistentCalls:
       m_Calls: []

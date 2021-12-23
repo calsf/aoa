@@ -15,6 +15,7 @@ TagManager:
   - GridGround
   - DamageNumberManager
   - Hitmarker
+  - Settings
   layers:
   - Default
   - TransparentFX

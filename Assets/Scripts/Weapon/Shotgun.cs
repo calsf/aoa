@@ -36,8 +36,15 @@ public class Shotgun : Weapon
             crosshairLine.enabled = false;
         }
 
-        crosshairCenter.enabled = true;
-        crosshairCircle.enabled = true;
+        foreach (Image center in crosshairCenters)
+        {
+            center.enabled = true;
+        }
+
+        foreach (Image circle in crosshairCircles)
+        {
+            circle.enabled = true;
+        }
 
         playerState.OnStateUpdate.AddListener(UpdateWeaponState);
 
@@ -137,7 +144,7 @@ public class Shotgun : Weapon
     protected void ClonedShotShotgun(Vector3 dir)
     {
         // Shoot additional shots, offset from the cam position and deals reduced damage, DOES NOT APPLY HEALTH GAIN FROM SACRIFICIAL and CANNOT DECOY
-        if (playerState.clonedShot)
+        if (playerState.powers["ClonedShot"].isActive)
         {
             ShootRaycastCloned(dir, cam.transform.position + Vector3.left * CLONED_SHOT_OFFSET, 0);
 
