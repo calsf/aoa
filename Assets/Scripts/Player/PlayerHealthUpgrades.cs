@@ -35,7 +35,7 @@ public class PlayerHealthUpgrades : MonoBehaviour
 
     private void SteadyRegen()
     {
-        if (playerState.steadyRegen)
+        if (playerState.powers["SteadyRegen"].isActive)
         {
             if (Time.time > steadyRegenNextTime)
             {
@@ -51,7 +51,7 @@ public class PlayerHealthUpgrades : MonoBehaviour
     private void PeakOfSurvival()
     {
         // Player becomes invincible for some time when certain health threshold is reached
-        if (playerState.peakOfSurvival)
+        if (playerState.powers["PeakOfSurvival"].isActive)
         {
             if (Time.time > peakSurvivalNextActive
                 && !playerState.peakOfSurvivalActive 

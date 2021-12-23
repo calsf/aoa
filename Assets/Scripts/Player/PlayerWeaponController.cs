@@ -91,7 +91,7 @@ public class PlayerWeaponController : MonoBehaviour
         weaponActive.Aim();
 
         // Holstered Reload - reload the inactive weapon
-        if (playerState.holsteredReload)
+        if (playerState.powers["HolsteredReload"].isActive)
         {
             Weapon weaponInactive = weaponActive == weaponPrimary ? weaponSecondary : weaponPrimary;
 

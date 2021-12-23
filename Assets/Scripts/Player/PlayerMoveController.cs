@@ -150,7 +150,7 @@ public class PlayerMoveController : MonoBehaviour
         }
         else // Apply gravity to velocityY if not grounded
         {
-            if (isAiming && playerState.aimGlide && !controller.isGrounded) // Aim glide - apply less gravity if in air and aiming
+            if (isAiming && playerState.powers["AimGlide"].isActive && !controller.isGrounded) // Aim glide - apply less gravity if in air and aiming
             {
                 currVelocityY += (GRAVITY / 3) * Time.deltaTime;
             }
@@ -165,7 +165,7 @@ public class PlayerMoveController : MonoBehaviour
         {
             // If player is not grounded and does not have Air Slide, do not allow slide
             // Must be grounded OR have Air Slide which will let player slide mid air
-            if (!playerState.airSlide && !controller.isGrounded)
+            if (!playerState.powers["AirSlide"].isActive && !controller.isGrounded)
             {
                 return;
             }

@@ -12,6 +12,7 @@ public class PlayerStateObject : ScriptableObject
 
     public float tempoShotExtraDmg { get; set; }
     public bool peakOfSurvivalActive { get; set; }
+    public Dictionary<string, Power> powers { get; set; }
 
     public int selectedPrimary;
     public int selectedSecondary;
@@ -32,6 +33,9 @@ public class PlayerStateObject : ScriptableObject
     public float healthMax;
     public float healthCurr;
 
+    public float armor;
+
+    /*
     // Implemented
     public bool aimGlide;
     public bool holsteredReload;
@@ -51,12 +55,45 @@ public class PlayerStateObject : ScriptableObject
 
     // TODO:
     public bool luckyShot;
+    */
+
+    public Sprite aimGlideIcon;
+    public Sprite holsteredReloadIcon;
+    public Sprite punchThroughIcon;
+    public Sprite sacrificialShotIcon;
+    public Sprite tacticalShotIcon;
+    public Sprite coldShotIcon;
+    public Sprite weakeningShotIcon;
+    public Sprite tempoShotIcon;
+    public Sprite peakOfSurvivalIcon;
+    public Sprite steadyRegenIcon;
+    public Sprite explosiveShotIcon;
+    public Sprite clonedShotIcon;
+    public Sprite defiantReloadIcon;
+    public Sprite decoyShotIcon;
+    public Sprite airSlideIcon;
+
+    public Sprite luckyShotIcon;
 
     // Objects that need to be updated should listen for this event to be invoked
     public UnityEvent OnStateUpdate;
 
     // Objects that need to be updated when player gets damaged should listen for this event to be invoked
     public UnityEvent OnPlayerDamaged;
+
+    public struct Power
+    {
+        public bool isActive;
+        public Sprite powerIcon;
+        public string powerName;
+
+        public Power(bool isActive, Sprite powerIcon, string powerName)
+        {
+            this.isActive = isActive;
+            this.powerIcon = powerIcon;
+            this.powerName = powerName;
+        }
+    }
 
     public void DamagePlayer(float damage)
     {
@@ -65,6 +102,9 @@ public class PlayerStateObject : ScriptableObject
         {
             return;
         }
+
+        // Apply armor damage reduction before taking damage
+        damage = damage - (damage * armor);
 
         nextDamagedTime = Time.time + INVULN_TIME;
         healthCurr = healthCurr - damage < 0 ? 0 : healthCurr - damage;
@@ -76,6 +116,24 @@ public class PlayerStateObject : ScriptableObject
 
     public void InitializeState()
     {
+        powers = new Dictionary<string, Power>();
+        powers.Add("AimGlide", new Power(false, aimGlideIcon, "Aim Glide"));
+        powers.Add("HolsteredReload", new Power(false, holsteredReloadIcon, "Holstered"));
+        powers.Add("Punchthrough", new Power(false, punchThroughIcon, "Punchthrough"));
+        powers.Add("SacrificialShot", new Power(false, sacrificialShotIcon, "Sacrificial"));
+        powers.Add("TacticalShot", new Power(true, tacticalShotIcon, "Tactical"));
+        powers.Add("ColdShot", new Power(false, coldShotIcon, "Cold"));
+        powers.Add("WeakeningShot", new Power(false, weakeningShotIcon, "Weakening"));
+        powers.Add("TempoShot", new Power(false, tempoShotIcon, "Tempo"));
+        powers.Add("PeakOfSurvival", new Power(false, peakOfSurvivalIcon, "Peak Survival"));
+        powers.Add("SteadyRegen", new Power(false, steadyRegenIcon, "Regen"));
+        powers.Add("ExplosiveShot", new Power(false, explosiveShotIcon, "Explosive"));
+        powers.Add("ClonedShot", new Power(false, clonedShotIcon, "Cloned"));
+        powers.Add("DefiantReload", new Power(false, defiantReloadIcon, "Defiant"));
+        powers.Add("DecoyShot", new Power(false, decoyShotIcon, "Decoy"));
+        powers.Add("AirSlide", new Power(true, airSlideIcon, "Air Slide"));
+        powers.Add("LuckyShot", new Power(false, luckyShotIcon, "Lucky"));
+
         selectedPrimary = 1;
         selectedSecondary = 3;
         selectedActive = 0;
@@ -95,8 +153,11 @@ public class PlayerStateObject : ScriptableObject
         healthMax = START_HEALTH;
         healthCurr = healthMax;
 
+        armor = 0;
+
         tempoShotExtraDmg = 0;
 
+        /*
         aimGlide = false;
         holsteredReload = false;
         punchThrough = false;
@@ -113,6 +174,7 @@ public class PlayerStateObject : ScriptableObject
         luckyShot = false;
         peakOfSurvival = false;
         steadyRegen = false;
+        */
 
         nextDamagedTime = Time.time;
 

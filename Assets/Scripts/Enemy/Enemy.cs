@@ -100,7 +100,7 @@ public abstract class Enemy : MonoBehaviour
                 deathObj.SetActive(true);
 
                 // Explosive shot - create explosion on death
-                if (playerState.explosiveShot)
+                if (playerState.powers["ExplosiveShot"].isActive)
                 {
                     GameObject exploObj = GetFromPool(explosiveShotEffectPool, explosiveShotEffect);
                     exploObj.transform.position = transform.position;

@@ -308,7 +308,7 @@ public class Weapon : MonoBehaviour
 
     protected void ShootRaycast(Vector3 dir, Vector3 raycastOrigin, float healthGainMultiplier = 2, float damageDealtMultiplier = 1, bool canDecoy = true, bool isClonedShot = false)
     {
-        if (!playerState.punchThrough) // No enemy punchthrough
+        if (!playerState.powers["Punchthrough"].isActive) // No enemy punchthrough
         {
             RaycastHit hit;
             bool hasHit = Physics.Raycast(raycastOrigin, dir, out hit, Mathf.Infinity, shootLayerMask);
@@ -341,7 +341,7 @@ public class Weapon : MonoBehaviour
                     }
 
                     // Tempo shot - apply extra damage if applies
-                    if (playerState.tempoShot)
+                    if (playerState.powers["TempoShot"].isActive)
                     {
                         damageDealt += playerState.tempoShotExtraDmg;
                     }
@@ -362,7 +362,7 @@ public class Weapon : MonoBehaviour
                     float damageDealt = hit.distance > effectiveRange ? weapon.DAMAGE_BASE * weapon.FALLOFF_MODIFIER_BASE : weapon.DAMAGE_BASE;
 
                     // Tactical shot - destroy wall with one shot if within effective range
-                    if (playerState.tacticalShot && hit.distance < effectiveRange)
+                    if (playerState.powers["TacticalShot"].isActive && hit.distance < effectiveRange)
                     {
                         damageDealt = 500;
                     }
@@ -400,7 +400,7 @@ public class Weapon : MonoBehaviour
                 float damageDealt = allHit[0].distance > effectiveRange ? weapon.DAMAGE_BASE * weapon.FALLOFF_MODIFIER_BASE : weapon.DAMAGE_BASE;
 
                 // Tactical shot - destroy wall with one shot if within effective range
-                if (playerState.tacticalShot && allHit[0].distance < effectiveRange)
+                if (playerState.powers["TacticalShot"].isActive && allHit[0].distance < effectiveRange)
                 {
                     damageDealt = 500;
                 }
@@ -448,7 +448,7 @@ public class Weapon : MonoBehaviour
                     }
 
                     // Tempo shot - apply extra damage if applies
-                    if (playerState.tempoShot)
+                    if (playerState.powers["TempoShot"].isActive)
                     {
                         damageDealt += playerState.tempoShotExtraDmg;
                     }
@@ -499,7 +499,7 @@ public class Weapon : MonoBehaviour
     {
         // Sacrificial shot - lose health on shot, gain double the amount lost on enemy hit, cannot fall below 1 health
         // CALL FIRST ON SHOOT SO HEALTH GAIN OCCURS AFTER LOSS
-        if (playerState.sacrificialShot)
+        if (playerState.powers["SacrificialShot"].isActive)
         {
             // Health to lose based on max health and max mag size of the gun
             float healthToLose = playerState.healthMax / (magSizeMax / 2.5f);
@@ -512,7 +512,7 @@ public class Weapon : MonoBehaviour
     protected void SacrificialShotGain(float healthGainMultiplier)
     {
         // Sacrificial shot - gain back health on hit
-        if (playerState.sacrificialShot)
+        if (playerState.powers["SacrificialShot"].isActive)
         {
             // Gain back double health lost from shooting, healthToLose * 2
             float healthToGain = (playerState.healthMax / (magSizeMax / 2.5f)) * healthGainMultiplier;
@@ -524,7 +524,7 @@ public class Weapon : MonoBehaviour
     protected void ColdShot(GameObject hit)
     {
         // Slow enemy on hit, resets timer on consecutive hits
-        if (playerState.coldShot)
+        if (playerState.powers["ColdShot"].isActive)
         {
             hit.GetComponentInParent<Enemy>().ApplyColdShot(COLD_SHOT_SLOW_MULTIPLIER, COLD_SHOT_SLOW_TIME);
         }
@@ -533,7 +533,7 @@ public class Weapon : MonoBehaviour
     protected void WeakeningShot(GameObject hit)
     {
         // Lower enemy damage on hit, resets timer on consecutive hits
-        if (playerState.weakeningShot)
+        if (playerState.powers["WeakeningShot"].isActive)
         {
             hit.GetComponentInParent<Enemy>().ApplyWeakeningShot(WEAKENING_SHOT_MULTIPLIER, WEAKENING_SHOT_TIME);
         }
@@ -542,7 +542,7 @@ public class Weapon : MonoBehaviour
     protected void TempoShot(bool isHeadshot)
     {
         // Add extra dmg on consecutive headshots, reset to 0 on miss (should not reset on wall hit)
-        if (playerState.tempoShot)
+        if (playerState.powers["TempoShot"].isActive)
         {
             if (isHeadshot)
             {
@@ -559,7 +559,7 @@ public class Weapon : MonoBehaviour
     protected void ClonedShot(Vector3 dir)
     {
         // Shoot additional shots, offset from the cam position and deals reduced damage, DOES NOT APPLY HEALTH GAIN FROM SACRIFICIAL and CANNOT DECOY
-        if (playerState.clonedShot)
+        if (playerState.powers["ClonedShot"].isActive)
         {
             ShootRaycast(dir, cam.transform.position + Vector3.left * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false, true);
             ShootRaycast(dir, cam.transform.position + Vector3.right * CLONED_SHOT_OFFSET, 0, CLONED_SHOT_DMG_MULTIPLIER, false, true);
@@ -578,7 +578,7 @@ public class Weapon : MonoBehaviour
     protected void DefiantReload()
     {
         // Knock back enemies upon reloading
-        if (playerState.defiantReload)
+        if (playerState.powers["DefiantReload"].isActive)
         {
             defiantReloadEffect.Reset();
             defiantReloadEffect.gameObject.SetActive(true);
@@ -588,7 +588,7 @@ public class Weapon : MonoBehaviour
     protected void DecoyShot(Vector3 pos)
     {
         // Spawn decoy at position if last shot of mag
-        if (playerState.decoyShot && magSizeCurr == 0)
+        if (playerState.powers["DecoyShot"].isActive && magSizeCurr == 0)
         {
             GameObject obj = GetFromPool(decoyShotPool, decoyShotEffect);
             obj.transform.position = pos;

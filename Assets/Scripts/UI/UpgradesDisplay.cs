@@ -16,11 +16,16 @@ public class UpgradesDisplay : MonoBehaviour
     [SerializeField] private Text textAimSpeed;
     [SerializeField] private Text textRange;
     [SerializeField] private Text textMoveSpeed;
+    [SerializeField] private Text textArmor;
     [SerializeField] private Text textMaxHealth;
     [SerializeField] private Text textJumps;
 
     private CanvasGroup upgradesScreen;
     private PlayerMoveController playerMove;
+
+    [SerializeField] private List<GameObject> powerDisplays; // Power displays that can be used to show active powers
+    private Queue<GameObject> powerDisplayItemQueue;
+    private Dictionary<string, PlayerStateObject.Power> activePowers; // To keep track of active powers, should initially be empty
 
     void Start()
     {
@@ -29,6 +34,9 @@ public class UpgradesDisplay : MonoBehaviour
 
         upgradesScreen.alpha = 0;
         upgradesScreen.blocksRaycasts = false;
+
+        powerDisplayItemQueue = new Queue<GameObject>(powerDisplays);
+        activePowers = new Dictionary<string, PlayerStateObject.Power>();
     }
 
     void Update()
@@ -49,8 +57,15 @@ public class UpgradesDisplay : MonoBehaviour
             HideDisplay();
         }
 
-        // Update text values
-        UpdateStats();
+        // Only update screen while it is active
+        if (upgradesScreen.alpha > 0)
+        {
+            // Update text values
+            UpdateStats();
+
+            // Update powers display
+            UpdatePowers();
+        }
     }
 
     private void UpdateStats()
@@ -64,8 +79,22 @@ public class UpgradesDisplay : MonoBehaviour
         textAimSpeed.text = "Aim Speed\n+" + playerState.aimTimeReduction;
         textRange.text = "Range\n+" + playerState.effectiveRangeBonus;
         textMoveSpeed.text = "Move Speed\n+" + playerState.moveSpeedBonus;
+        textArmor.text = "Armor\n+" + playerState.armor;
         textMaxHealth.text = "Max Health\n+" + (playerState.START_HEALTH - playerState.healthMax);
         textJumps.text = "Jumps\n+" + playerState.jumpBonus;
+    }
+
+    private void UpdatePowers()
+    {
+        foreach (KeyValuePair<string, PlayerStateObject.Power> power in playerState.powers)
+        {
+            if (!activePowers.ContainsKey(power.Key) && power.Value.isActive)
+            {
+                activePowers.Add(power.Key, power.Value); // Add to active powers to avoid duplicate displays
+                GameObject powerDisplay = powerDisplayItemQueue.Dequeue(); // Get first unused power display to show active power
+                powerDisplay.GetComponent<PowerDisplayItem>().ShowPower(power.Value.powerIcon, power.Value.powerName);
+            }    
+        }
     }
 
     private void ShowDisplay()

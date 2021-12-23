@@ -48,7 +48,7 @@ public class WeaponDisplay : MonoBehaviour
     // Check for decoy shot and change mag curr text color if shot will be decoy, else default to normal text color
     private void CheckDecoyShot()
     {
-        if (playerState.decoyShot && playerWeaponController.weaponActive.magSizeCurr == 1)
+        if (playerState.powers["DecoyShot"].isActive && playerWeaponController.weaponActive.magSizeCurr == 1)
         {
             magCurr.color = decoyShotColor;
         }
