@@ -120,17 +120,17 @@ public class PlayerStateObject : ScriptableObject
         powers.Add("AimGlide", new Power(false, aimGlideIcon, "Aim Glide"));
         powers.Add("HolsteredReload", new Power(false, holsteredReloadIcon, "Holstered"));
         powers.Add("Punchthrough", new Power(false, punchThroughIcon, "Punchthrough"));
-        powers.Add("SacrificialShot", new Power(false, sacrificialShotIcon, "Sacrificial"));
+        powers.Add("SacrificialShot", new Power(true, sacrificialShotIcon, "Sacrificial"));
         powers.Add("TacticalShot", new Power(true, tacticalShotIcon, "Tactical"));
-        powers.Add("ColdShot", new Power(false, coldShotIcon, "Cold"));
-        powers.Add("WeakeningShot", new Power(false, weakeningShotIcon, "Weakening"));
-        powers.Add("TempoShot", new Power(false, tempoShotIcon, "Tempo"));
-        powers.Add("PeakOfSurvival", new Power(false, peakOfSurvivalIcon, "Peak Survival"));
-        powers.Add("SteadyRegen", new Power(false, steadyRegenIcon, "Regen"));
-        powers.Add("ExplosiveShot", new Power(false, explosiveShotIcon, "Explosive"));
-        powers.Add("ClonedShot", new Power(false, clonedShotIcon, "Cloned"));
-        powers.Add("DefiantReload", new Power(false, defiantReloadIcon, "Defiant"));
-        powers.Add("DecoyShot", new Power(false, decoyShotIcon, "Decoy"));
+        powers.Add("ColdShot", new Power(true, coldShotIcon, "Cold"));
+        powers.Add("WeakeningShot", new Power(true, weakeningShotIcon, "Weakening"));
+        powers.Add("TempoShot", new Power(true, tempoShotIcon, "Tempo"));
+        powers.Add("PeakOfSurvival", new Power(true, peakOfSurvivalIcon, "Peak Survival"));
+        powers.Add("SteadyRegen", new Power(true, steadyRegenIcon, "Regen"));
+        powers.Add("ExplosiveShot", new Power(true, explosiveShotIcon, "Explosive"));
+        powers.Add("ClonedShot", new Power(true, clonedShotIcon, "Cloned"));
+        powers.Add("DefiantReload", new Power(true, defiantReloadIcon, "Defiant"));
+        powers.Add("DecoyShot", new Power(true, decoyShotIcon, "Decoy"));
         powers.Add("AirSlide", new Power(true, airSlideIcon, "Air Slide"));
         powers.Add("LuckyShot", new Power(false, luckyShotIcon, "Lucky"));
 

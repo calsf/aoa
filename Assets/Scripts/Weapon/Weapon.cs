@@ -524,7 +524,7 @@ public class Weapon : MonoBehaviour
     protected void ColdShot(GameObject hit)
     {
         // Slow enemy on hit, resets timer on consecutive hits
-        if (playerState.powers["ColdShot"].isActive)
+        if (playerState.powers["ColdShot"].isActive && hit.activeInHierarchy)
         {
             hit.GetComponentInParent<Enemy>().ApplyColdShot(COLD_SHOT_SLOW_MULTIPLIER, COLD_SHOT_SLOW_TIME);
         }
@@ -533,7 +533,7 @@ public class Weapon : MonoBehaviour
     protected void WeakeningShot(GameObject hit)
     {
         // Lower enemy damage on hit, resets timer on consecutive hits
-        if (playerState.powers["WeakeningShot"].isActive)
+        if (playerState.powers["WeakeningShot"].isActive && hit.activeInHierarchy)
         {
             hit.GetComponentInParent<Enemy>().ApplyWeakeningShot(WEAKENING_SHOT_MULTIPLIER, WEAKENING_SHOT_TIME);
         }
