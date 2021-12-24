@@ -59,8 +59,8 @@ public class PlayerMoveController : MonoBehaviour
         controller = GetComponent<CharacterController>();
         UpdateSensitivity();
 
-        jumpMaxAvailable = 1 + playerState.jumpBonus;
-        speedMax = SPEED_BASE + playerState.moveSpeedBonus;
+        jumpMaxAvailable = 1 + (int) playerState.stats["JumpBonus"].statValue;
+        speedMax = SPEED_BASE + playerState.stats["MoveSpeedBonus"].statValue;
         speedCurr = speedMax;
     }
 
@@ -96,8 +96,8 @@ public class PlayerMoveController : MonoBehaviour
     // Update player stats
     private void UpdatePlayerMoveState()
     {
-        jumpMaxAvailable = 3 + playerState.jumpBonus;
-        speedMax = SPEED_BASE + playerState.moveSpeedBonus;
+        jumpMaxAvailable = 1 + (int)playerState.stats["JumpBonus"].statValue;
+        speedMax = SPEED_BASE + playerState.stats["MoveSpeedBonus"].statValue;
         speedCurr = speedMax;
     }
 
