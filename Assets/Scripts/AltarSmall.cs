@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class AltarSmall : Altar
 {
-    private List<string> stats;
-    void Start()
+    
+    protected override void Start()
     {
+        base.Start();
         costCurr = COST_BASE_SMALL;
-        stats = new List<string>(playerState.stats.Keys);
     }
 
     protected override void OpenAltar()
@@ -18,28 +18,10 @@ public class AltarSmall : Altar
         {
             return;
         }
-        
-        string selectedStatKey = stats[Random.Range(0, stats.Count)];
 
+        playerState.bloodCurrency -= costCurr; // Take away currency
 
-        PlayerStateObject.Stat newStat = playerState.stats[selectedStatKey];
-        newStat.statValue = newStat.setStat(); // Upgrades the stat
-        playerState.UpdateStat(selectedStatKey, newStat);
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.tag == "Player")
-        {
-            OpenAltar();
-            Debug.Log("OPEN!!");
-        }
-
-        return;
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        return;
+        // Upgrades 1 random stat
+        UpgradeStat();
     }
 }

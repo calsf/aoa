@@ -501,8 +501,8 @@ public class Weapon : MonoBehaviour
         // CALL FIRST ON SHOOT SO HEALTH GAIN OCCURS AFTER LOSS
         if (playerState.powers["SacrificialShot"].isActive)
         {
-            // Health to lose based on max health and max mag size of the gun
-            float healthToLose = playerState.stats["HealthMax"].statValue / (magSizeMax / 2.5f);
+            // Health to lose based on health and max mag size of the gun
+            float healthToLose = playerState.healthCurr / (magSizeMax / 2f);
 
             // Lose health, always stay above 0 health
             playerState.healthCurr = playerState.healthCurr - healthToLose <= 0 ? 1 : playerState.healthCurr - healthToLose;
