@@ -14,6 +14,7 @@ public class TEST : MonoBehaviour
         //InvokeRepeating("SpawnPeriodically", 3, 4);
     }
 
+    /*
     // Update is called once per frame
     void Update()
     {
@@ -43,5 +44,5 @@ public class TEST : MonoBehaviour
     {
         Instantiate(enemies[Random.Range(0, enemies.Length)]);
         Debug.Log("spawned");
-    }
+    }*/
 }

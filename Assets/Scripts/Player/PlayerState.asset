@@ -13,22 +13,23 @@ MonoBehaviour:
   m_Name: PlayerState
   m_EditorClassIdentifier: 
   START_HEALTH: 100
+  healthCurr: 100
+  bloodCurrency: 0
   selectedPrimary: 1
-  selectedSecondary: 3
-  selectedActive: 1
-  reloadMultiplier: 1
-  fireRateMultiplier: 1
-  damageBonus: 0
-  headShotMultiplierBonus: 0
-  magSizeMaxMultiplier: 1
-  aimTimeReduction: 0
-  inaccuracyReduction: 0
-  effectiveRangeBonus: 0
-  moveSpeedBonus: 0
-  jumpBonus: 0
-  healthMax: 100
-  healthCurr: 4.6764708
-  armor: 0
+  selectedSecondary: 2
+  selectedActive: 0
+  reloadMultiplierIcon: {fileID: 21300000, guid: d79060a4e49139c45a34ec3130a2609d, type: 3}
+  fireRateMultiplierIcon: {fileID: 21300000, guid: de11cabaa557a4541a4749e27b5d92db, type: 3}
+  damageBonusIcon: {fileID: 21300000, guid: e1c151ddfe796724bb67e37f0086a58c, type: 3}
+  headShotMultiplierBonusIcon: {fileID: 21300000, guid: 08cfab3bcb779484c895673448705e3c, type: 3}
+  magSizeMaxMultiplierIcon: {fileID: 21300000, guid: 9748f76318d5a6843a7d663e9c5b99e2, type: 3}
+  aimTimeReductionIcon: {fileID: 21300000, guid: 4d02d03223a4232489a043dc6caa8e53, type: 3}
+  inaccuracyReductionIcon: {fileID: 21300000, guid: 5517f77c69519ba49b0a213d01f8f644, type: 3}
+  effectiveRangeBonusIcon: {fileID: 21300000, guid: e1a7a05f92a3b0648a3eee61da473e67, type: 3}
+  moveSpeedBonusIcon: {fileID: 21300000, guid: d267f175ced8022458d6777a1e096ec3, type: 3}
+  jumpBonusIcon: {fileID: 21300000, guid: f288bc23f65dd5d4bae9f0af3254bd74, type: 3}
+  healthMaxIcon: {fileID: 21300000, guid: 4cd56d21f8dd0114ebba9b8db1801b3c, type: 3}
+  armorIcon: {fileID: 21300000, guid: df23da4e38ff7274cba66b4626b84104, type: 3}
   aimGlideIcon: {fileID: 21300000, guid: 4fadecabcc8898d419fff4f23b105304, type: 3}
   holsteredReloadIcon: {fileID: 21300000, guid: 76759283a4168a447a3ae9f01ff39e6e, type: 3}
   punchThroughIcon: {fileID: 21300000, guid: f709825304cd96447990d0ad2079afe1, type: 3}
@@ -49,5 +50,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   OnPlayerDamaged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnUpgradeStat:
+    m_PersistentCalls:
+      m_Calls: []
+  OnUpgradePower:
     m_PersistentCalls:
       m_Calls: []

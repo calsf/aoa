@@ -40,8 +40,8 @@ public class PlayerHealthUpgrades : MonoBehaviour
             if (Time.time > steadyRegenNextTime)
             {
                 // Regen small percentage of max health
-                playerState.healthCurr = playerState.healthCurr + (playerState.healthMax * STEADY_REGEN_PERCENTAGE) > playerState.healthMax ?
-                    playerState.healthMax : playerState.healthCurr + (playerState.healthMax * STEADY_REGEN_PERCENTAGE);
+                playerState.healthCurr = playerState.healthCurr + (playerState.stats["HealthMax"].statValue * STEADY_REGEN_PERCENTAGE) > playerState.stats["HealthMax"].statValue ?
+                    playerState.stats["HealthMax"].statValue : playerState.healthCurr + (playerState.stats["HealthMax"].statValue * STEADY_REGEN_PERCENTAGE);
 
                 steadyRegenNextTime = Time.time + STEADY_REGEN_DELAY;
             }
@@ -56,7 +56,7 @@ public class PlayerHealthUpgrades : MonoBehaviour
             if (Time.time > peakSurvivalNextActive
                 && !playerState.peakOfSurvivalActive 
                 && !peakSurvivalThresholdReached 
-                && playerState.healthCurr < playerState.healthMax * PEAK_SURVIVAL_THRESHOLD) // Check for and activate effect
+                && playerState.healthCurr < playerState.stats["HealthMax"].statValue * PEAK_SURVIVAL_THRESHOLD) // Check for and activate effect
             {
                 playerState.peakOfSurvivalActive = true;
                 peakSurvivalThresholdReached = true;
@@ -75,7 +75,7 @@ public class PlayerHealthUpgrades : MonoBehaviour
         }
 
         // After falling below health threshold, check to see if health is regained above the threshold
-        if (peakSurvivalThresholdReached && playerState.healthCurr >= playerState.healthMax * PEAK_SURVIVAL_THRESHOLD)
+        if (peakSurvivalThresholdReached && playerState.healthCurr >= playerState.stats["HealthMax"].statValue * PEAK_SURVIVAL_THRESHOLD)
         {
             peakSurvivalThresholdReached = false;
         }

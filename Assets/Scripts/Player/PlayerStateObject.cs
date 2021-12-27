@@ -13,11 +13,16 @@ public class PlayerStateObject : ScriptableObject
     public float tempoShotExtraDmg { get; set; }
     public bool peakOfSurvivalActive { get; set; }
     public Dictionary<string, Power> powers { get; set; }
+    public Dictionary<string, Stat> stats { get; set; }
+
+    public float healthCurr;
+    public int bloodCurrency;
 
     public int selectedPrimary;
     public int selectedSecondary;
     public int selectedActive; // Selected active weapon, 0 for primary, 1 for secondary
 
+    /*
     public float reloadMultiplier;     // Anim dependent, all weapons have 1 speed multiplier by default
     public float fireRateMultiplier;     // Anim dependent, all weapons have 1 speed multiplier by default
     public float damageBonus;
@@ -31,9 +36,9 @@ public class PlayerStateObject : ScriptableObject
     public int jumpBonus;
 
     public float healthMax;
-    public float healthCurr;
 
     public float armor;
+    */
 
     /*
     // Implemented
@@ -56,6 +61,21 @@ public class PlayerStateObject : ScriptableObject
     // TODO:
     public bool luckyShot;
     */
+
+
+    public Sprite reloadMultiplierIcon;
+    public Sprite fireRateMultiplierIcon;
+    public Sprite damageBonusIcon;
+    public Sprite headShotMultiplierBonusIcon;
+    public Sprite magSizeMaxMultiplierIcon;
+    public Sprite aimTimeReductionIcon;
+    public Sprite inaccuracyReductionIcon;
+    public Sprite effectiveRangeBonusIcon;
+    public Sprite moveSpeedBonusIcon;
+    public Sprite jumpBonusIcon;
+    public Sprite healthMaxIcon;
+    public Sprite armorIcon;
+
 
     public Sprite aimGlideIcon;
     public Sprite holsteredReloadIcon;
@@ -81,17 +101,45 @@ public class PlayerStateObject : ScriptableObject
     // Objects that need to be updated when player gets damaged should listen for this event to be invoked
     public UnityEvent OnPlayerDamaged;
 
+    // These events will pass the upgraded Stat or Power as an argument when invoked
+    public UnityEvent<Stat> OnUpgradeStat;
+    public UnityEvent<Power> OnUpgradePower;
+
+    // Struct for a Power
     public struct Power
     {
         public bool isActive;
         public Sprite powerIcon;
+        public string powerNameShort;
         public string powerName;
+        public string powerDesc;
 
-        public Power(bool isActive, Sprite powerIcon, string powerName)
+        public Power(bool isActive, Sprite powerIcon, string powerNameShort, string powerName, string powerDesc)
         {
             this.isActive = isActive;
             this.powerIcon = powerIcon;
+            this.powerNameShort = powerNameShort;
             this.powerName = powerName;
+            this.powerDesc = powerDesc;
+        }
+    }
+
+    // Struct for a Stat
+    public struct Stat
+    {
+        public float statValue;
+        public Sprite statIcon;
+        public string statName;
+        public string statDesc;
+        public SetStatDelegate setStat;
+
+        public Stat(float statValue, Sprite statIcon, string statName, string statDesc, SetStatDelegate setStat)
+        {
+            this.statValue = statValue;
+            this.statIcon = statIcon;
+            this.statName = statName;
+            this.statDesc = statDesc;
+            this.setStat = setStat;
         }
     }
 
@@ -104,7 +152,7 @@ public class PlayerStateObject : ScriptableObject
         }
 
         // Apply armor damage reduction before taking damage
-        damage = damage - (damage * armor);
+        damage = damage - (damage * stats["Armor"].statValue);
 
         nextDamagedTime = Time.time + INVULN_TIME;
         healthCurr = healthCurr - damage < 0 ? 0 : healthCurr - damage;
@@ -117,27 +165,104 @@ public class PlayerStateObject : ScriptableObject
     public void InitializeState()
     {
         powers = new Dictionary<string, Power>();
-        powers.Add("AimGlide", new Power(false, aimGlideIcon, "Aim Glide"));
-        powers.Add("HolsteredReload", new Power(false, holsteredReloadIcon, "Holstered"));
-        powers.Add("Punchthrough", new Power(false, punchThroughIcon, "Punchthrough"));
-        powers.Add("SacrificialShot", new Power(true, sacrificialShotIcon, "Sacrificial"));
-        powers.Add("TacticalShot", new Power(true, tacticalShotIcon, "Tactical"));
-        powers.Add("ColdShot", new Power(true, coldShotIcon, "Cold"));
-        powers.Add("WeakeningShot", new Power(true, weakeningShotIcon, "Weakening"));
-        powers.Add("TempoShot", new Power(true, tempoShotIcon, "Tempo"));
-        powers.Add("PeakOfSurvival", new Power(true, peakOfSurvivalIcon, "Peak Survival"));
-        powers.Add("SteadyRegen", new Power(true, steadyRegenIcon, "Regen"));
-        powers.Add("ExplosiveShot", new Power(true, explosiveShotIcon, "Explosive"));
-        powers.Add("ClonedShot", new Power(true, clonedShotIcon, "Cloned"));
-        powers.Add("DefiantReload", new Power(true, defiantReloadIcon, "Defiant"));
-        powers.Add("DecoyShot", new Power(true, decoyShotIcon, "Decoy"));
-        powers.Add("AirSlide", new Power(true, airSlideIcon, "Air Slide"));
-        powers.Add("LuckyShot", new Power(false, luckyShotIcon, "Lucky"));
+        powers.Add("AimGlide", new Power(
+            false,
+            aimGlideIcon,
+            "Aim Glide",
+            "Aim Glide",
+            "Aiming down sights while in the air will slow down your fall."));
+        powers.Add("HolsteredReload", new Power(
+            false,
+            holsteredReloadIcon,
+            "Holstered",
+            "Holstered Reload",
+            "Gradually reloads your holstered weapon."));
+        powers.Add("Punchthrough", new Power(
+            false,
+            punchThroughIcon,
+            "Pierce",
+            "Piercing Shot",
+            "Shots can pierce through multiple enemies. Does not pierce through walls."));
+        powers.Add("SacrificialShot", new Power(
+            false,
+            sacrificialShotIcon,
+            "Sacrificial",
+            "Sacrificial Shot",
+            "Lose health per shot. Recover double the health lost if the shot hits an enemy."));
+        powers.Add("TacticalShot", new Power(
+            false,
+            tacticalShotIcon,
+            "Tactical",
+            "Tactical Shot",
+            "Shots will break walls in one hit."));
+        powers.Add("ColdShot", new Power(
+            false, 
+            coldShotIcon, 
+            "Cold",
+            "Cold Shot",
+            "Shots will lower the move speed of an enemy for a short duration."));
+        powers.Add("WeakeningShot", new Power(
+            false, 
+            weakeningShotIcon, 
+            "Weakening",
+            "Weakening Shot",
+            "Shots will lower the damage of an enemy for a short duration."));
+        powers.Add("TempoShot", new Power(
+            false, 
+            tempoShotIcon, 
+            "Tempo",
+            "Tempo Shot",
+            "Gain bonus damage with each consecutive headshot. A missed shot will reset bonus damage to 0."));
+        powers.Add("PeakOfSurvival", new Power(
+            false, 
+            peakOfSurvivalIcon, 
+            "Survival",
+            "Peak of Survival",
+            "When dropped to low health, become invincible for a short duration. Goes on cooldown afterwards."));
+        powers.Add("SteadyRegen", new Power(
+            false, 
+            steadyRegenIcon, 
+            "Regen",
+            "Steady Regen",
+            "Gradually recover health over time."));
+        powers.Add("ExplosiveShot", new Power(
+            false, 
+            explosiveShotIcon, 
+            "Explosive",
+            "Explosive Death",
+            "Enemies explode on death."));
+        powers.Add("ClonedShot", new Power(
+            false, 
+            clonedShotIcon, 
+            "Cloned",
+            "Cloned Shot",
+            "Additional shots are fired near the original shot."));
+        powers.Add("DefiantReload", new Power(
+            false, 
+            defiantReloadIcon, 
+            "Defiant",
+            "Defiant Reload",
+            "Reloading knocks back all nearby enemies."));
+        powers.Add("DecoyShot", new Power(
+            false, 
+            decoyShotIcon, 
+            "Decoy",
+            "Decoy Shot",
+            "The last shot of a magazine will spawn a decoy that will attract nearby enemies."));
+        powers.Add("AirSlide", new Power(
+            false, 
+            airSlideIcon, 
+            "Air Slide",
+            "Air Slide",
+            "Sliding can be performed while in the air."));
+        powers.Add("LuckyShot", new Power(
+            false, 
+            luckyShotIcon, 
+            "Lucky",
+            "Lucky Shot",
+            "TBD"));
 
-        selectedPrimary = 1;
-        selectedSecondary = 3;
-        selectedActive = 0;
-
+        /*
         reloadMultiplier = 1;
         fireRateMultiplier = 1;
         damageBonus = 0;
@@ -150,10 +275,90 @@ public class PlayerStateObject : ScriptableObject
         moveSpeedBonus = 0;
         jumpBonus = 0;
 
-        healthMax = START_HEALTH;
-        healthCurr = healthMax;
-
         armor = 0;
+
+        healthMax = START_HEALTH;
+        */
+
+        stats = new Dictionary<string, Stat>();
+        stats.Add("ReloadMultiplier", new Stat(
+            1,
+            reloadMultiplierIcon,
+            "Reload Speed",
+            "Increases reload speed.",
+            SetReload));
+        stats.Add("FireRateMultiplier", new Stat(
+            1,
+            fireRateMultiplierIcon,
+            "Fire Rate",
+            "Increases fire rate.",
+            SetFireRate));
+        stats.Add("DamageBonus", new Stat(
+            0,
+            damageBonusIcon,
+            "Damage Bonus",
+            "Increases weapon damage.",
+            SetDamageBonus));
+        stats.Add("HeadShotMultiplierBonus", new Stat(
+            0, 
+            headShotMultiplierBonusIcon,
+            "Headshot Damage",
+            "Increases headshot damage.",
+            SetHeadShot));
+        stats.Add("MagSizeMaxMultiplier", new Stat(
+            1, 
+            magSizeMaxMultiplierIcon,
+            "Magazine Size",
+            "Increases maximum magazine size.",
+            SetMagazine));
+        stats.Add("AimTimeReduction", new Stat(
+            0, 
+            aimTimeReductionIcon,
+            "Aim Speed", 
+            "Increases aim down sight speed.",
+            SetAimSpeed));
+        stats.Add("InaccuracyReduction", new Stat(
+            0, 
+            inaccuracyReductionIcon,
+            "Accuracy",
+            "Increases hip fire accuracy.",
+            SetAccuracy));
+        stats.Add("EffectiveRangeBonus", new Stat(
+            0, 
+            effectiveRangeBonusIcon,
+            "Range", 
+            "Increases the effective range of weapons.",
+            SetRange));
+        stats.Add("MoveSpeedBonus", new Stat(
+            0, 
+            moveSpeedBonusIcon,
+            "Move Speed",
+            "Increases move speed.", 
+            SetMoveSpeed));
+        stats.Add("JumpBonus", new Stat(
+            0, 
+            jumpBonusIcon,
+            "Jump", 
+            "Increases the number of jumps.",
+            SetJumps));
+        stats.Add("Armor", new Stat(
+            0, 
+            armorIcon,
+            "Armor", 
+            "Increases damage reduction.",
+            SetArmor));
+        stats.Add("HealthMax", new Stat(
+            START_HEALTH, 
+            healthMaxIcon,
+            "Max Health", 
+            "Increases maximum health.",
+            SetMaxHealth));
+
+        selectedPrimary = 1;
+        selectedSecondary = 2;
+        selectedActive = 0;
+
+        healthCurr = START_HEALTH;
 
         tempoShotExtraDmg = 0;
 
@@ -176,8 +381,115 @@ public class PlayerStateObject : ScriptableObject
         steadyRegen = false;
         */
 
+        bloodCurrency = 0;
+
         nextDamagedTime = Time.time;
 
         OnStateUpdate.Invoke();
+    }
+
+    public void UpdateStat(string key, Stat value)
+    {
+        if (value.statValue == stats[key].statValue)    // If stat is capped, show different description
+        {
+            OnUpgradeStat.Invoke(new Stat(
+            value.statValue,
+            value.statIcon,
+            value.statName,
+            "You feel no change...",
+            value.setStat));
+        }
+        else  // Else, upgrade and display normally
+        {
+            stats[key] = value;
+
+            OnStateUpdate.Invoke();
+            OnUpgradeStat.Invoke(value);
+        }
+    }
+
+    public void UpdatePower(string key, Power value)
+    {
+        powers[key] = value;
+
+        OnStateUpdate.Invoke();
+        OnUpgradePower.Invoke(value);
+    }
+
+    // Delegate to upgrade a specific stat value
+    public delegate float SetStatDelegate();
+
+    private float SetReload()
+    {
+        return stats["ReloadMultiplier"].statValue + .4f;
+    }
+
+    private float SetFireRate()
+    {
+        return stats["FireRateMultiplier"].statValue + .25f;
+    }
+
+    private float SetDamageBonus()
+    {
+        return stats["DamageBonus"].statValue + 2;
+    }
+
+    private float SetHeadShot()
+    {
+        return stats["HeadShotMultiplierBonus"].statValue + .25f;
+    }
+
+    private float SetMagazine()
+    {
+        return stats["MagSizeMaxMultiplier"].statValue + .3f;
+    }
+
+    private float SetAimSpeed()
+    {
+        return stats["AimTimeReduction"].statValue + .03f;
+    }
+
+    private float SetAccuracy()
+    {
+        return stats["InaccuracyReduction"].statValue + .01f;
+    }
+
+    private float SetRange()
+    {
+        return stats["EffectiveRangeBonus"].statValue + 50;
+    }
+
+    private float SetMoveSpeed()
+    {
+        return stats["MoveSpeedBonus"].statValue + 3;
+    }
+
+    private float SetJumps()
+    {
+        return stats["JumpBonus"].statValue + 1;
+    }
+
+    private float SetArmor()
+    {
+        // Cap max armor
+        if (stats["Armor"].statValue >= .9f)
+        {
+            return stats["Armor"].statValue;
+        }
+
+        float newVal = stats["Armor"].statValue + .1f;
+
+        // Lower increase amount after some value
+        if (stats["Armor"].statValue >= .5f)
+        {
+            newVal = stats["Armor"].statValue + .05f;
+        }
+
+        return newVal;
+    }
+
+    private float SetMaxHealth()
+    {
+        return stats["HealthMax"].statValue + 25;
     }
 }

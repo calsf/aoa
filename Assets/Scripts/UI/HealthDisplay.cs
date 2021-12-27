@@ -11,8 +11,8 @@ public class HealthDisplay : MonoBehaviour
 
     void Update()
     {
-        healthFill.localScale = new Vector3(playerState.healthCurr / playerState.healthMax, 1, 1);
+        healthFill.localScale = new Vector3(playerState.healthCurr / playerState.stats["HealthMax"].statValue, 1, 1);
 
-        healthText.text = (int) playerState.healthCurr + " / " + (int) playerState.healthMax;
+        healthText.text = (int) playerState.healthCurr + " / " + (int) playerState.stats["HealthMax"].statValue;
     }
 }

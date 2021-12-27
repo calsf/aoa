@@ -122,21 +122,21 @@ public class Weapon : MonoBehaviour
         hitmarker = GameObject.FindGameObjectWithTag("Hitmarker").GetComponent<Hitmarker>();
 
         // Weapon stats
-        reload = playerState.reloadMultiplier;
-        fireRate = playerState.fireRateMultiplier;
+        reload = playerState.stats["ReloadMultiplier"].statValue;
+        fireRate = playerState.stats["FireRateMultiplier"].statValue;
         anim.SetFloat("ReloadSpeed", reload);
         anim.SetFloat("ShootSpeed", fireRate);
 
-        damage = weapon.DAMAGE_BASE + playerState.damageBonus;
-        headshotMultiplier = weapon.HEADSHOT_MULTIPLIER_BASE + playerState.headShotMultiplierBonus;
-        magSizeMax = weapon.MAG_SIZE_BASE * playerState.magSizeMaxMultiplier;
+        damage = weapon.DAMAGE_BASE + playerState.stats["DamageBonus"].statValue;
+        headshotMultiplier = weapon.HEADSHOT_MULTIPLIER_BASE + playerState.stats["HeadShotMultiplierBonus"].statValue;
+        magSizeMax = (int) (weapon.MAG_SIZE_BASE * playerState.stats["MagSizeMaxMultiplier"].statValue);
         magSizeCurr = magSizeMax;
-        aimTime = weapon.AIM_TIME_BASE - playerState.aimTimeReduction <= 0 ? .03f : weapon.AIM_TIME_BASE - playerState.aimTimeReduction; // Have a min aim time
+        aimTime = weapon.AIM_TIME_BASE - playerState.stats["AimTimeReduction"].statValue <= 0 ? .03f : weapon.AIM_TIME_BASE - playerState.stats["AimTimeReduction"].statValue; // Have a min aim time
         inaccuracyMin = weapon.INACCURACY_MIN;
-        inaccuracyMax = weapon.INACCURACY_BASE - playerState.inaccuracyReduction < inaccuracyMin ? inaccuracyMin : weapon.INACCURACY_BASE - playerState.inaccuracyReduction;
+        inaccuracyMax = weapon.INACCURACY_BASE - playerState.stats["InaccuracyReduction"].statValue < inaccuracyMin ? inaccuracyMin : weapon.INACCURACY_BASE - playerState.stats["InaccuracyReduction"].statValue;
         inaccuracyCurr = inaccuracyMax;
         zoom = weapon.ZOOM_BASE;
-        effectiveRange = weapon.EFFECTIVE_RANGE_BASE + playerState.effectiveRangeBonus;
+        effectiveRange = weapon.EFFECTIVE_RANGE_BASE + playerState.stats["EffectiveRangeBonus"].statValue;
         falloffModifer = weapon.FALLOFF_MODIFIER_BASE;
 
         defiantReloadEffect.gameObject.SetActive(false);
@@ -181,17 +181,17 @@ public class Weapon : MonoBehaviour
     protected void UpdateWeaponState()
     {
         // Stats
-        reload = playerState.reloadMultiplier;
-        fireRate = playerState.fireRateMultiplier;
+        reload = playerState.stats["ReloadMultiplier"].statValue;
+        fireRate = playerState.stats["FireRateMultiplier"].statValue;
         anim.SetFloat("ReloadSpeed", reload);
         anim.SetFloat("ShootSpeed", fireRate);
 
-        damage = weapon.DAMAGE_BASE + playerState.damageBonus;
-        headshotMultiplier = weapon.HEADSHOT_MULTIPLIER_BASE + playerState.headShotMultiplierBonus;
-        magSizeMax = weapon.MAG_SIZE_BASE * playerState.magSizeMaxMultiplier;
-        aimTime = weapon.AIM_TIME_BASE - playerState.aimTimeReduction <= 0 ? .03f : weapon.AIM_TIME_BASE - playerState.aimTimeReduction; // Have a min aim time
-        inaccuracyMax = weapon.INACCURACY_BASE - playerState.inaccuracyReduction < inaccuracyMin ? inaccuracyMin : weapon.INACCURACY_BASE - playerState.inaccuracyReduction;
-        effectiveRange = weapon.EFFECTIVE_RANGE_BASE + playerState.effectiveRangeBonus;
+        damage = weapon.DAMAGE_BASE + playerState.stats["DamageBonus"].statValue;
+        headshotMultiplier = weapon.HEADSHOT_MULTIPLIER_BASE + playerState.stats["HeadShotMultiplierBonus"].statValue;
+        magSizeMax = (int) (weapon.MAG_SIZE_BASE * playerState.stats["MagSizeMaxMultiplier"].statValue);
+        aimTime = weapon.AIM_TIME_BASE - playerState.stats["AimTimeReduction"].statValue <= 0 ? .03f : weapon.AIM_TIME_BASE - playerState.stats["AimTimeReduction"].statValue; // Have a min aim time
+        inaccuracyMax = weapon.INACCURACY_BASE - playerState.stats["InaccuracyReduction"].statValue < inaccuracyMin ? inaccuracyMin : weapon.INACCURACY_BASE - playerState.stats["InaccuracyReduction"].statValue;
+        effectiveRange = weapon.EFFECTIVE_RANGE_BASE + playerState.stats["EffectiveRangeBonus"].statValue;
     }
 
     protected void OnFinishShoot()
@@ -501,8 +501,8 @@ public class Weapon : MonoBehaviour
         // CALL FIRST ON SHOOT SO HEALTH GAIN OCCURS AFTER LOSS
         if (playerState.powers["SacrificialShot"].isActive)
         {
-            // Health to lose based on max health and max mag size of the gun
-            float healthToLose = playerState.healthMax / (magSizeMax / 2.5f);
+            // Health to lose based on health and max mag size of the gun
+            float healthToLose = playerState.healthCurr / (magSizeMax / 2f);
 
             // Lose health, always stay above 0 health
             playerState.healthCurr = playerState.healthCurr - healthToLose <= 0 ? 1 : playerState.healthCurr - healthToLose;
@@ -515,9 +515,9 @@ public class Weapon : MonoBehaviour
         if (playerState.powers["SacrificialShot"].isActive)
         {
             // Gain back double health lost from shooting, healthToLose * 2
-            float healthToGain = (playerState.healthMax / (magSizeMax / 2.5f)) * healthGainMultiplier;
+            float healthToGain = (playerState.stats["HealthMax"].statValue / (magSizeMax / 2.5f)) * healthGainMultiplier;
 
-            playerState.healthCurr = playerState.healthCurr + healthToGain > playerState.healthMax ? playerState.healthMax : playerState.healthCurr + healthToGain;
+            playerState.healthCurr = playerState.healthCurr + healthToGain > playerState.stats["HealthMax"].statValue ? playerState.stats["HealthMax"].statValue : playerState.healthCurr + healthToGain;
         }
     }
 

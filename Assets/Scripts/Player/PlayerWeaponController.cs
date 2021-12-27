@@ -98,7 +98,7 @@ public class PlayerWeaponController : MonoBehaviour
             if (Time.time > holsteredReloadNextTime)
             {
                 // Increase holstered reload time with the player's current reload multiplier
-                holsteredReloadNextTime = Time.time + (HOLSTERED_RELOAD_DELAY / playerState.reloadMultiplier);
+                holsteredReloadNextTime = Time.time + (HOLSTERED_RELOAD_DELAY / playerState.stats["ReloadMultiplier"].statValue);
 
                 // Reload percentage of weapon mag, min of 1 ammo reloaded
                 weaponInactive.magSizeCurr += (int)(weaponInactive.magSizeMax * HOLSTERED_RELOAD_PERCENT) <= 0 ? 1 : (int)(weaponInactive.magSizeMax * HOLSTERED_RELOAD_PERCENT);
