@@ -43,13 +43,10 @@ public class PlayerMoveController : MonoBehaviour
     [SerializeField] private Transform cam;
     private float mouseSens;
     private float cameraY = 0f;
-    public bool canLook { get; set; }
 
     void Awake()
     {
         settings = GameObject.FindGameObjectWithTag("Settings").GetComponent<Settings>();
-        
-        canLook = true;
     }
 
     void Start()
@@ -84,12 +81,7 @@ public class PlayerMoveController : MonoBehaviour
             return;
         }
 
-        // Cannot look while Tabbed (showing upgrades display)
-        if (canLook)
-        {
-            Look();
-        }
-
+        Look();
         Move();
     }
 

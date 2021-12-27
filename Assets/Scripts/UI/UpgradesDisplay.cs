@@ -92,25 +92,19 @@ public class UpgradesDisplay : MonoBehaviour
             {
                 activePowers.Add(power.Key, power.Value); // Add to active powers to avoid duplicate displays
                 GameObject powerDisplay = powerDisplayItemQueue.Dequeue(); // Get first unused power display to show active power
-                powerDisplay.GetComponent<PowerDisplayItem>().ShowPower(power.Value.powerIcon, power.Value.powerName);
+                powerDisplay.GetComponent<PowerDisplayItem>().ShowPower(power.Value.powerIcon, power.Value.powerNameShort);
             }    
         }
     }
 
     private void ShowDisplay()
     {
-        playerMove.canLook = false;
-
-        Cursor.lockState = CursorLockMode.Confined;
         upgradesScreen.alpha = 1;
         upgradesScreen.blocksRaycasts = true;
     }
 
     public void HideDisplay()
     {
-        playerMove.canLook = true;
-
-        Cursor.lockState = CursorLockMode.Locked;
         upgradesScreen.alpha = 0;
         upgradesScreen.blocksRaycasts = false;
     }

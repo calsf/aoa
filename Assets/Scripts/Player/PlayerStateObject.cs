@@ -110,13 +110,15 @@ public class PlayerStateObject : ScriptableObject
     {
         public bool isActive;
         public Sprite powerIcon;
+        public string powerNameShort;
         public string powerName;
         public string powerDesc;
 
-        public Power(bool isActive, Sprite powerIcon, string powerName, string powerDesc)
+        public Power(bool isActive, Sprite powerIcon, string powerNameShort, string powerName, string powerDesc)
         {
             this.isActive = isActive;
             this.powerIcon = powerIcon;
+            this.powerNameShort = powerNameShort;
             this.powerName = powerName;
             this.powerDesc = powerDesc;
         }
@@ -167,81 +169,97 @@ public class PlayerStateObject : ScriptableObject
             false,
             aimGlideIcon,
             "Aim Glide",
+            "Aim Glide",
             "Aiming down sights while in the air will slow down your fall."));
         powers.Add("HolsteredReload", new Power(
             false,
             holsteredReloadIcon,
             "Holstered",
+            "Holstered Reload",
             "Gradually reloads your holstered weapon."));
         powers.Add("Punchthrough", new Power(
             false,
             punchThroughIcon,
-            "Punchthrough",
-            "Shots will pierce through multiple enemies. Does not pierce through walls."));
+            "Pierce",
+            "Piercing Shot",
+            "Shots can pierce through multiple enemies. Does not pierce through walls."));
         powers.Add("SacrificialShot", new Power(
             false,
             sacrificialShotIcon,
             "Sacrificial",
+            "Sacrificial Shot",
             "Lose health per shot. Recover double the health lost if the shot hits an enemy."));
         powers.Add("TacticalShot", new Power(
             false,
             tacticalShotIcon,
             "Tactical",
+            "Tactical Shot",
             "Shots will break walls in one hit."));
         powers.Add("ColdShot", new Power(
             false, 
             coldShotIcon, 
             "Cold",
+            "Cold Shot",
             "Shots will lower the move speed of an enemy for a short duration."));
         powers.Add("WeakeningShot", new Power(
             false, 
             weakeningShotIcon, 
             "Weakening",
+            "Weakening Shot",
             "Shots will lower the damage of an enemy for a short duration."));
         powers.Add("TempoShot", new Power(
             false, 
             tempoShotIcon, 
             "Tempo",
+            "Tempo Shot",
             "Gain bonus damage with each consecutive headshot. A missed shot will reset bonus damage to 0."));
         powers.Add("PeakOfSurvival", new Power(
             false, 
             peakOfSurvivalIcon, 
             "Survival",
+            "Peak of Survival",
             "When dropped to low health, become invincible for a short duration. Goes on cooldown afterwards."));
         powers.Add("SteadyRegen", new Power(
             false, 
             steadyRegenIcon, 
             "Regen",
+            "Steady Regen",
             "Gradually recover health over time."));
         powers.Add("ExplosiveShot", new Power(
             false, 
             explosiveShotIcon, 
             "Explosive",
+            "Explosive Death",
             "Enemies explode on death."));
         powers.Add("ClonedShot", new Power(
             false, 
             clonedShotIcon, 
             "Cloned",
+            "Cloned Shot",
             "Additional shots are fired near the original shot."));
         powers.Add("DefiantReload", new Power(
             false, 
             defiantReloadIcon, 
             "Defiant",
+            "Defiant Reload",
             "Reloading knocks back all nearby enemies."));
         powers.Add("DecoyShot", new Power(
             false, 
             decoyShotIcon, 
             "Decoy",
+            "Decoy Shot",
             "The last shot of a magazine will spawn a decoy that will attract nearby enemies."));
         powers.Add("AirSlide", new Power(
             false, 
             airSlideIcon, 
+            "Air Slide",
             "Air Slide",
             "Sliding can be performed while in the air."));
         powers.Add("LuckyShot", new Power(
             false, 
             luckyShotIcon, 
             "Lucky",
+            "Lucky Shot",
             "TBD"));
 
         /*
@@ -266,7 +284,7 @@ public class PlayerStateObject : ScriptableObject
         stats.Add("ReloadMultiplier", new Stat(
             1,
             reloadMultiplierIcon,
-            "Reload",
+            "Reload Speed",
             "Increases reload speed.",
             SetReload));
         stats.Add("FireRateMultiplier", new Stat(
@@ -278,19 +296,19 @@ public class PlayerStateObject : ScriptableObject
         stats.Add("DamageBonus", new Stat(
             0,
             damageBonusIcon,
-            "Damage",
+            "Damage Bonus",
             "Increases weapon damage.",
             SetDamageBonus));
         stats.Add("HeadShotMultiplierBonus", new Stat(
             0, 
             headShotMultiplierBonusIcon,
-            "Headshot",
+            "Headshot Damage",
             "Increases headshot damage.",
             SetHeadShot));
         stats.Add("MagSizeMaxMultiplier", new Stat(
             1, 
             magSizeMaxMultiplierIcon,
-            "Magazine",
+            "Magazine Size",
             "Increases maximum magazine size.",
             SetMagazine));
         stats.Add("AimTimeReduction", new Stat(
@@ -320,7 +338,7 @@ public class PlayerStateObject : ScriptableObject
         stats.Add("JumpBonus", new Stat(
             0, 
             jumpBonusIcon,
-            "Jumps", 
+            "Jump", 
             "Increases the number of jumps.",
             SetJumps));
         stats.Add("Armor", new Stat(
@@ -372,10 +390,22 @@ public class PlayerStateObject : ScriptableObject
 
     public void UpdateStat(string key, Stat value)
     {
-        stats[key] = value;
+        if (value.statValue == stats[key].statValue)    // If stat is capped, show different description
+        {
+            OnUpgradeStat.Invoke(new Stat(
+            value.statValue,
+            value.statIcon,
+            value.statName,
+            "You feel no change...",
+            value.setStat));
+        }
+        else  // Else, upgrade and display normally
+        {
+            stats[key] = value;
 
-        OnStateUpdate.Invoke();
-        OnUpgradeStat.Invoke(value);
+            OnStateUpdate.Invoke();
+            OnUpgradeStat.Invoke(value);
+        }
     }
 
     public void UpdatePower(string key, Power value)
@@ -441,10 +471,16 @@ public class PlayerStateObject : ScriptableObject
 
     private float SetArmor()
     {
+        // Cap max armor
+        if (stats["Armor"].statValue >= .9f)
+        {
+            return stats["Armor"].statValue;
+        }
+
         float newVal = stats["Armor"].statValue + .1f;
 
         // Lower increase amount after some value
-        if (stats["Armor"].statValue > .6f)
+        if (stats["Armor"].statValue >= .5f)
         {
             newVal = stats["Armor"].statValue + .05f;
         }
