@@ -354,8 +354,8 @@ public class PlayerStateObject : ScriptableObject
             "Increases maximum health.",
             SetMaxHealth));
 
-        selectedPrimary = 1;
-        selectedSecondary = 2;
+        selectedPrimary = 2;
+        selectedSecondary = 0;
         selectedActive = 0;
 
         healthCurr = START_HEALTH;

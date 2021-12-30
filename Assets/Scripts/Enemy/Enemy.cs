@@ -32,20 +32,24 @@ public abstract class Enemy : MonoBehaviour
     protected float damageMax;
     protected float damageCurr;
 
-    protected bool isColdShotted;
+    public bool isColdShotted { get; set; }
     protected float coldShotOffTime;
 
-    protected bool isWeakenShotted;
+    public bool isWeakenShotted { get; set; }
     protected float weakenShotOffTime;
 
     public bool isTaunted { get; set; }
     public Transform currTarget { get; set; }
+
+    public HealthBar healthBar;
 
     protected virtual void Start()
     {
         anim = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player");
         playerMoveController = player.GetComponent<PlayerMoveController>();
+
+        healthBar.ownerEnemy = this;
 
         origRot = transform.rotation;
 
@@ -92,6 +96,8 @@ public abstract class Enemy : MonoBehaviour
         {
             healthCurr -= dmg;
 
+            TriggerHealthBar();
+
             if (healthCurr <= 0)
             {
                 // Death effect
@@ -112,6 +118,12 @@ public abstract class Enemy : MonoBehaviour
                 gameObject.SetActive(false);
             }
         }
+    }
+
+    // show health bar or reset timer if already active
+    public void TriggerHealthBar()
+    {
+        healthBar.HealthBarOnHit(healthCurr / healthMax);
     }
 
     // Reset enemy values

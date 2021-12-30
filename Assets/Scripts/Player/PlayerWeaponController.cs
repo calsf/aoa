@@ -15,6 +15,9 @@ public class PlayerWeaponController : MonoBehaviour
     private const float HOLSTERED_RELOAD_DELAY = 2f; // Default delay
     private const float HOLSTERED_RELOAD_PERCENT = .25f; // Percentage of mag max to reload each iteration
 
+    private Camera cam;
+    private LayerMask hoverLayerMask;
+
     void Start()
     {
         weaponPrimary = weapons[playerState.selectedPrimary];
@@ -31,6 +34,14 @@ public class PlayerWeaponController : MonoBehaviour
         weaponActive.gameObject.SetActive(true);
 
         holsteredReloadNextTime = Time.time;
+
+        cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
+
+        // Must also include anything that can obstruct enemy view
+        hoverLayerMask = new LayerMask();
+        hoverLayerMask.value = (1 << LayerMask.NameToLayer("Enemy")
+            | 1 << LayerMask.NameToLayer("Ground")
+            | 1 << LayerMask.NameToLayer("Wall"));
     }
 
     void Update()
@@ -109,6 +120,14 @@ public class PlayerWeaponController : MonoBehaviour
                     weaponInactive.magSizeCurr = weaponInactive.magSizeMax;
                 }
             }
+        }
+
+        // Trigger health bars on hover and if in view of player's mouse target
+        RaycastHit hit;
+        bool hasHit = Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, hoverLayerMask);
+        if (hasHit && hit.collider != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        {
+            hit.collider.gameObject.GetComponentInParent<Enemy>().TriggerHealthBar();
         }
     }
 }
