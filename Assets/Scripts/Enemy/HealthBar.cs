@@ -17,17 +17,34 @@ public class HealthBar : MonoBehaviour
     private float startY;
     private Canvas parentCanvas;
 
+    private Settings settings;
+    private bool showHealthBars;
+
     public Enemy ownerEnemy { get; set; }
 
     void Start()
     {
         cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
+        settings = GameObject.FindGameObjectWithTag("Settings").GetComponent<Settings>();
         parentCanvas = GetComponentInParent<Canvas>();
         parentCanvas.worldCamera = cam;
 
         startY = parentCanvas.transform.localPosition.y;
         healthFill.localScale = Vector3.one;
         gameObject.SetActive(false);
+
+        UpdateShowHealthBar();
+
+        // Update to show health bar or not based on settings
+        settings.OnSettingsSaved.AddListener(UpdateShowHealthBar);
+    }
+
+    private void OnDestroy()
+    {
+        if (settings != null)
+        {
+            settings.OnSettingsSaved.RemoveListener(UpdateShowHealthBar);
+        }
     }
 
     void LateUpdate()
@@ -84,8 +101,29 @@ public class HealthBar : MonoBehaviour
         }
     }
 
+    // Update setting to show health bars
+    private void UpdateShowHealthBar()
+    {
+        showHealthBars = PlayerPrefs.GetInt("ShowHealthBars", 1) == 1 ? true : false;
+        
+        if (!showHealthBars)
+        {
+            gameObject.SetActive(false);
+        }
+        else if (Time.time < nextHideTime)
+        {
+            gameObject.SetActive(true);
+        }
+    }
+
     public void HealthBarOnHit(float healthRemaining)
     {
+        // Do not show if setting is off
+        if (!showHealthBars)
+        {
+            return;
+        }
+
         // Set health scale
         healthFill.localScale = new Vector3(healthRemaining, 1, 1);
 

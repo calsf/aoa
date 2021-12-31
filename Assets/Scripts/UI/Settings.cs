@@ -28,6 +28,9 @@ public class Settings : MonoBehaviour
     [SerializeField] private Text volumeValue;
     private float volume;
 
+    [SerializeField] private Toggle showHealthBarsToggle;
+    private int showHealthBars;
+
     public UnityEvent OnSettingsSaved;
 
     void Start()
@@ -103,12 +106,22 @@ public class Settings : MonoBehaviour
         sensitivitySlider.value = sensitivity;
     }
 
+    private void InitializeShowHealthBars()
+    {
+        // Get saved value
+        showHealthBars = PlayerPrefs.GetInt("ShowHealthBars", 1);
+
+        // Set toggle based on saved value ---> 1 is ON, 0 or other number is OFF
+        showHealthBarsToggle.isOn = showHealthBars == 1 ? true : false;
+    }
+
     // Initializes all setting values to display based on saved values, should be called before Settings screen is opened
     private void ResetValues()
     {
         InitializeCrosshairColor();
         InitializeVolume();
         InitializeSensitivity();
+        InitializeShowHealthBars();
     }
 
     public void OnSave()
@@ -121,6 +134,8 @@ public class Settings : MonoBehaviour
         PlayerPrefs.SetFloat("Volume", volumeSlider.value);
 
         PlayerPrefs.SetFloat("Sensitivity", sensitivitySlider.value);
+
+        PlayerPrefs.SetInt("ShowHealthBars", showHealthBarsToggle.isOn ? 1 : 0); // 1 is ON, 0 is OFF
 
         // Invoke OnSettingsSaved event
         OnSettingsSaved.Invoke();
