@@ -141,6 +141,9 @@ public abstract class Enemy : MonoBehaviour
         isColdShotted = false;
         isWeakenShotted = false;
         currTarget = player.transform;
+
+        // Deactivate health bar
+        healthBar.gameObject.SetActive(false);
     }
 
     private void OnTriggerEnter(Collider other)

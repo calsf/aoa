@@ -16,6 +16,8 @@ public class EnemySpawnManager : MonoBehaviour
     private LayerMask playerMask;
     private LayerMask objectMask;
 
+    public List<GameObject> activeEnemies { get; set; }
+
     void Start()
     {
         grid = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>();
@@ -25,10 +27,13 @@ public class EnemySpawnManager : MonoBehaviour
 
         objectMask = new LayerMask();
         objectMask = (1 << LayerMask.NameToLayer("Enemy")
-            | 1 << LayerMask.NameToLayer("Wall"));
+            | 1 << LayerMask.NameToLayer("Wall")
+            | 1 << LayerMask.NameToLayer("Nest")
+            | 1 << LayerMask.NameToLayer("Altar"));
 
         // Initialize pool of enemies
         enemyPool = new List<GameObject>();
+        activeEnemies = new List<GameObject>();
         for (int i = 0; i < startNum * 2; i++)
         {
             enemyPool.Add(Instantiate(enemy, Vector3.zero, Quaternion.identity));
@@ -59,10 +64,18 @@ public class EnemySpawnManager : MonoBehaviour
             GameObject newEnemy = GetFromPool(enemyPool, enemy);
             newEnemy.transform.position = spawnPos;
             newEnemy.SetActive(true);
+
+            activeEnemies.Add(newEnemy);
         }
     }
 
-    protected GameObject GetFromPool(List<GameObject> pool, GameObject obj)
+    private void FixedUpdate()
+    {
+        // Clear inactive enemies from list
+        activeEnemies.RemoveAll(enemy => !enemy.activeInHierarchy);
+    }
+
+    private GameObject GetFromPool(List<GameObject> pool, GameObject obj)
     {
         for (int i = 0; i < pool.Count; i++)
         {
@@ -76,5 +89,21 @@ public class EnemySpawnManager : MonoBehaviour
         GameObject newObj = Instantiate(obj, Vector3.zero, Quaternion.identity);
         pool.Add(newObj);
         return newObj;
+    }
+
+    public void Spawn(Vector3 pos)
+    {
+        // Cap number of enemies that can be spawned
+        if (activeEnemies.Count > startNum * 2)
+        {
+            return;
+        }
+
+        GameObject newEnemy = GetFromPool(enemyPool, enemy);
+        newEnemy.transform.position = pos;
+        newEnemy.SetActive(true);
+        activeEnemies.Add(newEnemy);
+
+        Debug.Log(newEnemy + "spawned");
     }
 }

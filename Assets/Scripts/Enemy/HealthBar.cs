@@ -22,7 +22,7 @@ public class HealthBar : MonoBehaviour
 
     public Enemy ownerEnemy { get; set; }
 
-    void Start()
+    void Awake()
     {
         cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         settings = GameObject.FindGameObjectWithTag("Settings").GetComponent<Settings>();
@@ -31,13 +31,13 @@ public class HealthBar : MonoBehaviour
 
         startY = parentCanvas.transform.localPosition.y;
         healthFill.localScale = Vector3.one;
-        gameObject.SetActive(false);
 
         UpdateShowHealthBar();
 
         // Update to show health bar or not based on settings
         settings.OnSettingsSaved.AddListener(UpdateShowHealthBar);
     }
+
 
     private void OnDestroy()
     {
@@ -105,10 +105,10 @@ public class HealthBar : MonoBehaviour
     private void UpdateShowHealthBar()
     {
         showHealthBars = PlayerPrefs.GetInt("ShowHealthBars", 1) == 1 ? true : false;
-        
+
         if (!showHealthBars)
         {
-            gameObject.SetActive(false);
+            nextHideTime = Time.time;
         }
         else if (Time.time < nextHideTime)
         {

@@ -40,6 +40,8 @@ public class PlayerWeaponController : MonoBehaviour
         // Must also include anything that can obstruct enemy view
         hoverLayerMask = new LayerMask();
         hoverLayerMask.value = (1 << LayerMask.NameToLayer("Enemy")
+            | 1 << LayerMask.NameToLayer("Nest")
+            | 1 << LayerMask.NameToLayer("Altar")
             | 1 << LayerMask.NameToLayer("Ground")
             | 1 << LayerMask.NameToLayer("Wall"));
     }
@@ -125,7 +127,7 @@ public class PlayerWeaponController : MonoBehaviour
         // Trigger health bars on hover and if in view of player's mouse target
         RaycastHit hit;
         bool hasHit = Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, Mathf.Infinity, hoverLayerMask);
-        if (hasHit && hit.collider != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+        if (hasHit && hit.collider != null && (hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") || hit.collider.gameObject.layer == LayerMask.NameToLayer("Nest")))
         {
             hit.collider.gameObject.GetComponentInParent<Enemy>().TriggerHealthBar();
         }

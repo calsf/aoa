@@ -194,7 +194,7 @@ public class PlayerStateObject : ScriptableObject
             tacticalShotIcon,
             "Tactical",
             "Tactical Shot",
-            "Shots will break walls in one hit."));
+            "Shots within effective range will break walls in one hit."));
         powers.Add("ColdShot", new Power(
             false, 
             coldShotIcon, 

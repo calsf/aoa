@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AltarSpawnManager : MonoBehaviour
 {
-    private const int OBJECT_SEPARATION = 5;
+    private const int OBJECT_SEPARATION = 10;
     private const int PLAYER_SEPARATION = 25;
 
     [SerializeField] private int startNum;
@@ -23,8 +23,10 @@ public class AltarSpawnManager : MonoBehaviour
         playerMask = 1 << LayerMask.NameToLayer("Player");
 
         objectMask = new LayerMask();
-        objectMask = (1 << LayerMask.NameToLayer("Altar")
-            | 1 << LayerMask.NameToLayer("Wall"));
+        objectMask = (1 << LayerMask.NameToLayer("Enemy")
+            | 1 << LayerMask.NameToLayer("Wall")
+            | 1 << LayerMask.NameToLayer("Nest")
+            | 1 << LayerMask.NameToLayer("Altar"));
 
         // Set number of large altars to spawn
         int largeNum = Random.Range(2, 4);

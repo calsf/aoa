@@ -16,6 +16,7 @@ TagManager:
   - DamageNumberManager
   - Hitmarker
   - Settings
+  - EnemySpawnManager
   layers:
   - Default
   - TransparentFX
@@ -31,7 +32,7 @@ TagManager:
   - WallDestroyed
   - Player
   - Altar
-  - 
+  - Nest
   - 
   - 
   - 

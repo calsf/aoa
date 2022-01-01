@@ -116,7 +116,9 @@ public class Weapon : MonoBehaviour
         shootLayerMask = new LayerMask();
         shootLayerMask.value = (1 << LayerMask.NameToLayer("Enemy") 
             | 1 << LayerMask.NameToLayer("Ground")
-            | 1 << LayerMask.NameToLayer("Wall"));
+            | 1 << LayerMask.NameToLayer("Wall")
+            | 1 << LayerMask.NameToLayer("Altar")
+            | 1 << LayerMask.NameToLayer("Nest"));
 
         damageNumberManager = GameObject.FindGameObjectWithTag("DamageNumberManager").GetComponent<DamageNumberManager>();
         hitmarker = GameObject.FindGameObjectWithTag("Hitmarker").GetComponent<Hitmarker>();
@@ -323,7 +325,7 @@ public class Weapon : MonoBehaviour
                     DecoyShot(hit.point);
                 }
 
-                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy")) // Enemy hit
+                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") || hit.collider.gameObject.layer == LayerMask.NameToLayer("Nest")) // Enemy hit
                 {
                     // Check for distance and apply falloff to damage if necessary
                     float damageDealt = hit.distance > effectiveRange ? damage * falloffModifer : damage;
@@ -422,7 +424,7 @@ public class Weapon : MonoBehaviour
             {
                 //Debug.Log(hit.collider.tag + "DISTANCE " + hit.distance);
 
-                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy")) // Enemy hit
+                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") || hit.collider.gameObject.layer == LayerMask.NameToLayer("Nest")) // Enemy hit
                 {
                     // If enemy object was already hit, do not apply hit again
                     // Since all hit is ordered by distance, first hit is the correct hit point and should not apply hit again to same enemy again
