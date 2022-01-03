@@ -179,6 +179,22 @@ public class EnemyAir : Enemy
                 currPathPos++;
             }
         }
+        else // Move around to random positions
+        {
+            transform.LookAt(nextPathPos);
+
+            if (Vector3.Distance(transform.position, nextPathPos) > 1f)
+            {
+                Vector3 moveDir = nextPathPos - transform.position;
+                moveDir.Normalize();
+
+                rb.AddForce((moveDir * (moveSpeedCurr / 4)) - rb.velocity, ForceMode.VelocityChange);
+            }
+            else
+            {
+                nextPathPos = new Vector3(Random.Range(-grid.gridSizeX, grid.gridSizeX), Random.Range(0, grid.gridSizeY), Random.Range(-grid.gridSizeZ, grid.gridSizeZ));
+            }
+        }
     }
 
     // Movement when taunted by decoy shot
@@ -213,6 +229,8 @@ public class EnemyAir : Enemy
         // Already at target node
         if (startNode == targetNode)
         {
+            isAggro = true;
+            nextPathfind = Time.time + 1;
             return;
         }
 

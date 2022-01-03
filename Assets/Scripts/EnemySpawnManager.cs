@@ -37,6 +37,8 @@ public class EnemySpawnManager : MonoBehaviour
         for (int i = 0; i < startNum * 2; i++)
         {
             enemyPool.Add(Instantiate(enemy, Vector3.zero, Quaternion.identity));
+            enemyPool[i].GetComponent<Enemy>().SetIgnoreNestCollision(true); // Initially ignore nest collision
+
             enemyPool[i].SetActive(false);
         }
 
@@ -63,6 +65,7 @@ public class EnemySpawnManager : MonoBehaviour
             // Get unused enemy and set position
             GameObject newEnemy = GetFromPool(enemyPool, enemy);
             newEnemy.transform.position = spawnPos;
+            newEnemy.GetComponent<Enemy>().SetIgnoreNestCollision(false); // Reset to collide with nest since these initial spawns will not spawn inside a nest
             newEnemy.SetActive(true);
 
             activeEnemies.Add(newEnemy);
@@ -91,6 +94,7 @@ public class EnemySpawnManager : MonoBehaviour
         return newObj;
     }
 
+    // Spawn at enemy at given position (usually from nest)
     public void Spawn(Vector3 pos)
     {
         // Cap number of enemies that can be spawned
@@ -100,6 +104,7 @@ public class EnemySpawnManager : MonoBehaviour
         }
 
         GameObject newEnemy = GetFromPool(enemyPool, enemy);
+        newEnemy.GetComponent<Enemy>().SetIgnoreNestCollision(true);
         newEnemy.transform.position = pos;
         newEnemy.SetActive(true);
         activeEnemies.Add(newEnemy);

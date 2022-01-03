@@ -63,7 +63,7 @@ public class NestManager : MonoBehaviour
         }
 
         // TEMPORARY!!!!!
-        InvokeRepeating("SpawnFromNest", 6, Random.Range(2, 3));
+        InvokeRepeating("SpawnFromNest", 6, 3);
     }
 
     // Spawn an enemy of random enemy type at one of the active nest positions

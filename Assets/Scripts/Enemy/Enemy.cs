@@ -144,6 +144,9 @@ public abstract class Enemy : MonoBehaviour
 
         // Deactivate health bar
         healthBar.gameObject.SetActive(false);
+
+        // When resetting enemy, ignore nest collision since they will be respawned inside a nest
+        SetIgnoreNestCollision(true);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -158,6 +161,22 @@ public abstract class Enemy : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         OnTriggerEnter(other);
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        // On exiting a nest, re-activate collision with nest
+        if (other.gameObject.layer == LayerMask.NameToLayer("Nest"))
+        {
+            Debug.Log("called");
+            SetIgnoreNestCollision(false);
+        }
+    }
+
+    // Set ignore layer collision with nest based on argument
+    public void SetIgnoreNestCollision(bool ignore)
+    {
+        Physics.IgnoreLayerCollision(LayerMask.NameToLayer("EnemyCollision"), LayerMask.NameToLayer("Nest"), ignore);
     }
 
     public void ApplyColdShot(float slowMultiplier, float delay)
