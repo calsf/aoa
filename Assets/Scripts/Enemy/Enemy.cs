@@ -86,6 +86,8 @@ public abstract class Enemy : MonoBehaviour
 
     protected abstract void Move();
 
+    protected abstract void PathFind();
+
     public virtual void Damaged(float dmg)
     {
         if (healthCurr <= 0)
@@ -155,6 +157,13 @@ public abstract class Enemy : MonoBehaviour
         if (other.gameObject == player)
         {
             playerState.DamagePlayer(damageCurr);
+        }
+
+        // Immediately trigger aggro if not already aggro'd and look for a path once in player's aggro area
+        if (!isAggro && other.gameObject.layer == LayerMask.NameToLayer("AggroArea"))
+        {
+            isAggro = true;
+            PathFind();
         }
     }
 

@@ -8,4 +8,9 @@ public class Nest : Enemy
     {
         return;
     }
+
+    protected override void PathFind()
+    {
+        return;
+    }
 }

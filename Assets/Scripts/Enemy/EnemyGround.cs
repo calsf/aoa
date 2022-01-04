@@ -8,8 +8,6 @@ public class EnemyGround : Enemy
     protected const int MAX_NODES_TO_LOOK = 10;
 
     // General Enemy pathfinding
-    [SerializeField] protected float fCostLimit; // fCost limit for a path
-
     protected Grid3D grid;
     protected Node[,,] gridArrayCopy;
     protected Vector3 lastValidStartPos;
@@ -105,10 +103,10 @@ public class EnemyGround : Enemy
         }
 
         // Check for next pathfind call
-        if (nextPathfind < Time.time)
+        if (isAggro && nextPathfind < Time.time)
         {
-            // Determine next pathfind call depending on enemy aggro state
-            pathfindDelay = isAggro ? Random.Range(1, 4) : 1;
+            // Determine next pathfind call
+            pathfindDelay = Random.Range(1, 4);
             nextPathfind = Time.time + pathfindDelay;
 
             PathFind();
@@ -224,7 +222,7 @@ public class EnemyGround : Enemy
     }
 
     // --- Pathfinding ---
-    protected void PathFind()
+    protected override void PathFind()
     {
         targetPos = new Vector3(player.transform.position.x, transform.position.y, player.transform.position.z) + (Vector3.up * 5); // Offset player position
 
@@ -244,8 +242,6 @@ public class EnemyGround : Enemy
         // Already at target node
         if (startNode == targetNode)
         {
-            isAggro = true;
-            nextPathfind = Time.time + 1;
             return;
         }
 
@@ -270,10 +266,6 @@ public class EnemyGround : Enemy
             {
                 GetPath(startNode, targetNode);
                 return;
-            }
-            else if (!isAggro && currNode.fCost > fCostLimit) // If not aggro and cost to reach this node is too high, we can ignore its neighbors and continue through open list
-            {
-                continue;
             }
             else if (numNodesLooked > MAX_NODES_TO_LOOK) // Limit number of nodes to look through and return partial path
             {
@@ -300,9 +292,7 @@ public class EnemyGround : Enemy
                         neighborNode.hCost = GetManhattanDistance(neighborNode, targetNode); // Cost to reach target from this neighbor node
                         neighborNode.parent = currNode; // Set parent of neighbor so we can backtrack for final path
 
-                        // If isAggro, no cost limit
-                        // If cost to reach this node is too high, do not add to open list
-                        if ((isAggro || neighborNode.fCost < fCostLimit) && !openList.Contains(neighborNode))
+                        if (isAggro && !openList.Contains(neighborNode))
                         {
                             openList.Enqueue(neighborNode);
                         }
@@ -347,7 +337,7 @@ public class EnemyGround : Enemy
                         }
                     }
 
-                    // Skip if at least 2 are blocking (realistically, a node of type (1, 1, 1) from curr should be reachable as long as < 3 are blocking but we'll cut off at 2)
+                    // Skip if at least 2 are blocking (a node of type (1, 1, 1) from curr should be reachable as long as < 3 are blocking but we'll cut off at 2)
                     if (unwalkableCount >= 2)
                     {
                         continue;
@@ -362,9 +352,7 @@ public class EnemyGround : Enemy
                         neighborNode.hCost = GetManhattanDistance(neighborNode, targetNode); // Cost to reach target from this neighbor node
                         neighborNode.parent = currNode; // Set parent of neighbor so we can backtrack for final path
 
-                        // If isAggro, no cost limit
-                        // If cost to reach this node is too high, do not add to open list
-                        if ((isAggro || neighborNode.fCost < fCostLimit) && !openList.Contains(neighborNode))
+                        if (isAggro && !openList.Contains(neighborNode))
                         {
                             openList.Enqueue(neighborNode);
                         }
