@@ -19,6 +19,11 @@ public class Explosion : MonoBehaviour
         hitmarker = GameObject.FindGameObjectWithTag("Hitmarker").GetComponent<Hitmarker>();
     }
 
+    void OnEnable()
+    {
+        hitEnemies.Clear();
+    }
+
     void LateUpdate()
     {
         if (mainParticles.particleCount <= 0)
@@ -39,7 +44,7 @@ public class Explosion : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy") && !hitEnemies.Contains(other.gameObject))
+        if ((other.gameObject.layer == LayerMask.NameToLayer("Enemy") || other.gameObject.layer == LayerMask.NameToLayer("Nest")) && !hitEnemies.Contains(other.gameObject))
         {
             hitEnemies.Add(other.gameObject);
 

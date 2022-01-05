@@ -490,6 +490,15 @@ public class PlayerStateObject : ScriptableObject
 
     private float SetMaxHealth()
     {
-        return stats["HealthMax"].statValue + 25;
+        float increaseAmount = 25;
+        
+        // Increase current health by max health increase amount
+        healthCurr += increaseAmount;
+        if (healthCurr > stats["HealthMax"].statValue + increaseAmount)
+        {
+            healthCurr = stats["HealthMax"].statValue + increaseAmount;
+        }
+        
+        return stats["HealthMax"].statValue + increaseAmount;
     }
 }
