@@ -18,7 +18,7 @@ public class PlayerMoveController : MonoBehaviour
     private const float STRAFE_MODIFIER = .95f;
     private const float AIM_MOVE_MODIFIER_X = .5f;
     private const float AIM_MOVE_MODIFIER_Z = .7f;
-    private const float AIR_ACCEL_MODIFIER = 3.5f;
+    private const float AIR_ACCEL_MODIFIER = 5.5f;
 
     // Movement
     [SerializeField] private ParticleSystem slideEffectForward;

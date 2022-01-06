@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class NestManager : MonoBehaviour
 {
-    private const int OBJECT_SEPARATION = 5;
-    private const int FAR_SEPARATION = 20;
+    private const int OBJECT_SEPARATION = 9;
+    private const int FAR_SEPARATION = 12;
     private const float BASE_SPAWN_DELAY_MIN = 5;
     private const float BASE_SPAWN_DELAY_MAX = 10;
     private const float MIN_SPAWN_DELAY = 1;
@@ -34,6 +34,7 @@ public class NestManager : MonoBehaviour
 
         objectMask = new LayerMask();
         objectMask = (1 << LayerMask.NameToLayer("Enemy")
+            | 1 << LayerMask.NameToLayer("Boundary")
             | 1 << LayerMask.NameToLayer("Wall")
             | 1 << LayerMask.NameToLayer("Altar"));
 
@@ -64,8 +65,7 @@ public class NestManager : MonoBehaviour
 
             } while (Physics.CheckSphere(spawnPos, OBJECT_SEPARATION, objectMask) || Physics.CheckSphere(spawnPos, FAR_SEPARATION, farMask)); // Keep certain distance between objects
 
-            GameObject newNest = Instantiate(nest, Vector3.zero, Quaternion.identity);
-            newNest.transform.position = spawnPos;
+            GameObject newNest = Instantiate(nest, spawnPos, Quaternion.identity);
             newNest.SetActive(true);
 
             nestList.Add(newNest);

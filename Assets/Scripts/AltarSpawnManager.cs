@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class AltarSpawnManager : MonoBehaviour
 {
-    private const int OBJECT_SEPARATION = 10;
-    private const int PLAYER_SEPARATION = 25;
+    private const int OBJECT_SEPARATION = 5;
+    private const int PLAYER_SEPARATION = 10;
 
     [SerializeField] private int startNum;
     [SerializeField] private GameObject altarSmall;
@@ -24,6 +24,7 @@ public class AltarSpawnManager : MonoBehaviour
 
         objectMask = new LayerMask();
         objectMask = (1 << LayerMask.NameToLayer("Enemy")
+            | 1 << LayerMask.NameToLayer("Boundary")
             | 1 << LayerMask.NameToLayer("Wall")
             | 1 << LayerMask.NameToLayer("Nest")
             | 1 << LayerMask.NameToLayer("Altar"));
@@ -49,15 +50,14 @@ public class AltarSpawnManager : MonoBehaviour
             GameObject newAltar;
             if (largeNum > 0) // Spawn large altars
             {
-                newAltar = Instantiate(altarLarge);
+                newAltar = Instantiate(altarLarge, spawnPos, Quaternion.identity);
                 largeNum--;
             }
             else // Spawn small altars for rest
             {
-                newAltar = Instantiate(altarSmall);
+                newAltar = Instantiate(altarSmall, spawnPos, Quaternion.identity);
             }
 
-            newAltar.transform.position = spawnPos;
             newAltar.SetActive(true);
         }
     }

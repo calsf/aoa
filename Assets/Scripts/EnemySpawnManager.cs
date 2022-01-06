@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemySpawnManager : MonoBehaviour
 {
-    private const int OBJECT_SEPARATION = 3;
+    private const int OBJECT_SEPARATION = 5;
     private const int PLAYER_SEPARATION = 80;
 
     [SerializeField] private int startNum;
@@ -29,6 +29,7 @@ public class EnemySpawnManager : MonoBehaviour
 
         objectMask = new LayerMask();
         objectMask = (1 << LayerMask.NameToLayer("Enemy")
+            | 1 << LayerMask.NameToLayer("Boundary")
             | 1 << LayerMask.NameToLayer("Wall")
             | 1 << LayerMask.NameToLayer("Nest")
             | 1 << LayerMask.NameToLayer("Altar"));
