@@ -44,16 +44,28 @@ public class PlayerMoveController : MonoBehaviour
     private float mouseSens;
     private float cameraY = 0f;
 
+    // Possible player starting spawn positions
+    [SerializeField] private Transform[] playerSpawns;
+
     void Awake()
     {
         settings = GameObject.FindGameObjectWithTag("Settings").GetComponent<Settings>();
+        controller = GetComponent<CharacterController>();
+
+        controller.enabled = false; // Disable character controller before manually changing position
+
+        // Spawn player at a random possible spawn position
+        Vector3 spawnPos = playerSpawns[Random.Range(0, playerSpawns.Length)].position;
+        transform.position = spawnPos;
+        transform.LookAt(new Vector3(0, (spawnPos - Vector3.zero).y, 0));
+
+        controller.enabled = true; // Re-enable character controller
     }
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
 
-        controller = GetComponent<CharacterController>();
         UpdateSensitivity();
 
         jumpMaxAvailable = 1 + (int) playerState.stats["JumpBonus"].statValue;

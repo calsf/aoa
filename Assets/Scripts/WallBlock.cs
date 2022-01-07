@@ -73,6 +73,27 @@ public class WallBlock : MonoBehaviour
         }
     }
 
+    public void UpdateGrid()
+    {
+        if (gridAir == null)
+        {
+            gridAir = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>();
+        }
+
+        if (gridGround == null)
+        {
+            gridGround = GameObject.FindGameObjectWithTag("GridGround").GetComponent<Grid3D>();
+        }
+
+        gridAir.UpdateNodeWalkable(transform.position);
+
+        // Only need to update ground grid if is a ground wall block
+        if (transform.position.y <= 5)
+        {
+            gridGround.UpdateNodeWalkable(transform.position);
+        }
+    }
+
     private IEnumerator FlashBreak()
     {
         float waitTime;
@@ -122,13 +143,8 @@ public class WallBlock : MonoBehaviour
 
         // Update the grid node isWalkable at this wall block's position
         gameObject.SetActive(false); // Set inactive before updating so grid won't see the block
-        gridAir.UpdateNodeWalkable(transform.position);
 
-        // Only need to update ground grid if is a ground wall block
-        if (transform.position.y <= 5)
-        {
-            gridGround.UpdateNodeWalkable(transform.position);
-        }
+        UpdateGrid();
 
         // Destroy this wall block
         Destroy(gameObject);
