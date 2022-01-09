@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class EnemySpawnManager : MonoBehaviour
 {
-    private const int OBJECT_SEPARATION = 5;
-    private const int PLAYER_SEPARATION = 80;
+    private const int OBJECT_SEPARATION = 3;
+    private const int PLAYER_SEPARATION = 50;
 
     [SerializeField] private int startNum;
     [SerializeField] private GameObject enemy;

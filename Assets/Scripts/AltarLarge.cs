@@ -9,6 +9,7 @@ public class AltarLarge : Altar
     {
         base.Start();
         costCurr = COST_BASE_LARGE;
+        costText.text = costCurr.ToString();
         powers = new List<string>(playerState.powers.Keys);
     }
 

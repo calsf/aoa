@@ -9,6 +9,7 @@ public class AltarSmall : Altar
     {
         base.Start();
         costCurr = COST_BASE_SMALL;
+        costText.text = costCurr.ToString();
     }
 
     protected override void OpenAltar()
