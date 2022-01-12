@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class NestManager : MonoBehaviour
 {
-    private const int OBJECT_SEPARATION = 5;
-    private const int FAR_SEPARATION = 20;
+    private const int OBJECT_SEPARATION = 9;
+    private const int FAR_SEPARATION = 12;
+    private const float BASE_SPAWN_DELAY_MIN = 5;
+    private const float BASE_SPAWN_DELAY_MAX = 10;
+    private const float MIN_SPAWN_DELAY = 1;
 
     [SerializeField] private int startNum;
     [SerializeField] private GameObject nest;
@@ -16,6 +19,9 @@ public class NestManager : MonoBehaviour
 
     private LayerMask farMask;
     private LayerMask objectMask;
+
+    private float nextSpawnTime;
+    private int maxActiveEnemies;
 
     void Start()
     {
@@ -28,6 +34,7 @@ public class NestManager : MonoBehaviour
 
         objectMask = new LayerMask();
         objectMask = (1 << LayerMask.NameToLayer("Enemy")
+            | 1 << LayerMask.NameToLayer("Boundary")
             | 1 << LayerMask.NameToLayer("Wall")
             | 1 << LayerMask.NameToLayer("Altar"));
 
@@ -37,7 +44,10 @@ public class NestManager : MonoBehaviour
 
         foreach (GameObject obj in spawnerObjs)
         {
-            enemySpawners.Add(obj.GetComponent<EnemySpawnManager>());
+            EnemySpawnManager enemySpawner = obj.GetComponent<EnemySpawnManager>();
+            enemySpawners.Add(enemySpawner);
+
+            maxActiveEnemies += enemySpawner.maxNum;
         }
 
         // Spawn within grid bounds
@@ -55,15 +65,34 @@ public class NestManager : MonoBehaviour
 
             } while (Physics.CheckSphere(spawnPos, OBJECT_SEPARATION, objectMask) || Physics.CheckSphere(spawnPos, FAR_SEPARATION, farMask)); // Keep certain distance between objects
 
-            GameObject newNest = Instantiate(nest, Vector3.zero, Quaternion.identity);
-            newNest.transform.position = spawnPos;
+            GameObject newNest = Instantiate(nest, spawnPos, Quaternion.identity);
             newNest.SetActive(true);
 
             nestList.Add(newNest);
         }
 
-        // TEMPORARY!!!!!
-        InvokeRepeating("SpawnFromNest", 6, Random.Range(2, 3));
+        // Initialize next spawn time
+        nextSpawnTime = Time.time + Random.Range(BASE_SPAWN_DELAY_MIN, BASE_SPAWN_DELAY_MAX);
+    }
+
+    void Update()
+    {
+        if (nextSpawnTime < Time.time)
+        {
+            // Calculate next spawn time based on total number of ALL enemies alive
+            // The less enemies alive, the faster the next spawn, the more enemies alive, the slower the next spawn
+            int currActiveEnemies = 0;
+            foreach (EnemySpawnManager spawner in enemySpawners)
+            {
+                currActiveEnemies += spawner.activeEnemies.Count;
+            }
+
+            float activeEnemyPercent = (float) currActiveEnemies / maxActiveEnemies;
+
+            nextSpawnTime = Time.time + (Random.Range(BASE_SPAWN_DELAY_MIN, BASE_SPAWN_DELAY_MAX) * activeEnemyPercent) + MIN_SPAWN_DELAY; // Add a min delay in case activeEnemyPercent is 0
+
+            SpawnFromNest();
+        }
     }
 
     // Spawn an enemy of random enemy type at one of the active nest positions
@@ -82,6 +111,12 @@ public class NestManager : MonoBehaviour
         
         Vector3 spawnPos = nestList[Random.Range(0, nestList.Count)].transform.position;
 
-        enemyType.Spawn(spawnPos);
+        bool spawned = enemyType.Spawn(spawnPos);
+        
+        // If failed to spawn because the selected enemy type is at max number of active enemies, wait a bit and then try to spawn an enemy type again
+        if (!spawned)
+        {
+            nextSpawnTime = Time.time + 1;
+        }
     }
 }

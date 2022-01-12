@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemySpawnManager : MonoBehaviour
 {
     private const int OBJECT_SEPARATION = 3;
-    private const int PLAYER_SEPARATION = 80;
+    private const int PLAYER_SEPARATION = 50;
 
     [SerializeField] private int startNum;
     [SerializeField] private GameObject enemy;
@@ -18,6 +18,8 @@ public class EnemySpawnManager : MonoBehaviour
 
     public List<GameObject> activeEnemies { get; set; }
 
+    public int maxNum { get { return startNum * 2; } }
+
     void Start()
     {
         grid = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>();
@@ -27,6 +29,7 @@ public class EnemySpawnManager : MonoBehaviour
 
         objectMask = new LayerMask();
         objectMask = (1 << LayerMask.NameToLayer("Enemy")
+            | 1 << LayerMask.NameToLayer("Boundary")
             | 1 << LayerMask.NameToLayer("Wall")
             | 1 << LayerMask.NameToLayer("Nest")
             | 1 << LayerMask.NameToLayer("Altar"));
@@ -34,9 +37,11 @@ public class EnemySpawnManager : MonoBehaviour
         // Initialize pool of enemies
         enemyPool = new List<GameObject>();
         activeEnemies = new List<GameObject>();
-        for (int i = 0; i < startNum * 2; i++)
+        for (int i = 0; i < maxNum; i++)
         {
             enemyPool.Add(Instantiate(enemy, Vector3.zero, Quaternion.identity));
+            enemyPool[i].GetComponent<Enemy>().SetIgnoreNestCollision(true); // Initially ignore nest collision
+
             enemyPool[i].SetActive(false);
         }
 
@@ -63,6 +68,7 @@ public class EnemySpawnManager : MonoBehaviour
             // Get unused enemy and set position
             GameObject newEnemy = GetFromPool(enemyPool, enemy);
             newEnemy.transform.position = spawnPos;
+            newEnemy.GetComponent<Enemy>().SetIgnoreNestCollision(false); // Reset to collide with nest since these initial spawns will not spawn inside a nest
             newEnemy.SetActive(true);
 
             activeEnemies.Add(newEnemy);
@@ -91,19 +97,23 @@ public class EnemySpawnManager : MonoBehaviour
         return newObj;
     }
 
-    public void Spawn(Vector3 pos)
+    // Spawn at enemy at given position (usually from nest)
+    public bool Spawn(Vector3 pos)
     {
         // Cap number of enemies that can be spawned
-        if (activeEnemies.Count > startNum * 2)
+        if (activeEnemies.Count > maxNum)
         {
-            return;
+            return false; // Return false, no enemy spawned
         }
 
         GameObject newEnemy = GetFromPool(enemyPool, enemy);
+        newEnemy.GetComponent<Enemy>().SetIgnoreNestCollision(true);
         newEnemy.transform.position = pos;
         newEnemy.SetActive(true);
         activeEnemies.Add(newEnemy);
 
         Debug.Log(newEnemy + "spawned");
+
+        return true; // Return true, enemy spawned
     }
 }

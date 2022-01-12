@@ -119,7 +119,7 @@ public class HealthBar : MonoBehaviour
     public void HealthBarOnHit(float healthRemaining)
     {
         // Do not show if setting is off
-        if (!showHealthBars)
+        if (!showHealthBars || float.IsNaN(healthRemaining))
         {
             return;
         }
