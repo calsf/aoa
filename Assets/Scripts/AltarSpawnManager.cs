@@ -27,7 +27,8 @@ public class AltarSpawnManager : MonoBehaviour
             | 1 << LayerMask.NameToLayer("Boundary")
             | 1 << LayerMask.NameToLayer("Wall")
             | 1 << LayerMask.NameToLayer("Nest")
-            | 1 << LayerMask.NameToLayer("Altar"));
+            | 1 << LayerMask.NameToLayer("Altar")
+            | 1 << LayerMask.NameToLayer("AltarInteract"));
 
         // Set number of large altars to spawn
         int largeNum = Random.Range(2, 4);
