@@ -131,7 +131,7 @@ public class EnemyGround : Enemy
             rb.AddForce(velocity, ForceMode.VelocityChange);
 
             // Keep looking at player
-            transform.LookAt(currTarget);
+            transform.LookAt(new Vector3(currTarget.position.x, transform.position.y, currTarget.position.z));
         }
     }
 
