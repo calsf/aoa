@@ -7,27 +7,21 @@ public class EnemyGroundUpright : EnemyGround
     protected const float MIN_ATK_DELAY = 2;
     protected const float MAX_ATK_DELAY = 4;
 
-    [SerializeField] private GameObject head;
-    [SerializeField] private GameObject mouthEnd;
-
     protected float nextAtkTime;
     protected bool isAttacking;
 
-    protected LayerMask blockedLayerMask;
-    protected LayerMask playerLayerMask;
+    protected Vector3 attackStartPos;
+    protected Vector3 attackTargetPos;
+    protected float delayTime;
+
+    protected LayerMask groundLayerMask;
 
     protected override void Start()
     {
         base.Start();
-
-        blockedLayerMask = new LayerMask();
-        blockedLayerMask = (
-            1 << LayerMask.NameToLayer("Wall")
-            | 1 << LayerMask.NameToLayer("Altar")
-            | 1 << LayerMask.NameToLayer("Nest"));
-
-        playerLayerMask = new LayerMask();
-        playerLayerMask = 1 << LayerMask.NameToLayer("Player");
+        groundLayerMask = new LayerMask();
+        groundLayerMask.value = 1 << LayerMask.NameToLayer("Ground")
+            | 1 << LayerMask.NameToLayer("Wall");
     }
 
     void Update()
@@ -38,32 +32,13 @@ public class EnemyGroundUpright : EnemyGround
         }
         else if (Time.time > nextAtkTime && !isAttacking && canMove) // Is aggro and not already attacking and can move, attack
         {
-            RaycastHit hit;
-            bool hasHit = Physics.Linecast(head.transform.position, mouthEnd.transform.position, out hit, blockedLayerMask);
-
-            if (hasHit && hit.collider != null) // If hit, means something is blocking between start and end of mouth attack, do not attack
-            {
-                return;
-            }
-            else
-            {
-                RaycastHit hitPlayer;
-                bool hasHitPlayer = Physics.Linecast(head.transform.position, mouthEnd.transform.position, out hitPlayer, playerLayerMask);
-
-                // Attack only if will hit player
-                // This means enemy will only attack if not blocked by other objects AND if in range of hitting the player
-                if (hasHitPlayer && hitPlayer.collider != null)
-                {
-                    StartAttacking();
-                }
-            }
+            StartAttacking();
         }
 
         CheckColdShot();
         CheckWeakeningShot();
     }
 
-    // SAME AS GROUND ENEMY, BUT DO NOT LOOK AT PLAYER WHEN ATTACKING/STOPPED MOVING
     void FixedUpdate()
     {
         // Check for and update last valid start node position for enemy
@@ -88,9 +63,13 @@ public class EnemyGroundUpright : EnemyGround
         {
             Taunted();
         }
-        else if (canMove)
+        else if (!isAttacking && canMove) // Move normally if not attacking and can move
         {
             Move();
+        }
+        else if(isAttacking && canMove) // Check for attack finish if attacking and moving
+        {
+            CheckAttackFinish();
         }
         else // Stop if cannot move
         {
@@ -101,37 +80,57 @@ public class EnemyGroundUpright : EnemyGround
 
             rb.AddForce(velocity, ForceMode.VelocityChange);
 
-            // Freeze rotation if is attacking, else unfreeze
-            if (!isAttacking)
-            {
-                rb.freezeRotation = false;
-            }
-            else
-            {
-                rb.freezeRotation = true;
-            }
+            // Keep looking at player
+            transform.LookAt(new Vector3(currTarget.position.x, transform.position.y, currTarget.position.z));
+        }
+    }
+
+    protected void CheckAttackFinish()
+    {
+        bool hasHit = Physics.Raycast(transform.position, Vector3.down, .2f, groundLayerMask);
+
+        if (hasHit && Time.time > delayTime)
+        {
+            FinishAttacking();
         }
     }
 
     protected void StartAttacking()
     {
         isAttacking = true;
-        canMove = false; // Stop movement while attacking
+        canMove = false; // Stop movement while starting attack
 
         anim.Play("Attack");
+    }
+
+    protected void Attack()
+    {
+        // Apply initial force to 'jump' to player
+        attackTargetPos = player.transform.position;
+        attackStartPos = transform.position;
+        Vector3 moveDir = attackTargetPos - attackStartPos;
+        moveDir.y = 0;
+        moveDir.Normalize();
+        rb.AddForce((moveDir * (moveSpeedCurr * 2)) + Vector3.up * 15, ForceMode.VelocityChange);
+
+        // Reactivate movement
+        canMove = true;
+
+        // Freeze rotation during attack
+        rb.freezeRotation = true;
+
+        // Delay time before checking for grounded raycast
+        delayTime = Time.time + .5f;
     }
 
     protected void FinishAttacking()
     {
         isAttacking = false;
-        canMove = true; // Resume movement after shooting
+        rb.freezeRotation = false;
+
+        anim.Play("Move");
 
         // Set next time to attack
         nextAtkTime = Time.time + Random.Range(MIN_ATK_DELAY, MAX_ATK_DELAY);
-    }
-
-    public void OnDrawGizmos()
-    {
-        Debug.DrawLine(head.transform.position, mouthEnd.transform.position, Color.red);
     }
 }
