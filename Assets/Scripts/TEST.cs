@@ -11,6 +11,7 @@ public class TEST : MonoBehaviour
 
     private void Start()
     {
+        playerState.InitializeState();
         //InvokeRepeating("SpawnPeriodically", 3, 4);
     }
 

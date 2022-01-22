@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    [SerializeField] private PlayerStateObject playerState;
+    [SerializeField] protected PlayerStateObject playerState;
 
-    private Rigidbody rb;
-    private LayerMask collideLayerMask;
+    protected Rigidbody rb;
+    protected LayerMask collideLayerMask;
 
     [SerializeField] protected float projectileSpeed;
     public Vector3 projectileDir { get; set; }

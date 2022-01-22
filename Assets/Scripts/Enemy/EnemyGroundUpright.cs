@@ -89,9 +89,13 @@ public class EnemyGroundUpright : EnemyGround
     {
         bool hasHit = Physics.Raycast(transform.position, Vector3.down, .2f, groundLayerMask);
 
-        if (hasHit && Time.time > delayTime)
+        if ((hasHit && Time.time > delayTime) || Time.time > delayTime + 2f) // Add a timeout to return to normal movement in case gets stuck since this ground detection suks
         {
             FinishAttacking();
+        }
+        else // Additional down force
+        {
+            rb.AddForce(Vector3.down * 19.6f, ForceMode.Acceleration);
         }
     }
 
@@ -111,7 +115,7 @@ public class EnemyGroundUpright : EnemyGround
         Vector3 moveDir = attackTargetPos - attackStartPos;
         moveDir.y = 0;
         moveDir.Normalize();
-        rb.AddForce((moveDir * (moveSpeedCurr * 2)) + Vector3.up * 15, ForceMode.VelocityChange);
+        rb.AddForce((moveDir * (moveSpeedCurr * 4)) + Vector3.up * 15, ForceMode.VelocityChange);
 
         // Reactivate movement
         canMove = true;
