@@ -5,6 +5,10 @@ using UnityEngine;
 public class WallBlock : MonoBehaviour
 {
     [SerializeField] private GameObject destroyedFx;
+    [SerializeField] private GameObject gasCloudFx;
+
+    [SerializeField] private PlayerStateObject playerState;
+
     private MeshRenderer rend;
     private Grid3D gridAir;
     private Grid3D gridGround;
@@ -13,6 +17,7 @@ public class WallBlock : MonoBehaviour
     private float healthCurr;
 
     private GameObject wallDestroyedObj;
+    private GameObject gasCloudObj;
 
     void Start()
     {
@@ -24,6 +29,7 @@ public class WallBlock : MonoBehaviour
         healthCurr = healthMax;
 
         wallDestroyedObj = Instantiate(destroyedFx);
+        gasCloudObj = Instantiate(gasCloudFx);
     }
 
     public void Damaged(float dmg)
@@ -140,6 +146,12 @@ public class WallBlock : MonoBehaviour
         // Activate destroyed effect
         wallDestroyedObj.transform.position = transform.position;
         wallDestroyedObj.SetActive(true);
+
+        if (playerState.powers["TacticalShot"].isActive)
+        {
+            gasCloudObj.transform.position = transform.position;
+            gasCloudObj.SetActive(true);
+        }
 
         // Update the grid node isWalkable at this wall block's position
         gameObject.SetActive(false); // Set inactive before updating so grid won't see the block

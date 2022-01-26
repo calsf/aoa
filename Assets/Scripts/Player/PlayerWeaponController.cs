@@ -60,6 +60,9 @@ public class PlayerWeaponController : MonoBehaviour
             weaponSecondary.StartCoroutine(weaponSecondary.SwapOutFor(weaponPrimary));
             weaponActive = weaponPrimary;
             playerState.selectedActive = 0;
+
+            // Set bonus swap damage on swap
+            playerState.bonusSwapDamage = playerState.SWAP_MULTIPLIER;
         }
 
         // Swap to secondary
@@ -68,6 +71,9 @@ public class PlayerWeaponController : MonoBehaviour
             weaponPrimary.StartCoroutine(weaponPrimary.SwapOutFor(weaponSecondary));
             weaponActive = weaponSecondary;
             playerState.selectedActive = 1;
+
+            // Set bonus swap damage on swap
+            playerState.bonusSwapDamage = playerState.SWAP_MULTIPLIER;
         }
 
         // Swap to inactive weapon
@@ -78,12 +84,18 @@ public class PlayerWeaponController : MonoBehaviour
                 weaponSecondary.StartCoroutine(weaponSecondary.SwapOutFor(weaponPrimary));
                 weaponActive = weaponPrimary;
                 playerState.selectedActive = 0;
+
+                // Set bonus swap damage on swap
+                playerState.bonusSwapDamage = playerState.SWAP_MULTIPLIER;
             }
             else if (weaponActive == weaponPrimary && !weaponPrimary.isSwapping && !weaponSecondary.isSwapping)
             {
                 weaponPrimary.StartCoroutine(weaponPrimary.SwapOutFor(weaponSecondary));
                 weaponActive = weaponSecondary;
                 playerState.selectedActive = 1;
+
+                // Set bonus swap damage on swap
+                playerState.bonusSwapDamage = playerState.SWAP_MULTIPLIER;
             }
         }
 

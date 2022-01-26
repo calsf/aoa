@@ -9,9 +9,13 @@ public class PlayerStateObject : ScriptableObject
     private const float INVULN_TIME = 1f;
     private float nextDamagedTime;
     public float START_HEALTH = 100;
+    public float SWAP_MULTIPLIER = .1f;
 
     public float tempoShotExtraDmg { get; set; }
     public bool peakOfSurvivalActive { get; set; }
+    public float bonusSwapDamage { get; set; }
+    public float bonusVengeDamage { get; set; }
+
     public Dictionary<string, Power> powers { get; set; }
     public Dictionary<string, Stat> stats { get; set; }
 
@@ -92,8 +96,8 @@ public class PlayerStateObject : ScriptableObject
     public Sprite defiantReloadIcon;
     public Sprite decoyShotIcon;
     public Sprite airSlideIcon;
-
-    public Sprite luckyShotIcon;
+    public Sprite swapShotIcon;
+    public Sprite vengeanceIcon;
 
     // Objects that need to be updated should listen for this event to be invoked
     public UnityEvent OnStateUpdate;
@@ -151,6 +155,12 @@ public class PlayerStateObject : ScriptableObject
             return;
         }
 
+        // Vengeance - store unreduced damage taken as bonus damage
+        if (powers["Vengeance"].isActive)
+        {
+            bonusVengeDamage += damage;
+        }
+
         // Apply armor damage reduction before taking damage
         damage = damage - (damage * stats["Armor"].statValue);
 
@@ -190,11 +200,11 @@ public class PlayerStateObject : ScriptableObject
             "Sacrificial Shot",
             "Lose health per shot. Recover double the health lost if the shot hits an enemy."));
         powers.Add("TacticalShot", new Power(
-            false,
+            true,
             tacticalShotIcon,
             "Tactical",
             "Tactical Shot",
-            "Shots within effective range will break walls in one hit."));
+            "Shots within effective range will break walls in one hit. Broken walls will leave behind a temporary gas cloud."));
         powers.Add("ColdShot", new Power(
             false, 
             coldShotIcon, 
@@ -255,12 +265,18 @@ public class PlayerStateObject : ScriptableObject
             "Air Slide",
             "Air Slide",
             "Sliding can be performed while in the air."));
-        powers.Add("LuckyShot", new Power(
-            false, 
-            luckyShotIcon, 
-            "Lucky",
-            "Lucky Shot",
-            "TBD"));
+        powers.Add("SwapShot", new Power(
+            true, 
+            swapShotIcon, 
+            "Swap Shot",
+            "Swap Shot",
+            "Deal increased damage on the first shot after swapping weapons."));
+        powers.Add("Vengeance", new Power(
+            true,
+            vengeanceIcon,
+            "Vengeance",
+            "Vengeance",
+            "Stores damage taken as bonus damage on the next shot. Stored damage is applied before armor reduction."));
 
         /*
         reloadMultiplier = 1;

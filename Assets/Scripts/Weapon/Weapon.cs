@@ -348,6 +348,26 @@ public class Weapon : MonoBehaviour
                         damageDealt += playerState.tempoShotExtraDmg;
                     }
 
+                    // Vengeance - apply any stored bonus damage from venge
+                    if (playerState.powers["Vengeance"].isActive)
+                    {
+                        // Add bonus venge damage
+                        damageDealt += playerState.bonusVengeDamage;
+
+                        // Reset the bonus venge damage
+                        playerState.bonusVengeDamage = 0;
+                    }
+
+                    // Swap shot - apply any bonus damage from swapping
+                    if (playerState.powers["SwapShot"].isActive)
+                    {
+                        // Add bonus damage based on percent of damage dealt
+                        damageDealt += damageDealt * playerState.bonusSwapDamage;
+
+                        // Reset the bonus swap damage
+                        playerState.bonusSwapDamage = 0;
+                    }
+
                     damageDealt *= damageDealtMultiplier; // Apply damage dealt multiplier
                     hit.collider.gameObject.GetComponentInParent<Enemy>().Damaged(damageDealt);
 
@@ -453,6 +473,26 @@ public class Weapon : MonoBehaviour
                     if (playerState.powers["TempoShot"].isActive)
                     {
                         damageDealt += playerState.tempoShotExtraDmg;
+                    }
+
+                    // Vengeance - apply any stored bonus damage from venge
+                    if (playerState.powers["Vengeance"].isActive)
+                    {
+                        // Add bonus venge damage
+                        damageDealt += playerState.bonusVengeDamage;
+
+                        // Reset the bonus venge damage
+                        playerState.bonusVengeDamage = 0;
+                    }
+
+                    // Swap shot - apply any bonus damage from swapping
+                    if (playerState.powers["SwapShot"].isActive)
+                    {
+                        // Add bonus damage based on percent of damage dealt
+                        damageDealt += damageDealt * playerState.bonusSwapDamage;
+
+                        // Reset the bonus swap damage
+                        playerState.bonusSwapDamage = 0;
                     }
 
                     damageDealt *= damageDealtMultiplier; // Apply damage dealt multiplier
