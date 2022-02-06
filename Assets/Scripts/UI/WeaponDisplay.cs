@@ -13,8 +13,11 @@ public class WeaponDisplay : MonoBehaviour
     [SerializeField] private Image imageSelected;
     [SerializeField] private Image imageUnselected;
 
+    [SerializeField] private RectTransform ammoUnselectedFill;
+
     private PlayerWeaponController playerWeaponController;
     private Color decoyShotColor = new Color(1, 0, 1, 1);
+    private Color swapShotColor = new Color(1, .75f, 0, 1);
 
     void Start()
     {
@@ -28,6 +31,7 @@ public class WeaponDisplay : MonoBehaviour
 
         CheckDecoyShot();
         UpdateSelectedWeapon();
+        UpdateAmmoUnselectedFill();
     }
 
     // Update selected and unselected images
@@ -45,16 +49,32 @@ public class WeaponDisplay : MonoBehaviour
         }
     }
 
-    // Check for decoy shot and change mag curr text color if shot will be decoy, else default to normal text color
+    // Check for decoy shot and change mag curr text color if shot will swap shot/decoy, else default to normal text color
     private void CheckDecoyShot()
     {
-        if (playerState.powers["DecoyShot"].isActive && playerWeaponController.weaponActive.magSizeCurr == 1)
+        // Swap shot color or default to normal
+        if (playerState.powers["SwapShot"].isActive && playerState.bonusSwapDamage > 0)
         {
-            magCurr.color = decoyShotColor;
+            magCurr.color = swapShotColor;
         }
         else
         {
             magCurr.color = Color.white;
         }
+
+
+        // Override any color with decoy shot color if will be decoy
+        if (playerState.powers["DecoyShot"].isActive && playerWeaponController.weaponActive.magSizeCurr == 1)
+        {
+            magCurr.color = decoyShotColor;
+        }
+    }
+
+    // Update ammo fill bar of unselected weapon
+    private void UpdateAmmoUnselectedFill()
+    {
+        Weapon weapon = playerWeaponController.weaponActive == playerWeaponController.weaponPrimary ? playerWeaponController.weaponSecondary : playerWeaponController.weaponPrimary;
+
+        ammoUnselectedFill.localScale = new Vector3(1, ((float) weapon.magSizeCurr / (float) weapon.magSizeMax), 1);
     }
 }

@@ -15,8 +15,8 @@ public class PlayerHealthUpgrades : MonoBehaviour
 
     private float steadyRegenNextTime;
 
-    private float peakSurvivalOffTime;
-    private float peakSurvivalNextActive;
+    public float peakSurvivalOffTime { get; set; }
+    public float peakSurvivalNextActive { get; set; }
     private bool peakSurvivalThresholdReached = false; // If fell below health threshold to activate, will be set to true until health is regained above threshold
 
     void Start()
@@ -70,14 +70,17 @@ public class PlayerHealthUpgrades : MonoBehaviour
                 if (Time.time > peakSurvivalOffTime)
                 {
                     playerState.peakOfSurvivalActive = false;
+
+                    peakSurvivalThresholdReached = false; // Will end up re-activating if player still below threshold
                 }
             }
         }
 
+        /*
         // After falling below health threshold, check to see if health is regained above the threshold
         if (peakSurvivalThresholdReached && playerState.healthCurr >= playerState.stats["HealthMax"].statValue * PEAK_SURVIVAL_THRESHOLD)
         {
             peakSurvivalThresholdReached = false;
-        }
+        }*/
     }
 }

@@ -518,6 +518,13 @@ public class Weapon : MonoBehaviour
                 }
             }
         }
+
+        // Swap shot - MAKE SURE TO RESET EVEN ON MISS
+        if (playerState.powers["SwapShot"].isActive)
+        {
+            // Reset the bonus swap damage
+            playerState.bonusSwapDamage = 0;
+        }
     }
 
     // Called when ShootRaycast hits something

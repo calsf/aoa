@@ -194,7 +194,7 @@ public class PlayerStateObject : ScriptableObject
             "Piercing Shot",
             "Shots can pierce through multiple enemies. Does not pierce through walls."));
         powers.Add("SacrificialShot", new Power(
-            false,
+            true,
             sacrificialShotIcon,
             "Sacrificial",
             "Sacrificial Shot",
@@ -218,13 +218,13 @@ public class PlayerStateObject : ScriptableObject
             "Weakening Shot",
             "Shots will lower the damage of an enemy for a short duration."));
         powers.Add("TempoShot", new Power(
-            false, 
+            true, 
             tempoShotIcon, 
             "Tempo",
             "Tempo Shot",
-            "Gain bonus damage with each consecutive headshot. A missed shot will reset bonus damage to 0."));
+            "Gain bonus damage with each consecutive headshot. A body shot will reset bonus damage to 0."));
         powers.Add("PeakOfSurvival", new Power(
-            false, 
+            true, 
             peakOfSurvivalIcon, 
             "Survival",
             "Peak of Survival",
@@ -254,7 +254,7 @@ public class PlayerStateObject : ScriptableObject
             "Defiant Reload",
             "Reloading knocks back all nearby enemies."));
         powers.Add("DecoyShot", new Power(
-            false, 
+            true, 
             decoyShotIcon, 
             "Decoy",
             "Decoy Shot",
@@ -378,25 +378,12 @@ public class PlayerStateObject : ScriptableObject
 
         tempoShotExtraDmg = 0;
 
-        /*
-        aimGlide = false;
-        holsteredReload = false;
-        punchThrough = false;
-        explosiveShot = false;
-        clonedShot = false;
-        sacrificialShot = false;
-        coldShot = false;
-        weakeningShot = false;
-        tacticalShot = false;
-        defiantReload = false;
+        peakOfSurvivalActive = false;
 
-        tempoShot = false;
-        decoyShot = false;
-        luckyShot = false;
-        peakOfSurvival = false;
-        steadyRegen = false;
-        */
+        bonusSwapDamage = 0;
 
+        bonusVengeDamage = 0;
+        
         bloodCurrency = 0;
 
         nextDamagedTime = Time.time;
