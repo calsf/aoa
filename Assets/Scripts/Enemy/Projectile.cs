@@ -20,7 +20,10 @@ public class Projectile : MonoBehaviour
         collideLayerMask = new LayerMask();
         collideLayerMask.value = (1 << LayerMask.NameToLayer("Player")
             | 1 << LayerMask.NameToLayer("Ground")
-            | 1 << LayerMask.NameToLayer("Wall"));
+            | 1 << LayerMask.NameToLayer("Wall")
+            | 1 << LayerMask.NameToLayer("Altar")
+            | 1 << LayerMask.NameToLayer("Nest")
+            | 1 << LayerMask.NameToLayer("Boundary"));
     }
 
     void FixedUpdate()

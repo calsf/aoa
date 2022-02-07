@@ -76,7 +76,7 @@ public abstract class Enemy : MonoBehaviour
             
             Explosion explo = explosiveShotEffectPool[i].GetComponent<Explosion>();
             explo.SetSize(enemy.EXPLO_SIZE);    // Set explo size
-            explo.damage = (healthMax * EXPLOSIVE_DMG_MULTIPLIER) + playerState.stats["DamageBonus"].statValue;    // Set explo dmg based on % enemy max health and player bonus dmg
+            explo.damage = (healthMax * EXPLOSIVE_DMG_MULTIPLIER);    // Set explo dmg based on % enemy max health
 
             explosiveShotEffectPool[i].SetActive(false);
         }

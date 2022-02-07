@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   START_HEALTH: 100
   SWAP_MULTIPLIER: 0.2
-  healthCurr: 25
+  healthCurr: 96
   bloodCurrency: 0
   selectedPrimary: 2
   selectedSecondary: 0
@@ -48,6 +48,7 @@ MonoBehaviour:
   airSlideIcon: {fileID: 21300000, guid: c2850783dd18f8f45be86eb57d4b51b7, type: 3}
   swapShotIcon: {fileID: 21300000, guid: 7b2212382d617474da5111d9372ef316, type: 3}
   vengeanceIcon: {fileID: 21300000, guid: e3a3396b474fc064b987d4d02eff42b5, type: 3}
+  rocketJumpIcon: {fileID: 21300000, guid: 6d46c0c4ea8df614280c8f55b421e490, type: 3}
   OnStateUpdate:
     m_PersistentCalls:
       m_Calls: []

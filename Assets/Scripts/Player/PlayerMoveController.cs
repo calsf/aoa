@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerMoveController : MonoBehaviour
 {
+    private const int POOL_NUM = 10;
     private const float SENS_SPEED = 5;
 
     [SerializeField] private PlayerStateObject playerState;
@@ -47,6 +48,9 @@ public class PlayerMoveController : MonoBehaviour
     // Possible player starting spawn positions
     [SerializeField] private Transform[] playerSpawns;
 
+    [SerializeField] private GameObject rocketObject;
+    protected List<GameObject> rocketObjectPool;
+
     void Awake()
     {
         settings = GameObject.FindGameObjectWithTag("Settings").GetComponent<Settings>();
@@ -60,6 +64,15 @@ public class PlayerMoveController : MonoBehaviour
         transform.LookAt(new Vector3(0, (spawnPos - Vector3.zero).y, 0));
 
         controller.enabled = true; // Re-enable character controller
+
+        // Initialize pool of rockets
+        rocketObjectPool = new List<GameObject>();
+        for (int i = 0; i < POOL_NUM; i++)
+        {
+            rocketObjectPool.Add(Instantiate(rocketObject, Vector3.zero, Quaternion.identity));
+
+            rocketObjectPool[i].SetActive(false);
+        }
     }
 
     void Start()
@@ -212,6 +225,14 @@ public class PlayerMoveController : MonoBehaviour
 
             currVelocityY = 0; // Reset to 0 so jump heights are always consistent
             currVelocityY += Mathf.Sqrt((JUMP_HEIGHT * -1f) * GRAVITY); // Set velocityY to be some positive velocity based on jump height
+
+            // Rocket Jump
+            if (playerState.powers["RocketJump"].isActive)
+            {
+                GameObject rocket = GetFromPool(rocketObjectPool, rocketObject);
+                rocket.transform.position = transform.position;
+                rocket.SetActive(true);
+            }
         }
 
         // Apply movement and velocityY
@@ -330,5 +351,21 @@ public class PlayerMoveController : MonoBehaviour
 
         // Reset slide
         isSliding = false;
+    }
+
+    protected GameObject GetFromPool(List<GameObject> pool, GameObject obj)
+    {
+        for (int i = 0; i < pool.Count; i++)
+        {
+            if (!pool[i].activeInHierarchy)
+            {
+                return pool[i];
+            }
+        }
+
+        // If no object in the pool is available, create a new object and add to the pool
+        GameObject newObj = Instantiate(obj, Vector3.zero, Quaternion.identity);
+        pool.Add(newObj);
+        return newObj;
     }
 }

@@ -98,6 +98,7 @@ public class PlayerStateObject : ScriptableObject
     public Sprite airSlideIcon;
     public Sprite swapShotIcon;
     public Sprite vengeanceIcon;
+    public Sprite rocketJumpIcon;
 
     // Objects that need to be updated should listen for this event to be invoked
     public UnityEvent OnStateUpdate;
@@ -277,6 +278,12 @@ public class PlayerStateObject : ScriptableObject
             "Vengeance",
             "Vengeance",
             "Stores damage taken as bonus damage on the next shot. Stored damage is applied before armor reduction."));
+        powers.Add("RocketJump", new Power(
+            true,
+            rocketJumpIcon,
+            "Rocket Jump",
+            "Rocket Jump",
+            "Drop a rocket when jumping. Deals more damage based on Damage Bonus stat."));
 
         /*
         reloadMultiplier = 1;
