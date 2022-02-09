@@ -6,7 +6,7 @@ public abstract class Enemy : MonoBehaviour
 {
     protected const int POOL_NUM = 3;
 
-    [SerializeField] private PlayerStateObject playerState;
+    [SerializeField] protected PlayerStateObject playerState;
 
     [SerializeField] protected GameObject deathEffect;
     [SerializeField] protected GameObject explosiveShotEffect;
@@ -30,7 +30,7 @@ public abstract class Enemy : MonoBehaviour
     protected float healthMax;
     protected float healthCurr;
     protected float damageMax;
-    protected float damageCurr;
+    public float damageCurr { get; set; }
 
     public bool isColdShotted { get; set; }
     protected float coldShotOffTime;

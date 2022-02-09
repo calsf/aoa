@@ -237,7 +237,7 @@ public class PlayerStateObject : ScriptableObject
             "Steady Regen",
             "Gradually recover health over time."));
         powers.Add("ExplosiveShot", new Power(
-            false, 
+            true, 
             explosiveShotIcon, 
             "Explosive",
             "Explosive Death",
@@ -279,7 +279,7 @@ public class PlayerStateObject : ScriptableObject
             "Vengeance",
             "Stores damage taken as bonus damage on the next shot. Stored damage is applied before armor reduction."));
         powers.Add("RocketJump", new Power(
-            true,
+            false,
             rocketJumpIcon,
             "Rocket Jump",
             "Rocket Jump",
