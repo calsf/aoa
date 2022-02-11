@@ -8,6 +8,7 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private CanvasGroup settingsScreen;
     [SerializeField] private CanvasGroup controlsScreen;
     [SerializeField] private UpgradesDisplay upgradesDisplay;
+    [SerializeField] private PausedUpgradesDisplay pausedUpgradesDisplay;
 
     private CanvasGroup pauseScreen;
     private bool isPaused = false;
@@ -41,6 +42,19 @@ public class PauseMenu : MonoBehaviour
             else
             {
                 Unpause();
+            }
+        }
+
+        // Hide or show paused version of upgrades display depending on other pause screens
+        if (Time.timeScale == 0)
+        {
+            if (settingsScreen.alpha == 0 && controlsScreen.alpha == 0)
+            {
+                pausedUpgradesDisplay.ShowDisplay();
+            }
+            else
+            {
+                pausedUpgradesDisplay.HideDisplay();
             }
         }
     }
@@ -82,8 +96,21 @@ public class PauseMenu : MonoBehaviour
 
     public void OnControlsOpen()
     {
-        controlsScreen.alpha = 1;
-        controlsScreen.blocksRaycasts = true;
+        if (controlsScreen.alpha == 1)
+        {
+            controlsScreen.alpha = 0;
+            controlsScreen.blocksRaycasts = false;
+        }
+        else
+        {
+            // Close other screen
+            settingsScreen.alpha = 0;
+            settingsScreen.blocksRaycasts = false;
+
+            // Activate this screen
+            controlsScreen.alpha = 1;
+            controlsScreen.blocksRaycasts = true;
+        }
     }
 
     public void OnControlsClose()
@@ -94,8 +121,21 @@ public class PauseMenu : MonoBehaviour
 
     public void OnSettings()
     {
-        settingsScreen.alpha = 1;
-        settingsScreen.blocksRaycasts = true;
+        if (settingsScreen.alpha == 1)
+        {
+            settingsScreen.alpha = 0;
+            settingsScreen.blocksRaycasts = false;
+        }
+        else
+        {
+            // Close other screen
+            controlsScreen.alpha = 0;
+            controlsScreen.blocksRaycasts = false;
+
+            // Activate this screen
+            settingsScreen.alpha = 1;
+            settingsScreen.blocksRaycasts = true;
+        }
     }
 
     public void OnQuit()

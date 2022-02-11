@@ -8,6 +8,8 @@ public class PowerDisplayItem : MonoBehaviour
     [SerializeField] private Image img;
     [SerializeField] private Text text;
 
+    public PlayerStateObject.Power power { get; set; }
+
     void Start()
     {
         img.enabled = false;

@@ -195,13 +195,13 @@ public class PlayerStateObject : ScriptableObject
             "Piercing Shot",
             "Shots can pierce through multiple enemies. Does not pierce through walls."));
         powers.Add("SacrificialShot", new Power(
-            true,
+            false,
             sacrificialShotIcon,
             "Sacrificial",
             "Sacrificial Shot",
             "Lose health per shot. Recover double the health lost if the shot hits an enemy."));
         powers.Add("TacticalShot", new Power(
-            true,
+            false,
             tacticalShotIcon,
             "Tactical",
             "Tactical Shot",
@@ -219,13 +219,13 @@ public class PlayerStateObject : ScriptableObject
             "Weakening Shot",
             "Shots will lower the damage of an enemy for a short duration."));
         powers.Add("TempoShot", new Power(
-            true, 
+            false, 
             tempoShotIcon, 
             "Tempo",
             "Tempo Shot",
             "Gain bonus damage with each consecutive headshot. A body shot will reset bonus damage to 0."));
         powers.Add("PeakOfSurvival", new Power(
-            true, 
+            false, 
             peakOfSurvivalIcon, 
             "Survival",
             "Peak of Survival",
@@ -237,7 +237,7 @@ public class PlayerStateObject : ScriptableObject
             "Steady Regen",
             "Gradually recover health over time."));
         powers.Add("ExplosiveShot", new Power(
-            true, 
+            false, 
             explosiveShotIcon, 
             "Explosive",
             "Explosive Death",
@@ -255,7 +255,7 @@ public class PlayerStateObject : ScriptableObject
             "Defiant Reload",
             "Reloading knocks back all nearby enemies."));
         powers.Add("DecoyShot", new Power(
-            true, 
+            false, 
             decoyShotIcon, 
             "Decoy",
             "Decoy Shot",
@@ -267,13 +267,13 @@ public class PlayerStateObject : ScriptableObject
             "Air Slide",
             "Sliding can be performed while in the air."));
         powers.Add("SwapShot", new Power(
-            true, 
+            false, 
             swapShotIcon, 
             "Swap Shot",
             "Swap Shot",
             "Deal increased damage on the first shot after swapping weapons."));
         powers.Add("Vengeance", new Power(
-            true,
+            false,
             vengeanceIcon,
             "Vengeance",
             "Vengeance",

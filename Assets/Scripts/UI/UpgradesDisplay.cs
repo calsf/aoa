@@ -21,8 +21,8 @@ public class UpgradesDisplay : MonoBehaviour
     [SerializeField] private Text textJumps;
 
     private CanvasGroup upgradesScreen;
-    private PlayerMoveController playerMove;
 
+    [SerializeField] private CanvasGroup pausedUpgradesDisplay;
     [SerializeField] private List<GameObject> powerDisplays; // Power displays that can be used to show active powers
     private Queue<GameObject> powerDisplayItemQueue;
     private Dictionary<string, PlayerStateObject.Power> activePowers; // To keep track of active powers, should initially be empty
@@ -30,7 +30,6 @@ public class UpgradesDisplay : MonoBehaviour
     void Start()
     {
         upgradesScreen = GetComponent<CanvasGroup>();
-        playerMove = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMoveController>();
 
         upgradesScreen.alpha = 0;
         upgradesScreen.blocksRaycasts = false;
@@ -57,8 +56,8 @@ public class UpgradesDisplay : MonoBehaviour
             HideDisplay();
         }
 
-        // Only update screen while it is active
-        if (upgradesScreen.alpha > 0)
+        // Only update screen while it is active OR the paused version is active to maintain consistency
+        if (upgradesScreen.alpha > 0 || pausedUpgradesDisplay.alpha > 0)
         {
             // Update text values
             UpdateStats();
@@ -92,7 +91,10 @@ public class UpgradesDisplay : MonoBehaviour
             {
                 activePowers.Add(power.Key, power.Value); // Add to active powers to avoid duplicate displays
                 GameObject powerDisplay = powerDisplayItemQueue.Dequeue(); // Get first unused power display to show active power
-                powerDisplay.GetComponent<PowerDisplayItem>().ShowPower(power.Value.powerIcon, power.Value.powerNameShort);
+
+                PowerDisplayItem powerDisplayItem = powerDisplay.GetComponent<PowerDisplayItem>();
+                powerDisplayItem.power = power.Value; // Set power
+                powerDisplayItem.ShowPower(power.Value.powerIcon, power.Value.powerNameShort);
             }    
         }
     }

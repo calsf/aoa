@@ -9,7 +9,7 @@ public class TEST : MonoBehaviour
 
     [SerializeField] Enemy[] enemies;
 
-    private void Start()
+    private void Awake()
     {
         playerState.InitializeState();
         //InvokeRepeating("SpawnPeriodically", 3, 4);
