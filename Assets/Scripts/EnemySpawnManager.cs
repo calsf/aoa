@@ -98,7 +98,8 @@ public class EnemySpawnManager : MonoBehaviour
     }
 
     // Spawn at enemy at given position (usually from nest)
-    public bool Spawn(Vector3 pos)
+    // By default, does not aggro on spawn but can specify to do so
+    public bool Spawn(Vector3 pos, bool aggroOnSpawn = false)
     {
         // Cap number of enemies that can be spawned
         if (activeEnemies.Count > maxNum)
@@ -107,7 +108,15 @@ public class EnemySpawnManager : MonoBehaviour
         }
 
         GameObject newEnemy = GetFromPool(enemyPool, enemy);
-        newEnemy.GetComponent<Enemy>().SetIgnoreNestCollision(true);
+        Enemy enemyBehavior = newEnemy.GetComponent<Enemy>();
+        enemyBehavior.SetIgnoreNestCollision(true);
+
+        // Aggro on spawn if specified
+        if (aggroOnSpawn)
+        {
+            enemyBehavior.isAggro = true;
+        }
+
         newEnemy.transform.position = pos;
         newEnemy.SetActive(true);
         activeEnemies.Add(newEnemy);

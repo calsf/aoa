@@ -66,6 +66,7 @@ public class NestManager : MonoBehaviour
             } while (Physics.CheckSphere(spawnPos, OBJECT_SEPARATION, objectMask) || Physics.CheckSphere(spawnPos, FAR_SEPARATION, farMask)); // Keep certain distance between objects
 
             GameObject newNest = Instantiate(nest, spawnPos, Quaternion.identity);
+            newNest.GetComponent<Nest>().nestManager = this; // For all nests, reference this nest manager
             newNest.SetActive(true);
 
             nestList.Add(newNest);
@@ -118,5 +119,17 @@ public class NestManager : MonoBehaviour
         {
             nextSpawnTime = Time.time + 1;
         }
+    }
+
+    // Spawn an enemy of random type at given nest position when hit/damaged, will not retry
+    public void SpawnFromNestHit(Transform nest)
+    {
+        // Get random enemy type
+        EnemySpawnManager enemyType = enemySpawners[Random.Range(0, enemySpawners.Count)];
+
+        Vector3 spawnPos = nest.position;
+
+        // Spawning from nest on hit will auto aggro the spawned enemy
+        enemyType.Spawn(spawnPos, true);
     }
 }

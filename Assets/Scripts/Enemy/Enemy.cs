@@ -18,7 +18,7 @@ public abstract class Enemy : MonoBehaviour
     protected GameObject player;
     protected PlayerMoveController playerMoveController;
 
-    protected bool isAggro = false;
+    public bool isAggro = false;
     protected Quaternion origRot;
 
     public bool canMove { get; set; }
@@ -64,7 +64,7 @@ public abstract class Enemy : MonoBehaviour
         deathEffectPool = new List<GameObject>();
         for (int i = 0; i < POOL_NUM; i++)
         {
-            deathEffectPool.Add(Instantiate(deathEffect, Vector3.zero, Quaternion.identity));
+            deathEffectPool.Add(Instantiate(deathEffect, Vector3.zero, deathEffect.transform.rotation));
             deathEffectPool[i].SetActive(false);
         }
 
@@ -117,6 +117,7 @@ public abstract class Enemy : MonoBehaviour
 
                 // Deactivate and reset enemy object
                 ResetEnemy();
+                playerState.bloodCurrency += enemy.CURRENCY_DROP; // Give player currency amount from killing
                 gameObject.SetActive(false);
             }
         }
