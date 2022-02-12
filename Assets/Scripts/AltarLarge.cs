@@ -37,5 +37,9 @@ public class AltarLarge : Altar
             newPower.isActive = true;
             playerState.UpdatePower(selectedPowerKey, newPower);
         }
+
+        // Activate used effect and destroy self after use
+        altarUsedEffectObj.SetActive(true);
+        Destroy(gameObject);
     }
 }

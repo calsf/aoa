@@ -21,11 +21,16 @@ public abstract class Altar : MonoBehaviour
     protected bool canOpen;
     protected bool hasOpened;
 
+    [SerializeField] protected GameObject altarUsedEffect;
+    protected GameObject altarUsedEffectObj;
+
     protected virtual void Start()
     {
         stats = new List<string>(playerState.stats.Keys);
         cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         interactPopUp.SetActive(false);
+
+        altarUsedEffectObj = Instantiate(altarUsedEffect, transform.position, Quaternion.identity);
     }
 
     void Update()

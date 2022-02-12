@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class AltarSmall : Altar
 {
-    
     protected override void Start()
     {
         base.Start();
@@ -24,5 +23,9 @@ public class AltarSmall : Altar
 
         // Upgrades 1 random stat
         UpgradeStat();
+
+        // Activate used effect and destroy self after use
+        altarUsedEffectObj.SetActive(true);
+        Destroy(gameObject);
     }
 }
