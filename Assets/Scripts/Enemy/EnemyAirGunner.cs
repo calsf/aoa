@@ -39,6 +39,7 @@ public class EnemyAirGunner : EnemyAir
 
         CheckColdShot();
         CheckWeakeningShot();
+        MoveMinimapIcon();
     }
 
     // Shoots while moving

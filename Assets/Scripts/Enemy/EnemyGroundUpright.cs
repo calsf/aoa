@@ -37,6 +37,7 @@ public class EnemyGroundUpright : EnemyGround
 
         CheckColdShot();
         CheckWeakeningShot();
+        MoveMinimapIcon();
     }
 
     void FixedUpdate()

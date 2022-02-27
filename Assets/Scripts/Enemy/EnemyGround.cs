@@ -91,6 +91,7 @@ public class EnemyGround : Enemy
     {
         CheckColdShot();
         CheckWeakeningShot();
+        MoveMinimapIcon();
     }
 
     void FixedUpdate()

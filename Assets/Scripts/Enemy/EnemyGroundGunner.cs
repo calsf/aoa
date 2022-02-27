@@ -39,6 +39,7 @@ public class EnemyGroundGunner : EnemyGround
 
         CheckColdShot();
         CheckWeakeningShot();
+        MoveMinimapIcon();
     }
 
     // Shoots while moving

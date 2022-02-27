@@ -90,6 +90,7 @@ public class EnemyAir : Enemy
     {
         CheckColdShot();
         CheckWeakeningShot();
+        MoveMinimapIcon();
     }
 
     void FixedUpdate()

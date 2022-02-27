@@ -8,6 +8,9 @@ public abstract class Enemy : MonoBehaviour
 
     [SerializeField] protected PlayerStateObject playerState;
 
+    [SerializeField] protected Transform minimapIconPrefab;
+    protected Transform minimapIcon;
+
     [SerializeField] protected GameObject deathEffect;
     [SerializeField] protected GameObject explosiveShotEffect;
     protected List<GameObject> deathEffectPool;
@@ -82,6 +85,8 @@ public abstract class Enemy : MonoBehaviour
         }
 
         currTarget = player.transform;
+
+        minimapIcon = Instantiate(minimapIconPrefab);
     }
 
     protected abstract void Move();
@@ -123,10 +128,16 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
-    // show health bar or reset timer if already active
+    // Show health bar or reset timer if already active
     public void TriggerHealthBar()
     {
         healthBar.HealthBarOnHit(healthCurr / healthMax);
+    }
+
+    // Keep minimap icon at same position as enemy
+    protected void MoveMinimapIcon()
+    {
+        minimapIcon.transform.position = transform.position;
     }
 
     // Reset enemy values

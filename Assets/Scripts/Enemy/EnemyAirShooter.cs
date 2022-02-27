@@ -39,6 +39,7 @@ public class EnemyAirShooter : EnemyAir
 
         CheckColdShot();
         CheckWeakeningShot();
+        MoveMinimapIcon();
     }
 
     protected void StartShooting()

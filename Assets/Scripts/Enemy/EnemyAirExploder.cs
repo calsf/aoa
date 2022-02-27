@@ -26,6 +26,7 @@ public class EnemyAirExploder : EnemyAir
         
         CheckColdShot();
         CheckWeakeningShot();
+        MoveMinimapIcon();
     }
 
     private void Explode()

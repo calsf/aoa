@@ -41,6 +41,7 @@ public class EnemyCannon : EnemyGround
 
         CheckColdShot();
         CheckWeakeningShot();
+        MoveMinimapIcon();
     }
 
     protected void ShootUp()
