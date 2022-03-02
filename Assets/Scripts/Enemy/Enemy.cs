@@ -137,6 +137,11 @@ public abstract class Enemy : MonoBehaviour
     // Keep minimap icon at same position as enemy
     protected void MoveMinimapIcon()
     {
+        if (!minimapIcon.gameObject.activeInHierarchy)
+        {
+            minimapIcon.gameObject.SetActive(true);
+        }
+
         minimapIcon.transform.position = transform.position;
     }
 
@@ -155,6 +160,9 @@ public abstract class Enemy : MonoBehaviour
         isColdShotted = false;
         isWeakenShotted = false;
         currTarget = player.transform;
+
+        // Deactivate minimap icon
+        minimapIcon.gameObject.SetActive(false);
 
         // Deactivate health bar
         healthBar.gameObject.SetActive(false);

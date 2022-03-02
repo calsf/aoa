@@ -8,6 +8,11 @@ public class Nest : Enemy
 
     public NestManager nestManager { get; set; }
 
+    void Update()
+    {
+        MoveMinimapIcon();
+    }
+
     protected override void Move()
     {
         return;
