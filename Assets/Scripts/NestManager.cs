@@ -10,9 +10,9 @@ public class NestManager : MonoBehaviour
     private const float BASE_SPAWN_DELAY_MAX = 10;
     private const float MIN_SPAWN_DELAY = 1;
 
-    [SerializeField] private int startNum;
+    public int startNum;
     [SerializeField] private GameObject nest;
-    private List<GameObject> nestList;
+    public List<GameObject> nestList { get; set; }
     private List<EnemySpawnManager> enemySpawners;
 
     private Grid3D grid;
@@ -78,6 +78,8 @@ public class NestManager : MonoBehaviour
 
     void Update()
     {
+        nestList.RemoveAll(n => !n.activeInHierarchy); // Clear nests
+
         if (nextSpawnTime < Time.time)
         {
             // Calculate next spawn time based on total number of ALL enemies alive
