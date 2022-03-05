@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Exit : MonoBehaviour
@@ -27,9 +28,16 @@ public class Exit : MonoBehaviour
     public float exitTime { get; set; }
     private float textTime;
 
+    [SerializeField] private string nextScene;
+    [SerializeField] private GameObject firstPersonCamera;
+    private GameObject player;
+    private bool isExiting;
+
     void Start()
     {
         grid = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>();
+
+        player = GameObject.FindGameObjectWithTag("Player");
 
         playerMask = new LayerMask();
         playerMask = 1 << LayerMask.NameToLayer("Player");
@@ -55,6 +63,7 @@ public class Exit : MonoBehaviour
 
         transform.position = spawnPos;
         objectiveComplete = false;
+        isExiting = false;
         text.text = "CANNOT ACTIVATE - COMPLETE CURRENT OBJECTIVE";
     }
 
@@ -74,9 +83,10 @@ public class Exit : MonoBehaviour
         }
 
         // Once entered, wait until time has passed beofre actually exiting
-        if (hasActivated && Time.time > exitTime)
+        if (!isExiting && hasActivated && Time.time > exitTime)
         {
-            // TODO: Disappear and load next scene
+            isExiting = true;
+            StartCoroutine(TeleportToScene());
         }
 
         // Once entered, wait until some time has passed before disabling text
@@ -110,6 +120,17 @@ public class Exit : MonoBehaviour
         }
     }
 
+    // Change to normal color when objectives complete and can activate portal
+    public void OpenPortal()
+    {
+        ParticleSystem.MainModule ringsPs = rings.main;
+        ringsPs.startColor = Color.white;
+
+        ParticleSystem.MainModule groundEffectPs = groundEffect.main;
+        groundEffectPs.startColor = Color.white;
+    }
+
+    // For when player actually activates portal
     private void ActivatePortal()
     {
         ParticleSystem.MainModule ringsPs = rings.main;
@@ -117,5 +138,20 @@ public class Exit : MonoBehaviour
 
         ParticleSystem.MainModule groundEffectPs = groundEffect.main;
         groundEffectPs.startColor = Color.yellow;
+    }
+
+    private IEnumerator TeleportToScene()
+    {
+        // Disable components as needed to show player has "teleported"
+        player.GetComponent<CharacterController>().enabled = false;
+        player.GetComponent<PlayerMoveController>().enabled = false;
+        player.GetComponent<PlayerWeaponController>().enabled = false;
+        firstPersonCamera.SetActive(false);
+
+        // Wait a bit
+        yield return new WaitForSeconds(3);
+
+        // Load next scene
+        SceneManager.LoadScene(nextScene);
     }
 }

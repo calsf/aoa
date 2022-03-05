@@ -43,10 +43,15 @@ public class ObjectiveManager : MonoBehaviour
             exit.objectiveComplete = true;
         }
 
-        // Aggro all enemies when all nests are destroyed
         if (!hasAggroed && nest.nestList.Count == 0)
         {
+            hasAggroed = true;
+
+            // Aggro all enemies when all nests are destroyed
             AggroAllEnemies();
+
+            // Change portal color to normal to indicate can activate portal
+            exit.OpenPortal();
         }
     }
 
