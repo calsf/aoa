@@ -10,7 +10,7 @@ public class Grid3D : MonoBehaviour
 
     // The entire grid size in world units
     [SerializeField] private Vector3 gridSizeTotal;
-    [SerializeField] private float nodeRadius;
+    public float nodeRadius;
 
     // The grid sizes based on the size of each node
     public int gridSizeX { get; set; }

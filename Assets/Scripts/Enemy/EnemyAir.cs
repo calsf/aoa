@@ -60,6 +60,9 @@ public class EnemyAir : Enemy
 
         // Update node walkable for this grid copy when original gets updated
         grid.OnNodeWalkableUpdate.AddListener((nodeIndex) => UpdateNodeWalkable(nodeIndex));
+
+        // Get random position to start moving to
+        nextPathPos = new Vector3(Random.Range(-grid.gridSizeX * grid.nodeRadius, grid.gridSizeX * grid.nodeRadius), Random.Range(0, grid.gridSizeY * grid.nodeRadius), Random.Range(-grid.gridSizeZ * grid.nodeRadius, grid.gridSizeZ * grid.nodeRadius));
     }
 
     void OnDestroy()
@@ -84,6 +87,8 @@ public class EnemyAir : Enemy
         rb.angularVelocity = Vector3.zero;
         rb.velocity = Vector3.zero;
         path = null;
+
+        nextPathPos = new Vector3(Random.Range(-grid.gridSizeX * grid.nodeRadius, grid.gridSizeX * grid.nodeRadius), Random.Range(0, grid.gridSizeY * grid.nodeRadius), Random.Range(-grid.gridSizeZ * grid.nodeRadius, grid.gridSizeZ * grid.nodeRadius));
     }
 
     void Update()
@@ -191,7 +196,7 @@ public class EnemyAir : Enemy
             }
             else
             {
-                nextPathPos = new Vector3(Random.Range(-grid.gridSizeX, grid.gridSizeX), Random.Range(0, grid.gridSizeY), Random.Range(-grid.gridSizeZ, grid.gridSizeZ));
+                nextPathPos = new Vector3(Random.Range(-grid.gridSizeX * grid.nodeRadius, grid.gridSizeX * grid.nodeRadius), Random.Range(0, grid.gridSizeY * grid.nodeRadius), Random.Range(-grid.gridSizeZ * grid.nodeRadius, grid.gridSizeZ * grid.nodeRadius));
             }
         }
     }

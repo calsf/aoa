@@ -61,6 +61,9 @@ public class EnemyGround : Enemy
 
         // Update node walkable for this grid copy when original gets updated
         grid.OnNodeWalkableUpdate.AddListener((nodeIndex) => UpdateNodeWalkable(nodeIndex));
+
+        // Get random position to start moving to
+        nextPathPos = new Vector3(Random.Range(-grid.gridSizeX * grid.nodeRadius, grid.gridSizeX * grid.nodeRadius), 0, Random.Range(-grid.gridSizeZ * grid.nodeRadius, grid.gridSizeZ * grid.nodeRadius));
     }
 
     void OnDestroy()
@@ -85,6 +88,8 @@ public class EnemyGround : Enemy
         rb.angularVelocity = Vector3.zero;
         rb.velocity = Vector3.zero;
         path = null;
+
+        nextPathPos = new Vector3(Random.Range(-grid.gridSizeX * grid.nodeRadius, grid.gridSizeX * grid.nodeRadius), 0, Random.Range(-grid.gridSizeZ * grid.nodeRadius, grid.gridSizeZ * grid.nodeRadius));
     }
 
     void Update()
@@ -203,7 +208,7 @@ public class EnemyGround : Enemy
             }
             else
             {
-                nextPathPos = new Vector3(Random.Range(-grid.gridSizeX, grid.gridSizeX), 0, Random.Range(-grid.gridSizeZ, grid.gridSizeZ));
+                nextPathPos = new Vector3(Random.Range(-grid.gridSizeX * grid.nodeRadius, grid.gridSizeX * grid.nodeRadius), 0, Random.Range(-grid.gridSizeZ * grid.nodeRadius, grid.gridSizeZ * grid.nodeRadius));
             }
         }
     }
