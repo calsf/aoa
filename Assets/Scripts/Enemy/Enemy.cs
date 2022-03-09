@@ -122,7 +122,7 @@ public abstract class Enemy : MonoBehaviour
 
                 // Deactivate and reset enemy object
                 ResetEnemy();
-                playerState.bloodCurrency += enemy.CURRENCY_DROP; // Give player currency amount from killing
+                playerState.AddBloodCurrency(enemy.CURRENCY_DROP); // Give player currency amount from killing
                 gameObject.SetActive(false);
             }
         }

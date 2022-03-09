@@ -70,15 +70,15 @@ public class UpgradesDisplay : MonoBehaviour
     private void UpdateStats()
     {
         textDamage.text = "Damage\n+" + playerState.stats["DamageBonus"].statValue;
-        textMagazine.text = "Magazine\n+" + playerState.stats["MagSizeMaxMultiplier"].statValue;
-        textReload.text = "Reload\n+" + playerState.stats["ReloadMultiplier"].statValue;
-        textFireRate.text = "Fire Rate\n+" + playerState.stats["FireRateMultiplier"].statValue;
-        textHeadshot.text = "Headshot\n+" + playerState.stats["HeadShotMultiplierBonus"].statValue;
+        textMagazine.text = "Magazine\n+" + ((playerState.stats["MagSizeMaxMultiplier"].statValue * 100) - 100) + "%";
+        textReload.text = "Reload\n+" + ((playerState.stats["ReloadMultiplier"].statValue * 100) - 100) + "%";
+        textFireRate.text = "Fire Rate\n+" + ((playerState.stats["FireRateMultiplier"].statValue * 100) - 100) + "%";
+        textHeadshot.text = "Headshot\n+" + (playerState.stats["HeadShotMultiplierBonus"].statValue * 100) +"%";
         textAccuracy.text = "Accuracy\n+" + playerState.stats["InaccuracyReduction"].statValue;
         textAimSpeed.text = "Aim Speed\n+" + playerState.stats["AimTimeReduction"].statValue;
         textRange.text = "Range\n+" + playerState.stats["EffectiveRangeBonus"].statValue;
         textMoveSpeed.text = "Move Speed\n+" + playerState.stats["MoveSpeedBonus"].statValue;
-        textArmor.text = "Armor\n+" + playerState.stats["Armor"].statValue;
+        textArmor.text = "Armor\n+" + (playerState.stats["Armor"].statValue * 100) + "%";
         textMaxHealth.text = "Max Health\n+" + (playerState.stats["HealthMax"].statValue - playerState.START_HEALTH);
         textJumps.text = "Jumps\n+" + playerState.stats["JumpBonus"].statValue;
     }

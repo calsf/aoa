@@ -6,6 +6,8 @@ using UnityEngine.Events;
 [CreateAssetMenu(fileName = "New Player State", menuName = "Player State")]
 public class PlayerStateObject : ScriptableObject
 {
+    private const int MAX_BLOOD_CURRENCY = 999999999;
+    private const int MAX_HEALTH = 100000000;
     private const float INVULN_TIME = 1f;
     private float nextDamagedTime;
     public float START_HEALTH = 100;
@@ -431,51 +433,111 @@ public class PlayerStateObject : ScriptableObject
 
     private float SetReload()
     {
+        // Cap max reload
+        if (stats["ReloadMultiplier"].statValue >= 10)
+        {
+            return stats["ReloadMultiplier"].statValue;
+        }
+
         return stats["ReloadMultiplier"].statValue + .4f;
     }
 
     private float SetFireRate()
     {
+        // Cap max fire rate
+        if (stats["FireRateMultiplier"].statValue >= 10)
+        {
+            return stats["FireRateMultiplier"].statValue;
+        }
+
         return stats["FireRateMultiplier"].statValue + .25f;
     }
 
     private float SetDamageBonus()
     {
+        // Cap max damage bonus
+        if (stats["DamageBonus"].statValue >= 1000)
+        {
+            return stats["DamageBonus"].statValue;
+        }
+
         return stats["DamageBonus"].statValue + 2;
     }
 
     private float SetHeadShot()
     {
+        // Cap max headshot multiplier bonus
+        if (stats["HeadShotMultiplierBonus"].statValue >= 10)
+        {
+            return stats["HeadShotMultiplierBonus"].statValue;
+        }
+
         return stats["HeadShotMultiplierBonus"].statValue + .25f;
     }
 
     private float SetMagazine()
     {
+        // Cap max magazine
+        if (stats["MagSizeMaxMultiplier"].statValue >= 15)
+        {
+            return stats["MagSizeMaxMultiplier"].statValue;
+        }
+
         return stats["MagSizeMaxMultiplier"].statValue + .3f;
     }
 
     private float SetAimSpeed()
     {
+        // Cap max aim speed
+        if (stats["AimTimeReduction"].statValue >= 1.5f)
+        {
+            return stats["AimTimeReduction"].statValue;
+        }
+
         return stats["AimTimeReduction"].statValue + .03f;
     }
 
     private float SetAccuracy()
     {
+        // Cap max accuracy
+        if (stats["InaccuracyReduction"].statValue >= 1)
+        {
+            return stats["InaccuracyReduction"].statValue;
+        }
+
         return stats["InaccuracyReduction"].statValue + .01f;
     }
 
     private float SetRange()
     {
+        // Cap max range
+        if (stats["EffectiveRangeBonus"].statValue >= 1000)
+        {
+            return stats["EffectiveRangeBonus"].statValue;
+        }
+
         return stats["EffectiveRangeBonus"].statValue + 50;
     }
 
     private float SetMoveSpeed()
     {
+        // Cap max move speed
+        if (stats["MoveSpeedBonus"].statValue >= 45)
+        {
+            return stats["MoveSpeedBonus"].statValue;
+        }
+
         return stats["MoveSpeedBonus"].statValue + 3;
     }
 
     private float SetJumps()
     {
+        // Cap max jumps
+        if (stats["JumpBonus"].statValue >= 15)
+        {
+            return stats["JumpBonus"].statValue;
+        }
+
         return stats["JumpBonus"].statValue + 1;
     }
 
@@ -500,8 +562,14 @@ public class PlayerStateObject : ScriptableObject
 
     private float SetMaxHealth()
     {
+        // Cap max health
+        if (stats["HealthMax"].statValue >= MAX_HEALTH)
+        {
+            return stats["HealthMax"].statValue;
+        }
+
         float increaseAmount = 25;
-        
+
         // Increase current health by max health increase amount
         healthCurr += increaseAmount;
         if (healthCurr > stats["HealthMax"].statValue + increaseAmount)
@@ -510,5 +578,11 @@ public class PlayerStateObject : ScriptableObject
         }
         
         return stats["HealthMax"].statValue + increaseAmount;
+    }
+
+    public void AddBloodCurrency(int amount)
+    {
+        // Cap max blood currency
+        bloodCurrency = bloodCurrency + amount >= MAX_BLOOD_CURRENCY ? MAX_BLOOD_CURRENCY : bloodCurrency + amount;
     }
 }

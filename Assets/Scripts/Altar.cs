@@ -48,7 +48,7 @@ public abstract class Altar : MonoBehaviour
     {
         float zoomRatio = cam.fieldOfView / 90; // Adjust scale based on zoom to keep consistency
         float dist = Vector3.Distance(interactPopUpCanvas.transform.position, cam.transform.position); // Scale based on distance from camera
-        interactPopUpCanvas.transform.localScale = zoomRatio * (new Vector3(.05f, .05f, .05f) * dist) / 18; // Set size
+        interactPopUpCanvas.transform.localScale = zoomRatio * (new Vector3(.05f, .05f, .05f) * dist) / 12; // Set size
 
         // Look at camera
         interactPopUpCanvas.transform.LookAt(interactPopUpCanvas.transform.position + cam.transform.rotation * Vector3.back, cam.transform.rotation * Vector3.up);
