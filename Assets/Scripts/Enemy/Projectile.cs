@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
+    protected const int POOL_NUM = 2;
+
     [SerializeField] protected PlayerStateObject playerState;
 
     protected Rigidbody rb;
     protected LayerMask collideLayerMask;
 
     [SerializeField] protected float projectileSpeed;
+    [SerializeField] protected GameObject destroyedEffect;
+    protected List<GameObject> destroyedEffectPool;
+
     public Vector3 projectileDir { get; set; }
     public float projectileDamage { get; set; }
 
@@ -24,6 +29,13 @@ public class Projectile : MonoBehaviour
             | 1 << LayerMask.NameToLayer("Altar")
             | 1 << LayerMask.NameToLayer("Nest")
             | 1 << LayerMask.NameToLayer("Boundary"));
+
+        destroyedEffectPool = new List<GameObject>();
+        for (int i = 0; i < POOL_NUM; i++)
+        {
+            destroyedEffectPool.Add(Instantiate(destroyedEffect, Vector3.zero, destroyedEffect.transform.rotation));
+            destroyedEffectPool[i].SetActive(false);
+        }
     }
 
     void FixedUpdate()
@@ -42,7 +54,27 @@ public class Projectile : MonoBehaviour
                 playerState.DamagePlayer(projectileDamage);
             }
 
+            GameObject destroyedEffectObj = GetFromPool(destroyedEffectPool, destroyedEffect);
+            destroyedEffectObj.transform.position = transform.position;
+            destroyedEffectObj.SetActive(true);
+
             gameObject.SetActive(false);
         }
+    }
+
+    protected GameObject GetFromPool(List<GameObject> pool, GameObject obj)
+    {
+        for (int i = 0; i < pool.Count; i++)
+        {
+            if (!pool[i].activeInHierarchy)
+            {
+                return pool[i];
+            }
+        }
+
+        // If no object in the pool is available, create a new object and add to the pool
+        GameObject newObj = Instantiate(obj, Vector3.zero, Quaternion.identity);
+        pool.Add(newObj);
+        return newObj;
     }
 }

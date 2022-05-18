@@ -127,3 +127,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
   projectileSpeed: 5
+  destroyedEffect: {fileID: 8605843453398321423, guid: 28763d8332813b640a6603140f4149d8, type: 3}
