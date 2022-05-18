@@ -27,6 +27,9 @@ public class Shotgun : Weapon
         hasHeadshotClones = new bool[8];
         hasDisplayPosClones = new bool[8];
         displayPosClones = new Vector3[8];
+
+        // Split damage bonus among pellets
+        damage = weapon.DAMAGE_BASE + (playerState.stats["DamageBonus"].statValue / 17);
     }
 
     void OnEnable()
@@ -54,6 +57,14 @@ public class Shotgun : Weapon
     void OnDisable()
     {
         playerState.OnStateUpdate.RemoveListener(UpdateWeaponState);
+    }
+
+    protected override void UpdateWeaponState()
+    {
+        base.UpdateWeaponState();
+
+        // Split damage bonus among pellets
+        damage = weapon.DAMAGE_BASE + (playerState.stats["DamageBonus"].statValue / 17);
     }
 
     // Override aim to change scope circle size

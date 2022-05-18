@@ -380,7 +380,7 @@ public class PlayerStateObject : ScriptableObject
             SetMaxHealth));
 
         selectedPrimary = 2;
-        selectedSecondary = 4;
+        selectedSecondary = 3;
         selectedActive = 0;
 
         healthCurr = START_HEALTH;
@@ -461,7 +461,7 @@ public class PlayerStateObject : ScriptableObject
             return stats["DamageBonus"].statValue;
         }
 
-        return stats["DamageBonus"].statValue + 2;
+        return stats["DamageBonus"].statValue + 10;
     }
 
     private float SetHeadShot()

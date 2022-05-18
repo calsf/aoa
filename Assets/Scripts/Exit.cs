@@ -45,6 +45,7 @@ public class Exit : MonoBehaviour
         objectMask = new LayerMask();
         objectMask = (1 << LayerMask.NameToLayer("Boundary")
             | 1 << LayerMask.NameToLayer("Wall")
+            | 1 << LayerMask.NameToLayer("Nest")
             | 1 << LayerMask.NameToLayer("Altar"));
 
         text.gameObject.SetActive(false);

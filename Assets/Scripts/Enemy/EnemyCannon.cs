@@ -7,8 +7,8 @@ public class EnemyCannon : EnemyGround
     protected const int PROJECTILE_POOL_NUM = 20;
     protected const float MIN_SHOOT_DELAY = 2;
     protected const float MAX_SHOOT_DELAY = 5;
-    protected const float MIN_HEIGHT = 2;
-    protected const float MAX_HEIGHT = 4;
+    protected const float MIN_HEIGHT = 4;
+    protected const float MAX_HEIGHT = 6;
 
     [SerializeField] protected GameObject projectile;
     protected List<GameObject> projectilePool;

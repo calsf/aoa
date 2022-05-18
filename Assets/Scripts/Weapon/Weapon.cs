@@ -180,7 +180,7 @@ public class Weapon : MonoBehaviour
     }
 
     // Update weapon state
-    protected void UpdateWeaponState()
+    protected virtual void UpdateWeaponState()
     {
         // Stats
         reload = playerState.stats["ReloadMultiplier"].statValue;
