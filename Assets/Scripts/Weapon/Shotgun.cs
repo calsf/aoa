@@ -240,8 +240,8 @@ public class Shotgun : Weapon
             }
         }
 
-        // Only display if did damage and obtained hit position (0 damage or no hit position was obtained, means every 'pellet' missed)
-        if (totalDamage != 0 && hasDisplayPos)
+        // Only obtained hit position (no hit position was obtained, means every 'pellet' missed)
+        if (hasDisplayPos)
         {
             // Display accumulated damage from all 'pellets'
             damageNumberManager.GetDamageNumberAndDisplay(totalDamage, displayPos, hasHeadshot, false);

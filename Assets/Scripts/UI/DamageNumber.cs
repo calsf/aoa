@@ -56,11 +56,13 @@ public class DamageNumber : MonoBehaviour
         // Set text
         int damageRounded = Mathf.RoundToInt(damage);
 
+        /*
         // If rounded damage is 0, ignore display
         if (damageRounded == 0)
         {
             return;
         }
+        */
 
         damageText.text = damageRounded.ToString();
 

@@ -56,7 +56,7 @@ public class Weapon : MonoBehaviour
     protected float inaccuracyCurr;
     protected float zoom;
     protected float effectiveRange;
-    protected float falloffModifer;
+    protected float falloffModifier;
 
     // Player state props
     [SerializeField] protected PlayerStateObject playerState;
@@ -139,7 +139,7 @@ public class Weapon : MonoBehaviour
         inaccuracyCurr = inaccuracyMax;
         zoom = weapon.ZOOM_BASE;
         effectiveRange = weapon.EFFECTIVE_RANGE_BASE + playerState.stats["EffectiveRangeBonus"].statValue;
-        falloffModifer = weapon.FALLOFF_MODIFIER_BASE;
+        falloffModifier = weapon.FALLOFF_MODIFIER_BASE;
 
         defiantReloadEffect.gameObject.SetActive(false);
 
@@ -328,7 +328,7 @@ public class Weapon : MonoBehaviour
                 if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") || hit.collider.gameObject.layer == LayerMask.NameToLayer("Nest")) // Enemy hit
                 {
                     // Check for distance and apply falloff to damage if necessary
-                    float damageDealt = hit.distance > effectiveRange ? damage * falloffModifer : damage;
+                    float damageDealt = hit.distance > effectiveRange ? damage - (damage * ((hit.distance - effectiveRange) / (100 * falloffModifier))) : damage;
 
                     // Headshot
                     if (hit.collider.gameObject.tag == "EnemyHead")
@@ -369,6 +369,13 @@ public class Weapon : MonoBehaviour
                     }
 
                     damageDealt *= damageDealtMultiplier; // Apply damage dealt multiplier
+
+                    // Apply min damage of 0
+                    if (damageDealt < 0)
+                    {
+                        damageDealt = 0;
+                    }
+
                     hit.collider.gameObject.GetComponentInParent<Enemy>().Damaged(damageDealt);
 
                     SacrificialShotGain(healthGainMultiplier);
@@ -381,7 +388,7 @@ public class Weapon : MonoBehaviour
                 {
                     // Check for distance and apply falloff to damage if necessary
                     // Use base damage and base weapon falloff modifier for hits on wall
-                    float damageDealt = hit.distance > effectiveRange ? weapon.DAMAGE_BASE * weapon.FALLOFF_MODIFIER_BASE : weapon.DAMAGE_BASE;
+                    float damageDealt = hit.distance > effectiveRange ? weapon.DAMAGE_BASE - ((hit.distance - effectiveRange) * weapon.FALLOFF_MODIFIER_BASE) : weapon.DAMAGE_BASE;
 
                     // Tactical shot - destroy wall with one shot if within effective range
                     if (playerState.powers["TacticalShot"].isActive && hit.distance < effectiveRange)
@@ -390,6 +397,12 @@ public class Weapon : MonoBehaviour
                     }
 
                     damageDealt *= damageDealtMultiplier; // Apply damage dealt multiplier
+
+                    // Apply min damage of 0
+                    if (damageDealt < 0)
+                    {
+                        damageDealt = 0;
+                    }
 
                     // Deal damage to wall block
                     hit.collider.gameObject.GetComponent<WallBlock>().Damaged(damageDealt);
@@ -419,7 +432,7 @@ public class Weapon : MonoBehaviour
             if (allHit.Length > 0 && allHit[0].collider.gameObject.layer == LayerMask.NameToLayer("Wall"))
             {
                 // Check for distance and apply falloff to damage if necessary (Use base damage and base weapon falloff modifier for hits on wall)
-                float damageDealt = allHit[0].distance > effectiveRange ? weapon.DAMAGE_BASE * weapon.FALLOFF_MODIFIER_BASE : weapon.DAMAGE_BASE;
+                float damageDealt = allHit[0].distance > effectiveRange ? weapon.DAMAGE_BASE - ((allHit[0].distance - effectiveRange) * weapon.FALLOFF_MODIFIER_BASE) : weapon.DAMAGE_BASE;
 
                 // Tactical shot - destroy wall with one shot if within effective range
                 if (playerState.powers["TacticalShot"].isActive && allHit[0].distance < effectiveRange)
@@ -428,6 +441,12 @@ public class Weapon : MonoBehaviour
                 }
 
                 damageDealt *= damageDealtMultiplier; // Apply damage dealt multiplier
+
+                // Apply min damage of 0
+                if (damageDealt < 0)
+                {
+                    damageDealt = 0;
+                }
 
                 allHit[0].collider.gameObject.GetComponent<WallBlock>().Damaged(damageDealt);
 
@@ -454,7 +473,7 @@ public class Weapon : MonoBehaviour
                     }
 
                     // Check for distance and apply falloff to damage if necessary
-                    float damageDealt = hit.distance > effectiveRange ? damage * falloffModifer : damage;
+                    float damageDealt = hit.distance > effectiveRange ? damage - (damage * ((hit.distance - effectiveRange) / (100 * falloffModifier))) : damage;
 
                     // Headshot
                     if (hit.collider.gameObject.tag == "EnemyHead")
@@ -496,6 +515,13 @@ public class Weapon : MonoBehaviour
                     }
 
                     damageDealt *= damageDealtMultiplier; // Apply damage dealt multiplier
+
+                    // Apply min damage of 0
+                    if (damageDealt < 0)
+                    {
+                        damageDealt = 0;
+                    }
+
                     hit.collider.gameObject.GetComponentInParent<Enemy>().Damaged(damageDealt);
 
                     // Add this enemy object to list of hit objects so it does not get hit again
