@@ -233,6 +233,13 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
+  - time: 0
+    functionName: PlayAudioClip
+    data: 
+    objectReferenceParameter: {fileID: 8300000, guid: 0b8d7bda64e10704ca83d6471376e25f, type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 0.33333334
     functionName: OnFinishShoot
     data: 

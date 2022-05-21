@@ -24,8 +24,15 @@ public abstract class Altar : MonoBehaviour
     [SerializeField] protected GameObject altarUsedEffect;
     protected GameObject altarUsedEffectObj;
 
+    [SerializeField] protected AudioClip audioClip;
+    protected AudioSource audioSrc;
+
     protected virtual void Start()
     {
+        // Set up audio, use Player's audio source
+        audioSrc = GameObject.FindGameObjectWithTag("Player").GetComponent<AudioSource>();
+        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
+
         stats = new List<string>(playerState.stats.Keys);
         cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         interactPopUp.SetActive(false);

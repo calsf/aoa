@@ -17,6 +17,7 @@ TagManager:
   - Hitmarker
   - Settings
   - EnemySpawnManager
+  - SoundManager
   layers:
   - Default
   - TransparentFX

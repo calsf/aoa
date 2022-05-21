@@ -349,6 +349,13 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
+  - time: 0
+    functionName: PlayAudioClip
+    data: 
+    objectReferenceParameter: {fileID: 8300000, guid: 1a6c69ed0fae2fc45a512ffa197491c1, type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 0.5833333
     functionName: OnFinishReload
     data: 

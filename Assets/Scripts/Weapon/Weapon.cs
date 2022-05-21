@@ -71,8 +71,21 @@ public class Weapon : MonoBehaviour
 
     protected List<GameObject> decoyShotPool;
 
+    protected float[] pitches = { 1, .95f, 1.05f };
+    protected int playedCount = 0;
+    [SerializeField] protected AudioSource audioSrcMain;
+    [SerializeField] protected AudioSource audioSrcHit;
+
+    [SerializeField] protected AudioClip enemyHeadHit;
+    [SerializeField] protected AudioClip enemyBodyHit;
+
     protected virtual void Awake()
     {
+        // Set up audio
+        SoundManager soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
+        soundManager.AddAudioSource(audioSrcMain);
+        soundManager.AddAudioSource(audioSrcHit);
+
         crosshair = GameObject.FindGameObjectWithTag("Crosshair").GetComponent<RectTransform>();
 
         // Get all crosshair lines (including ones for Crosshair Color preview)
@@ -194,6 +207,31 @@ public class Weapon : MonoBehaviour
         aimTime = weapon.AIM_TIME_BASE - playerState.stats["AimTimeReduction"].statValue <= 0 ? .03f : weapon.AIM_TIME_BASE - playerState.stats["AimTimeReduction"].statValue; // Have a min aim time
         inaccuracyMax = weapon.INACCURACY_BASE - playerState.stats["InaccuracyReduction"].statValue < inaccuracyMin ? inaccuracyMin : weapon.INACCURACY_BASE - playerState.stats["InaccuracyReduction"].statValue;
         effectiveRange = weapon.EFFECTIVE_RANGE_BASE + playerState.stats["EffectiveRangeBonus"].statValue;
+    }
+
+    // Play main audio and change pitch
+    public void PlayAudioClip(AudioClip audioClip)
+    {
+        if (playedCount > pitches.Length - 1)
+        {
+            playedCount = 0;
+        }
+
+        audioSrcMain.pitch = pitches[playedCount];
+        audioSrcMain.PlayOneShot(audioClip);
+        playedCount++;
+    }
+
+    // Play hit audio with current pitch
+    public void PlayAudioHit(AudioClip audioClip)
+    {
+        if (playedCount > pitches.Length - 1)
+        {
+            playedCount = 0;
+        }
+
+        audioSrcHit.pitch = pitches[playedCount];
+        audioSrcHit.PlayOneShot(audioClip);
     }
 
     protected void OnFinishShoot()
@@ -563,10 +601,16 @@ public class Weapon : MonoBehaviour
         if (isHeadshot)
         {
             hitmarker.OnHeadShot();
+
+            // Play audio
+            PlayAudioHit(enemyHeadHit);
         }
         else
         {
             hitmarker.OnBodyShot();
+
+            // Play audio
+            PlayAudioHit(enemyBodyHit);
         }
     }
 
