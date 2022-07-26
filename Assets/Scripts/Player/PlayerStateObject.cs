@@ -227,7 +227,7 @@ public class PlayerStateObject : ScriptableObject
             "Tempo Shot",
             "Gain bonus damage with each consecutive headshot. A body shot will reset bonus damage to 0."));
         powers.Add("PeakOfSurvival", new Power(
-            false, 
+            true, 
             peakOfSurvivalIcon, 
             "Survival",
             "Peak of Survival",
@@ -251,13 +251,13 @@ public class PlayerStateObject : ScriptableObject
             "Cloned Shot",
             "Additional shots are fired near the original shot."));
         powers.Add("DefiantReload", new Power(
-            false, 
+            true, 
             defiantReloadIcon, 
             "Defiant",
             "Defiant Reload",
             "Reloading knocks back all nearby enemies."));
         powers.Add("DecoyShot", new Power(
-            false, 
+            true, 
             decoyShotIcon, 
             "Decoy",
             "Decoy Shot",
@@ -380,7 +380,7 @@ public class PlayerStateObject : ScriptableObject
             SetMaxHealth));
 
         selectedPrimary = 2;
-        selectedSecondary = 3;
+        selectedSecondary = 1;
         selectedActive = 0;
 
         healthCurr = START_HEALTH;

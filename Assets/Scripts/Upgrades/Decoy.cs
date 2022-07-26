@@ -9,10 +9,15 @@ public class Decoy : MonoBehaviour
     private List<GameObject> hitEnemiesObj;
     private List<Enemy> hitEnemies;
 
+    private AudioSource audioSrc;
+
     void Awake()
     {
         hitEnemiesObj = new List<GameObject>();
         hitEnemies = new List<Enemy>();
+
+        audioSrc = GetComponent<AudioSource>();
+        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
     }
 
     void LateUpdate()

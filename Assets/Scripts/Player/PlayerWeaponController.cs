@@ -18,8 +18,18 @@ public class PlayerWeaponController : MonoBehaviour
     private Camera cam;
     private LayerMask hoverLayerMask;
 
+    protected AudioSource audioSrc;
+
+    [SerializeField] protected AudioClip defiantReload;
+
+    [SerializeField] protected AudioClip swap;
+
     void Start()
     {
+        // Set up audio, use Player's audio source
+        audioSrc = GameObject.FindGameObjectWithTag("Player").GetComponent<AudioSource>();
+        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
+
         weaponPrimary = weapons[playerState.selectedPrimary];
         weaponSecondary = weapons[playerState.selectedSecondary];
 
@@ -63,6 +73,8 @@ public class PlayerWeaponController : MonoBehaviour
 
             // Set bonus swap damage on swap
             playerState.bonusSwapDamage = playerState.SWAP_MULTIPLIER;
+
+            audioSrc.PlayOneShot(swap);
         }
 
         // Swap to secondary
@@ -74,6 +86,8 @@ public class PlayerWeaponController : MonoBehaviour
 
             // Set bonus swap damage on swap
             playerState.bonusSwapDamage = playerState.SWAP_MULTIPLIER;
+
+            audioSrc.PlayOneShot(swap);
         }
 
         // Swap to inactive weapon
@@ -87,6 +101,8 @@ public class PlayerWeaponController : MonoBehaviour
 
                 // Set bonus swap damage on swap
                 playerState.bonusSwapDamage = playerState.SWAP_MULTIPLIER;
+
+                audioSrc.PlayOneShot(swap);
             }
             else if (weaponActive == weaponPrimary && !weaponPrimary.isSwapping && !weaponSecondary.isSwapping)
             {
@@ -96,6 +112,8 @@ public class PlayerWeaponController : MonoBehaviour
 
                 // Set bonus swap damage on swap
                 playerState.bonusSwapDamage = playerState.SWAP_MULTIPLIER;
+
+                audioSrc.PlayOneShot(swap);
             }
         }
 
@@ -109,6 +127,11 @@ public class PlayerWeaponController : MonoBehaviour
         // Reload
         if (Input.GetButtonDown("Reload") && weaponActive.canReload)
         {
+            if (playerState.powers["DefiantReload"].isActive)
+            {
+                audioSrc.PlayOneShot(defiantReload);
+            }
+
             weaponActive.Reload();
         }
 

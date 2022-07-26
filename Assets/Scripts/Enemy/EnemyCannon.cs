@@ -17,6 +17,8 @@ public class EnemyCannon : EnemyGround
 
     protected float nextShotTime;
 
+    private AudioSource audioSrc;
+
     protected override void Start()
     {
         base.Start();
@@ -26,6 +28,10 @@ public class EnemyCannon : EnemyGround
             projectilePool.Add(Instantiate(projectile, Vector3.zero, Quaternion.identity));
             projectilePool[i].SetActive(false);
         }
+
+
+        audioSrc = GetComponent<AudioSource>();
+        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
     }
 
     void Update()
@@ -46,6 +52,8 @@ public class EnemyCannon : EnemyGround
 
     protected void ShootUp()
     {
+        audioSrc.Play();
+        
         GameObject obj = GetFromPool(projectilePool, projectile);
 
         Transform spawnPos = projectileSpawnPos[Random.Range(0, projectileSpawnPos.Length)];

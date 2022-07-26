@@ -6,9 +6,18 @@ public class DeathEffect : MonoBehaviour
 {
     private ParticleSystem particles;
 
+    private AudioSource audioSrc;
+
     private void Awake()
     {
         particles = GetComponent<ParticleSystem>();
+
+        audioSrc = GetComponent<AudioSource>();
+
+        if (audioSrc != null)
+        {
+            GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
+        }
     }
 
     private void OnEnable()

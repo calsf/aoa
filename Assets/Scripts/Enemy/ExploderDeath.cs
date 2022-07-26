@@ -12,9 +12,14 @@ public class ExploderDeath : MonoBehaviour
 
     public Enemy enemy { get; set; }
 
+    private AudioSource audioSrc;
+
     void Awake()
     {
         mainParticles = GetComponent<ParticleSystem>();
+
+        audioSrc = GetComponent<AudioSource>();
+        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
     }
 
     void OnEnable()
