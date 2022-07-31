@@ -9,7 +9,11 @@ public class WallBlockDestroyed : MonoBehaviour
     void Awake()
     {
         audioSrc = GetComponent<AudioSource>();
-        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
+
+        if (audioSrc != null)
+        {
+            GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
+        }
     }
 
     public void OnEnable()

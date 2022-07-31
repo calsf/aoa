@@ -33,8 +33,20 @@ public class Exit : MonoBehaviour
     private GameObject player;
     private bool isExiting;
 
+    [SerializeField] protected AudioSource audioSrcActivate;
+    private AudioSource audioSrc;
+
+    [SerializeField] protected AudioClip portalActivate;
+
     void Start()
     {
+        // Set up audio
+        audioSrc = GetComponent<AudioSource>();
+
+        SoundManager soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
+        soundManager.AddAudioSource(audioSrcActivate);
+        soundManager.AddAudioSource(audioSrc);
+
         grid = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>();
 
         player = GameObject.FindGameObjectWithTag("Player");
@@ -134,6 +146,9 @@ public class Exit : MonoBehaviour
     // For when player actually activates portal
     private void ActivatePortal()
     {
+        // Play audio
+        audioSrcActivate.PlayOneShot(portalActivate);
+
         ParticleSystem.MainModule ringsPs = rings.main;
         ringsPs.startColor = Color.yellow;
 

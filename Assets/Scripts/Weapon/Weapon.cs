@@ -74,17 +74,24 @@ public class Weapon : MonoBehaviour
     protected float[] pitches = { 1, .95f, 1.05f };
     protected int playedCount = 0;
     [SerializeField] protected AudioSource audioSrcMain;
-    [SerializeField] protected AudioSource audioSrcHit;
+    [SerializeField] protected AudioSource audioSrcHeadHit;
+    [SerializeField] protected AudioSource audioSrcBodyHit;
 
-    [SerializeField] protected AudioClip enemyHeadHit;
-    [SerializeField] protected AudioClip enemyBodyHit;
+    protected AudioSource audioSrc;
+
+    [SerializeField] protected AudioClip defiantReload;
 
     protected virtual void Awake()
     {
         // Set up audio
         SoundManager soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
         soundManager.AddAudioSource(audioSrcMain);
-        soundManager.AddAudioSource(audioSrcHit);
+        soundManager.AddAudioSource(audioSrcHeadHit);
+        soundManager.AddAudioSource(audioSrcBodyHit);
+
+        // Set up audio, use Player's audio source
+        audioSrc = GameObject.FindGameObjectWithTag("Player").GetComponent<AudioSource>();
+        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
 
         crosshair = GameObject.FindGameObjectWithTag("Crosshair").GetComponent<RectTransform>();
 
@@ -223,15 +230,27 @@ public class Weapon : MonoBehaviour
     }
 
     // Play hit audio with current pitch
-    public void PlayAudioHit(AudioClip audioClip)
+    public void PlayAudioHeadHit()
     {
         if (playedCount > pitches.Length - 1)
         {
             playedCount = 0;
         }
 
-        audioSrcHit.pitch = pitches[playedCount];
-        audioSrcHit.PlayOneShot(audioClip);
+        audioSrcHeadHit.pitch = pitches[playedCount];
+        audioSrcHeadHit.Play();
+    }
+
+    // Play hit audio with current pitch
+    public void PlayAudioBodyHit()
+    {
+        if (playedCount > pitches.Length - 1)
+        {
+            playedCount = 0;
+        }
+
+        audioSrcBodyHit.pitch = pitches[playedCount];
+        audioSrcBodyHit.Play();
     }
 
     protected void OnFinishShoot()
@@ -297,6 +316,11 @@ public class Weapon : MonoBehaviour
     {
         isReloading = true;
         anim.Play("Reload");
+
+        if (playerState.powers["DefiantReload"].isActive)
+        {
+            audioSrc.PlayOneShot(defiantReload);
+        }
 
         defiantReloadEffect.Reset();
         DefiantReload();
@@ -603,14 +627,15 @@ public class Weapon : MonoBehaviour
             hitmarker.OnHeadShot();
 
             // Play audio
-            PlayAudioHit(enemyHeadHit);
+            PlayAudioHeadHit();
         }
         else
         {
-            hitmarker.OnBodyShot();
+            // Do not play hit sound again
+            hitmarker.OnBodyShot(false);
 
             // Play audio
-            PlayAudioHit(enemyBodyHit);
+            PlayAudioBodyHit();
         }
     }
 

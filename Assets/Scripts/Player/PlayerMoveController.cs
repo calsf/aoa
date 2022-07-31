@@ -55,13 +55,19 @@ public class PlayerMoveController : MonoBehaviour
     protected int playedCount = 0;
     [SerializeField] protected AudioSource audioSrcMovement;
 
+    protected float[] pitchesRocketJump = { 1, .9f, 1.1f };
+    protected int playedCountRocketJump = 0;
+    [SerializeField] protected AudioSource audioSrcRocketJump;
+
     [SerializeField] protected AudioClip jump;
+    [SerializeField] protected AudioClip slide;
 
     void Awake()
     {
         // Set up audio
         SoundManager soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
         soundManager.AddAudioSource(audioSrcMovement);
+        soundManager.AddAudioSource(audioSrcRocketJump);
 
         settings = GameObject.FindGameObjectWithTag("Settings").GetComponent<Settings>();
         controller = GetComponent<CharacterController>();
@@ -131,6 +137,19 @@ public class PlayerMoveController : MonoBehaviour
         audioSrcMovement.pitch = pitches[playedCount];
         audioSrcMovement.PlayOneShot(audioClip);
         playedCount++;
+    }
+
+    // Play rocket jump audio and change pitch
+    public void PlayRocketJumpAudioClip()
+    {
+        if (playedCountRocketJump > pitchesRocketJump.Length - 1)
+        {
+            playedCountRocketJump = 0;
+        }
+
+        audioSrcRocketJump.pitch = pitchesRocketJump[playedCountRocketJump];
+        audioSrcRocketJump.Play();
+        playedCountRocketJump++;
     }
 
     // Update player stats
@@ -255,6 +274,9 @@ public class PlayerMoveController : MonoBehaviour
             // Rocket Jump
             if (playerState.powers["RocketJump"].isActive)
             {
+                // Play audio
+                PlayRocketJumpAudioClip();
+
                 GameObject rocket = GetFromPool(rocketObjectPool, rocketObject);
                 rocket.transform.position = transform.position;
                 rocket.SetActive(true);
@@ -308,6 +330,9 @@ public class PlayerMoveController : MonoBehaviour
 
     IEnumerator Slide()
     {
+        // Play audio
+        PlayAudioClip(slide);
+
         float waitTime;
         float elapsedTime;
         float targetY;

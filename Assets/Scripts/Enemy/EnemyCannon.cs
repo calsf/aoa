@@ -32,6 +32,8 @@ public class EnemyCannon : EnemyGround
 
         audioSrc = GetComponent<AudioSource>();
         GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
+
+        nextShotTime = Time.time + MIN_SHOOT_DELAY;
     }
 
     void Update()

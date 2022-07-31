@@ -28,6 +28,11 @@ public class SoundManager : MonoBehaviour
     {
         foreach (AudioSource audioSrc in audioSources)
         {
+            if (audioSrc == null)
+            {
+                continue;
+            }
+
             audioSrc.volume = PlayerPrefs.GetFloat("Volume", 1);
         }
     }

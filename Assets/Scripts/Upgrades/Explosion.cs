@@ -11,8 +11,15 @@ public class Explosion : MonoBehaviour
 
     public float damage { get; set; }
 
+    private AudioSource audioSrc;
+
+    private bool hasInit = false;
+
     void Awake()
     {
+        audioSrc = GameObject.FindGameObjectWithTag("ExplosionAudioSource").GetComponent<AudioSource>();
+        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
+
         hitEnemies = new List<GameObject>();
         mainParticles = GetComponent<ParticleSystem>();
         damageNumberManager = GameObject.FindGameObjectWithTag("DamageNumberManager").GetComponent<DamageNumberManager>();
@@ -22,6 +29,18 @@ public class Explosion : MonoBehaviour
     void OnEnable()
     {
         hitEnemies.Clear();
+
+        if (hasInit)
+        {
+            audioSrc.Play();
+        }
+    }
+
+    void OnDisable()
+    {
+        // Needed for first time it is disabled
+        // Set to true to indicate this object has been initialized so that it can play sound next time it is enabled
+        hasInit = true;
     }
 
     void LateUpdate()

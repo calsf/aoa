@@ -271,16 +271,10 @@ public class Shotgun : Weapon
             if (hasHeadShotAny)
             {
                 hitmarker.OnHeadShot();
-
-                // Play audio
-                PlayAudioHit(enemyHeadHit);
             }
             else
             {
                 hitmarker.OnBodyShot();
-
-                // Play audio
-                PlayAudioHit(enemyBodyHit);
             }
         }
     }

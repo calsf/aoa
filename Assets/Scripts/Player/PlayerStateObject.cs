@@ -203,7 +203,7 @@ public class PlayerStateObject : ScriptableObject
             "Sacrificial Shot",
             "Lose health per shot. Recover double the health lost if the shot hits an enemy."));
         powers.Add("TacticalShot", new Power(
-            false,
+            true,
             tacticalShotIcon,
             "Tactical",
             "Tactical Shot",
@@ -239,13 +239,13 @@ public class PlayerStateObject : ScriptableObject
             "Steady Regen",
             "Gradually recover health over time."));
         powers.Add("ExplosiveShot", new Power(
-            false, 
+            true, 
             explosiveShotIcon, 
             "Explosive",
             "Explosive Death",
             "Enemies explode on death."));
         powers.Add("ClonedShot", new Power(
-            false, 
+            true, 
             clonedShotIcon, 
             "Cloned",
             "Cloned Shot",
@@ -263,7 +263,7 @@ public class PlayerStateObject : ScriptableObject
             "Decoy Shot",
             "The last shot of a magazine will spawn a decoy that will attract nearby enemies."));
         powers.Add("AirSlide", new Power(
-            false, 
+            true, 
             airSlideIcon, 
             "Air Slide",
             "Air Slide",
@@ -281,7 +281,7 @@ public class PlayerStateObject : ScriptableObject
             "Vengeance",
             "Stores damage taken as bonus damage on the next shot. Stored damage is applied before armor reduction."));
         powers.Add("RocketJump", new Power(
-            false,
+            true,
             rocketJumpIcon,
             "Rocket Jump",
             "Rocket Jump",

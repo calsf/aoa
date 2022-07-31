@@ -20,8 +20,6 @@ public class PlayerWeaponController : MonoBehaviour
 
     protected AudioSource audioSrc;
 
-    [SerializeField] protected AudioClip defiantReload;
-
     [SerializeField] protected AudioClip swap;
 
     void Start()
@@ -127,11 +125,6 @@ public class PlayerWeaponController : MonoBehaviour
         // Reload
         if (Input.GetButtonDown("Reload") && weaponActive.canReload)
         {
-            if (playerState.powers["DefiantReload"].isActive)
-            {
-                audioSrc.PlayOneShot(defiantReload);
-            }
-
             weaponActive.Reload();
         }
 
