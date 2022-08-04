@@ -34,9 +34,8 @@ public class Exit : MonoBehaviour
     private bool isExiting;
 
     [SerializeField] protected AudioSource audioSrcActivate;
+    [SerializeField] protected AudioSource audioSrcTeleport;
     private AudioSource audioSrc;
-
-    [SerializeField] protected AudioClip portalActivate;
 
     void Start()
     {
@@ -45,6 +44,7 @@ public class Exit : MonoBehaviour
 
         SoundManager soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
         soundManager.AddAudioSource(audioSrcActivate);
+        soundManager.AddAudioSource(audioSrcTeleport);
         soundManager.AddAudioSource(audioSrc);
 
         grid = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>();
@@ -147,7 +147,7 @@ public class Exit : MonoBehaviour
     private void ActivatePortal()
     {
         // Play audio
-        audioSrcActivate.PlayOneShot(portalActivate);
+        audioSrcActivate.Play();
 
         ParticleSystem.MainModule ringsPs = rings.main;
         ringsPs.startColor = Color.yellow;
@@ -158,6 +158,9 @@ public class Exit : MonoBehaviour
 
     private IEnumerator TeleportToScene()
     {
+        // Play audio
+        audioSrcTeleport.Play();
+
         // Disable components as needed to show player has "teleported"
         player.GetComponent<CharacterController>().enabled = false;
         player.GetComponent<PlayerMoveController>().enabled = false;

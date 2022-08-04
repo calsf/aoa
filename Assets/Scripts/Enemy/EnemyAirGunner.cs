@@ -15,9 +15,19 @@ public class EnemyAirGunner : EnemyAir
     protected float nextShotTime;
     protected bool isShooting;
 
+    [SerializeField] private AudioSource windUpAudioSrc;
+    [SerializeField] private AudioSource shootAudioSrc;
+    private bool hasShot = false;
+
     protected override void Start()
     {
         base.Start();
+
+        // Set up audio
+        SoundManager soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
+        soundManager.AddAudioSource(shootAudioSrc);
+        soundManager.AddAudioSource(windUpAudioSrc);
+
         projectilePool = new List<GameObject>();
         for (int i = 0; i < PROJECTILE_POOL_NUM; i++)
         {
@@ -48,6 +58,9 @@ public class EnemyAirGunner : EnemyAir
         isShooting = true;
 
         anim.Play("Shoot"); // Shoot animation should have anim event to actually shoot
+
+        windUpAudioSrc.Play();
+        hasShot = false;
     }
 
     protected void FinishShooting()
@@ -61,6 +74,12 @@ public class EnemyAirGunner : EnemyAir
 
     protected void ShootAtPlayer()
     {
+        if (!hasShot)
+        {
+            hasShot = true;
+            shootAudioSrc.Play();
+        }
+
         GameObject obj = GetFromPool(projectilePool, projectile);
 
         obj.transform.rotation = projectileSpawnPos.transform.rotation;
