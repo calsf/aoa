@@ -16,11 +16,16 @@ public class GasCloud : MonoBehaviour
 
     private float nextReset;
 
+    private AudioSource audioSrc;
+
     void Awake()
     {
         hitEnemiesObj = new List<GameObject>();
         damageNumberManager = GameObject.FindGameObjectWithTag("DamageNumberManager").GetComponent<DamageNumberManager>();
         hitmarker = GameObject.FindGameObjectWithTag("Hitmarker").GetComponent<Hitmarker>();
+
+        audioSrc = GetComponent<AudioSource>();
+        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
     }
 
     void Update()

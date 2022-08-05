@@ -71,8 +71,28 @@ public class Weapon : MonoBehaviour
 
     protected List<GameObject> decoyShotPool;
 
+    protected float[] pitches = { 1, .95f, 1.05f };
+    protected int playedCount = 0;
+    [SerializeField] protected AudioSource audioSrcMain;
+    [SerializeField] protected AudioSource audioSrcHeadHit;
+    [SerializeField] protected AudioSource audioSrcBodyHit;
+
+    protected AudioSource audioSrc;
+
+    [SerializeField] protected AudioClip defiantReload;
+
     protected virtual void Awake()
     {
+        // Set up audio
+        SoundManager soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
+        soundManager.AddAudioSource(audioSrcMain);
+        soundManager.AddAudioSource(audioSrcHeadHit);
+        soundManager.AddAudioSource(audioSrcBodyHit);
+
+        // Set up audio, use Player's audio source
+        audioSrc = GameObject.FindGameObjectWithTag("Player").GetComponent<AudioSource>();
+        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
+
         crosshair = GameObject.FindGameObjectWithTag("Crosshair").GetComponent<RectTransform>();
 
         // Get all crosshair lines (including ones for Crosshair Color preview)
@@ -196,6 +216,43 @@ public class Weapon : MonoBehaviour
         effectiveRange = weapon.EFFECTIVE_RANGE_BASE + playerState.stats["EffectiveRangeBonus"].statValue;
     }
 
+    // Play main audio and change pitch
+    public void PlayAudioClip(AudioClip audioClip)
+    {
+        if (playedCount > pitches.Length - 1)
+        {
+            playedCount = 0;
+        }
+
+        audioSrcMain.pitch = pitches[playedCount];
+        audioSrcMain.PlayOneShot(audioClip);
+        playedCount++;
+    }
+
+    // Play hit audio with current pitch
+    public void PlayAudioHeadHit()
+    {
+        if (playedCount > pitches.Length - 1)
+        {
+            playedCount = 0;
+        }
+
+        audioSrcHeadHit.pitch = pitches[playedCount];
+        audioSrcHeadHit.Play();
+    }
+
+    // Play hit audio with current pitch
+    public void PlayAudioBodyHit()
+    {
+        if (playedCount > pitches.Length - 1)
+        {
+            playedCount = 0;
+        }
+
+        audioSrcBodyHit.pitch = pitches[playedCount];
+        audioSrcBodyHit.Play();
+    }
+
     protected void OnFinishShoot()
     {
         isShooting = false;
@@ -259,6 +316,11 @@ public class Weapon : MonoBehaviour
     {
         isReloading = true;
         anim.Play("Reload");
+
+        if (playerState.powers["DefiantReload"].isActive)
+        {
+            audioSrc.PlayOneShot(defiantReload);
+        }
 
         defiantReloadEffect.Reset();
         DefiantReload();
@@ -563,10 +625,17 @@ public class Weapon : MonoBehaviour
         if (isHeadshot)
         {
             hitmarker.OnHeadShot();
+
+            // Play audio
+            PlayAudioHeadHit();
         }
         else
         {
-            hitmarker.OnBodyShot();
+            // Do not play hit sound again
+            hitmarker.OnBodyShot(false);
+
+            // Play audio
+            PlayAudioBodyHit();
         }
     }
 

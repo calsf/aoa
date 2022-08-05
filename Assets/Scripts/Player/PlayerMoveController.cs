@@ -51,8 +51,24 @@ public class PlayerMoveController : MonoBehaviour
     [SerializeField] private GameObject rocketObject;
     protected List<GameObject> rocketObjectPool;
 
+    protected float[] pitches = { 1, .9f, 1.1f };
+    protected int playedCount = 0;
+    [SerializeField] protected AudioSource audioSrcMovement;
+
+    protected float[] pitchesRocketJump = { 1, .9f, 1.1f };
+    protected int playedCountRocketJump = 0;
+    [SerializeField] protected AudioSource audioSrcRocketJump;
+
+    [SerializeField] protected AudioClip jump;
+    [SerializeField] protected AudioClip slide;
+
     void Awake()
     {
+        // Set up audio
+        SoundManager soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
+        soundManager.AddAudioSource(audioSrcMovement);
+        soundManager.AddAudioSource(audioSrcRocketJump);
+
         settings = GameObject.FindGameObjectWithTag("Settings").GetComponent<Settings>();
         controller = GetComponent<CharacterController>();
 
@@ -108,6 +124,32 @@ public class PlayerMoveController : MonoBehaviour
 
         Look();
         Move();
+    }
+
+    // Play movement audio and change pitch
+    public void PlayAudioClip(AudioClip audioClip)
+    {
+        if (playedCount > pitches.Length - 1)
+        {
+            playedCount = 0;
+        }
+
+        audioSrcMovement.pitch = pitches[playedCount];
+        audioSrcMovement.PlayOneShot(audioClip);
+        playedCount++;
+    }
+
+    // Play rocket jump audio and change pitch
+    public void PlayRocketJumpAudioClip()
+    {
+        if (playedCountRocketJump > pitchesRocketJump.Length - 1)
+        {
+            playedCountRocketJump = 0;
+        }
+
+        audioSrcRocketJump.pitch = pitchesRocketJump[playedCountRocketJump];
+        audioSrcRocketJump.Play();
+        playedCountRocketJump++;
     }
 
     // Update player stats
@@ -226,9 +268,15 @@ public class PlayerMoveController : MonoBehaviour
             currVelocityY = 0; // Reset to 0 so jump heights are always consistent
             currVelocityY += Mathf.Sqrt((JUMP_HEIGHT * -1f) * GRAVITY); // Set velocityY to be some positive velocity based on jump height
 
+            // Play audio
+            PlayAudioClip(jump);
+
             // Rocket Jump
             if (playerState.powers["RocketJump"].isActive)
             {
+                // Play audio
+                PlayRocketJumpAudioClip();
+
                 GameObject rocket = GetFromPool(rocketObjectPool, rocketObject);
                 rocket.transform.position = transform.position;
                 rocket.SetActive(true);
@@ -282,6 +330,9 @@ public class PlayerMoveController : MonoBehaviour
 
     IEnumerator Slide()
     {
+        // Play audio
+        PlayAudioClip(slide);
+
         float waitTime;
         float elapsedTime;
         float targetY;

@@ -4,6 +4,18 @@ using UnityEngine;
 
 public class WallBlockDestroyed : MonoBehaviour
 {
+    private AudioSource audioSrc;
+
+    void Awake()
+    {
+        audioSrc = GetComponent<AudioSource>();
+
+        if (audioSrc != null)
+        {
+            GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
+        }
+    }
+
     public void OnEnable()
     {
         // Apply explosion on all child blocks

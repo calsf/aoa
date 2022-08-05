@@ -19,8 +19,20 @@ public class PlayerHealthUpgrades : MonoBehaviour
     public float peakSurvivalNextActive { get; set; }
     private bool peakSurvivalThresholdReached = false; // If fell below health threshold to activate, will be set to true until health is regained above threshold
 
+    private AudioSource audioSrc;
+
+    [SerializeField] private AudioClip peakOfSurvivalActivate;
+    [SerializeField] private AudioClip peakOfSurvivalEnd;
+    [SerializeField] private Animator peakOfSurvivalAnim;
+
+    private bool hasPlayedWarning = false;
+
     void Start()
     {
+        // Set up audio, use Player's audio source
+        audioSrc = GameObject.FindGameObjectWithTag("Player").GetComponent<AudioSource>();
+        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
+
         steadyRegenNextTime = Time.time;
 
         peakSurvivalOffTime = Time.time;
@@ -58,20 +70,34 @@ public class PlayerHealthUpgrades : MonoBehaviour
                 && !peakSurvivalThresholdReached 
                 && playerState.healthCurr < playerState.stats["HealthMax"].statValue * PEAK_SURVIVAL_THRESHOLD) // Check for and activate effect
             {
+                peakOfSurvivalAnim.Play("PeakOfSurvivalFadeIn");
+                audioSrc.PlayOneShot(peakOfSurvivalActivate);
+
                 playerState.peakOfSurvivalActive = true;
                 peakSurvivalThresholdReached = true;
 
                 peakSurvivalOffTime = Time.time + PEAK_SURVIVAL_TIME;
                 peakSurvivalNextActive = Time.time + PEAK_SURVIVAL_COOLDOWN;
             }
-            else // Effect is active
+            else if (playerState.peakOfSurvivalActive) // Effect is active
             {
+                // Play sound a little bit before effect ends
+                if (!hasPlayedWarning && Time.time > peakSurvivalOffTime - 1f)
+                {
+                    hasPlayedWarning = true;
+
+                    peakOfSurvivalAnim.Play("PeakOfSurvivalFadeOut");
+                    audioSrc.PlayOneShot(peakOfSurvivalEnd);
+                }
+
                 // Check for and deactive active effect after some time
                 if (Time.time > peakSurvivalOffTime)
                 {
                     playerState.peakOfSurvivalActive = false;
 
                     peakSurvivalThresholdReached = false; // Will end up re-activating if player still below threshold
+
+                    hasPlayedWarning = false;
                 }
             }
         }

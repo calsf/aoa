@@ -203,7 +203,7 @@ public class PlayerStateObject : ScriptableObject
             "Sacrificial Shot",
             "Lose health per shot. Recover double the health lost if the shot hits an enemy."));
         powers.Add("TacticalShot", new Power(
-            false,
+            true,
             tacticalShotIcon,
             "Tactical",
             "Tactical Shot",
@@ -227,7 +227,7 @@ public class PlayerStateObject : ScriptableObject
             "Tempo Shot",
             "Gain bonus damage with each consecutive headshot. A body shot will reset bonus damage to 0."));
         powers.Add("PeakOfSurvival", new Power(
-            false, 
+            true, 
             peakOfSurvivalIcon, 
             "Survival",
             "Peak of Survival",
@@ -239,31 +239,31 @@ public class PlayerStateObject : ScriptableObject
             "Steady Regen",
             "Gradually recover health over time."));
         powers.Add("ExplosiveShot", new Power(
-            false, 
+            true, 
             explosiveShotIcon, 
             "Explosive",
             "Explosive Death",
             "Enemies explode on death."));
         powers.Add("ClonedShot", new Power(
-            false, 
+            true, 
             clonedShotIcon, 
             "Cloned",
             "Cloned Shot",
             "Additional shots are fired near the original shot."));
         powers.Add("DefiantReload", new Power(
-            false, 
+            true, 
             defiantReloadIcon, 
             "Defiant",
             "Defiant Reload",
             "Reloading knocks back all nearby enemies."));
         powers.Add("DecoyShot", new Power(
-            false, 
+            true, 
             decoyShotIcon, 
             "Decoy",
             "Decoy Shot",
             "The last shot of a magazine will spawn a decoy that will attract nearby enemies."));
         powers.Add("AirSlide", new Power(
-            false, 
+            true, 
             airSlideIcon, 
             "Air Slide",
             "Air Slide",
@@ -281,7 +281,7 @@ public class PlayerStateObject : ScriptableObject
             "Vengeance",
             "Stores damage taken as bonus damage on the next shot. Stored damage is applied before armor reduction."));
         powers.Add("RocketJump", new Power(
-            false,
+            true,
             rocketJumpIcon,
             "Rocket Jump",
             "Rocket Jump",
@@ -380,7 +380,7 @@ public class PlayerStateObject : ScriptableObject
             SetMaxHealth));
 
         selectedPrimary = 2;
-        selectedSecondary = 3;
+        selectedSecondary = 1;
         selectedActive = 0;
 
         healthCurr = START_HEALTH;

@@ -8,8 +8,14 @@ public class OnDamagedFlash : MonoBehaviour
 
     private Animator anim;
 
+    private AudioSource audioSrc;
+
     void Start()
     {
+        // Set up audio
+        audioSrc = GetComponent<AudioSource>();
+        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
+
         anim = GetComponent<Animator>();
     }
 
@@ -26,5 +32,7 @@ public class OnDamagedFlash : MonoBehaviour
     private void DamageFlash()
     {
         anim.Play("OnDamaged");
+
+        audioSrc.Play();
     }
 }
