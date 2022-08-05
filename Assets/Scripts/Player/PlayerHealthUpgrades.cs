@@ -23,6 +23,7 @@ public class PlayerHealthUpgrades : MonoBehaviour
 
     [SerializeField] private AudioClip peakOfSurvivalActivate;
     [SerializeField] private AudioClip peakOfSurvivalEnd;
+    [SerializeField] private Animator peakOfSurvivalAnim;
 
     private bool hasPlayedWarning = false;
 
@@ -69,6 +70,7 @@ public class PlayerHealthUpgrades : MonoBehaviour
                 && !peakSurvivalThresholdReached 
                 && playerState.healthCurr < playerState.stats["HealthMax"].statValue * PEAK_SURVIVAL_THRESHOLD) // Check for and activate effect
             {
+                peakOfSurvivalAnim.Play("PeakOfSurvivalFadeIn");
                 audioSrc.PlayOneShot(peakOfSurvivalActivate);
 
                 playerState.peakOfSurvivalActive = true;
@@ -84,6 +86,7 @@ public class PlayerHealthUpgrades : MonoBehaviour
                 {
                     hasPlayedWarning = true;
 
+                    peakOfSurvivalAnim.Play("PeakOfSurvivalFadeOut");
                     audioSrc.PlayOneShot(peakOfSurvivalEnd);
                 }
 
