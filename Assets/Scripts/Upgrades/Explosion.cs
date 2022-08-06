@@ -32,7 +32,7 @@ public class Explosion : MonoBehaviour
 
         if (hasInit)
         {
-            audioSrc.Play();
+            audioSrc.PlayOneShot(audioSrc.clip);
         }
     }
 

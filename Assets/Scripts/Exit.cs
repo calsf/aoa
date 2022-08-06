@@ -170,6 +170,10 @@ public class Exit : MonoBehaviour
         // Wait a bit
         yield return new WaitForSeconds(3);
 
+        // Increase saved blood shard currency by 1
+        int shards = PlayerPrefs.GetInt("ShardCurrency", 0);
+        PlayerPrefs.SetInt("ShardCurrency", shards + 1);
+
         // Load next scene
         SceneManager.LoadScene(nextScene);
     }
