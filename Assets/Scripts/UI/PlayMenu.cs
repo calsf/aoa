@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-// Upgrades display to be shown when paused, allows for hover on stats/powers to show information
-public class PausedUpgradesDisplay : MonoBehaviour
+public class PlayMenu : MonoBehaviour
 {
-    private Vector3 INFO_OFFSET = Vector3.up * 35;
+    private Vector3 INFO_OFFSET = Vector3.up * 48;
 
+    [SerializeField] private ShardCurrencyDisplay shardDisplay;
     [SerializeField] private PlayerStateObject playerState;
 
     [SerializeField] private Text textDamage;
@@ -23,37 +24,21 @@ public class PausedUpgradesDisplay : MonoBehaviour
     [SerializeField] private Text textMaxHealth;
     [SerializeField] private Text textJumps;
 
-    private CanvasGroup upgradesScreen;
-
-    [SerializeField] private CanvasGroup originalUpgradesScreen;
-    [SerializeField] private List<GameObject> powerDisplays; // Power displays that can be used to show active powers
-    private Queue<GameObject> powerDisplayItemQueue;
-    private Dictionary<string, PlayerStateObject.Power> activePowers; // To keep track of active powers, should initially be empty
-
     [SerializeField] private CanvasGroup upgradeInfoCanvas;
     [SerializeField] private Image upgradeInfoImage;
     [SerializeField] private Text upgradeInfoName;
     [SerializeField] private Text upgradeInfoDesc;
 
+    private Animator playMenuAnim;
+
+    private int initialShardAmount;
+
     void Start()
     {
-        upgradesScreen = GetComponent<CanvasGroup>();
+        playMenuAnim = GetComponent<Animator>();
 
-        powerDisplayItemQueue = new Queue<GameObject>(powerDisplays);
-        activePowers = new Dictionary<string, PlayerStateObject.Power>();
-    }
-
-    void Update()
-    {
-        // Only update screen while it is active OR the original is active to maintain consistency
-        if (upgradesScreen.alpha > 0 || originalUpgradesScreen.alpha > 0)
-        {
-            // Update text values
-            UpdateStats();
-
-            // Update powers display
-            UpdatePowers();
-        }
+        UpdateStats();
+        initialShardAmount = shardDisplay.shardCurrency;
     }
 
     private void UpdateStats()
@@ -70,34 +55,6 @@ public class PausedUpgradesDisplay : MonoBehaviour
         textArmor.text = "Armor\n+" + (Mathf.RoundToInt(playerState.stats["Armor"].statValue * 100)) + "%";
         textMaxHealth.text = "Max Health\n+" + (playerState.stats["HealthMax"].statValue - playerState.START_HEALTH);
         textJumps.text = "Jumps\n+" + playerState.stats["JumpBonus"].statValue;
-    }
-
-    private void UpdatePowers()
-    {
-        foreach (KeyValuePair<string, PlayerStateObject.Power> power in playerState.powers)
-        {
-            if (!activePowers.ContainsKey(power.Key) && power.Value.isActive)
-            {
-                activePowers.Add(power.Key, power.Value); // Add to active powers to avoid duplicate displays
-                GameObject powerDisplay = powerDisplayItemQueue.Dequeue(); // Get first unused power display to show active power
-
-                PowerDisplayItem powerDisplayItem = powerDisplay.GetComponent<PowerDisplayItem>();
-                powerDisplayItem.power = power.Value; // Set power
-                powerDisplayItem.ShowPower(power.Value.powerIcon, power.Value.powerNameShort);
-            }
-        }
-    }
-
-    public void ShowDisplay()
-    {
-        upgradesScreen.alpha = 1;
-        upgradesScreen.blocksRaycasts = true;
-    }
-
-    public void HideDisplay()
-    {
-        upgradesScreen.alpha = 0;
-        upgradesScreen.blocksRaycasts = false;
     }
 
     public void ShowStatInfo(StatDisplayItem item)
@@ -119,22 +76,65 @@ public class PausedUpgradesDisplay : MonoBehaviour
         upgradeInfoCanvas.alpha = 0;
     }
 
-    public void ShowPowerInfo(PowerDisplayItem item)
+    public void OnBack()
     {
-        if (item.power.powerIcon == null)
+        playMenuAnim.Play("TransitionOut");
+    }
+
+    public void OnStart()
+    {
+        SceneManager.LoadScene("Level001");
+    }
+
+    public void OnStatIncrease(string statKey)
+    {
+        if (shardDisplay.shardCurrency == 0
+            || playerState.stats[statKey].statValue >= playerState.stats[statKey].maxValue)
         {
             return;
         }
 
-        upgradeInfoCanvas.alpha = 1;
-        upgradeInfoCanvas.transform.position = item.transform.position + INFO_OFFSET;
-        upgradeInfoImage.sprite = item.power.powerIcon;
-        upgradeInfoName.text = item.power.powerName;
-        upgradeInfoDesc.text = item.power.powerDesc;
+        shardDisplay.shardCurrency -= 1;
+        shardDisplay.UpdateText();
+
+        PlayerStateObject.Stat newStat = playerState.stats[statKey];
+        newStat.statValue = newStat.setStat(); // Upgrades the stat
+        playerState.UpdateStat(statKey, newStat);
+
+        UpdateStats();
     }
 
-    public void HidePowerInfo(PowerDisplayItem item)
+    public void OnStatDecrease(string statKey)
     {
-        upgradeInfoCanvas.alpha = 0;
+        if (shardDisplay.shardCurrency == initialShardAmount 
+            || playerState.stats[statKey].statValue <= playerState.stats[statKey].minValue)
+        {
+            return;
+        }
+
+        shardDisplay.shardCurrency += 1;
+        shardDisplay.UpdateText();
+
+        PlayerStateObject.Stat newStat = playerState.stats[statKey];
+        newStat.statValue = newStat.decreaseStat(); // Upgrades the stat
+        playerState.UpdateStat(statKey, newStat);
+
+        UpdateStats();
+    }
+
+    public void OnStatReset()
+    {
+        List<string> statKeys = new List<string>(playerState.stats.Keys);
+        foreach (string statKey in statKeys)
+        {
+            PlayerStateObject.Stat newStat = playerState.stats[statKey];
+            newStat.statValue = newStat.minValue;
+            playerState.UpdateStat(statKey, newStat);
+        }
+
+        shardDisplay.shardCurrency = initialShardAmount;
+        shardDisplay.UpdateText();
+
+        UpdateStats();
     }
 }

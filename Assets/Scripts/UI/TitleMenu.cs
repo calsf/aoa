@@ -7,7 +7,15 @@ public class TitleMenu : MonoBehaviour
 {
     [SerializeField] private CanvasGroup settingsScreen;
     [SerializeField] private CanvasGroup controlsScreen;
+    [SerializeField] private Animator playMenuAnim;
+
     [SerializeField] private PlayerStateObject playerState;
+
+    private void Awake()
+    {
+        // Initialize player state upon entering title
+        playerState.InitializeState();
+    }
 
     void Start()
     {
@@ -26,10 +34,10 @@ public class TitleMenu : MonoBehaviour
 
     public void OnPlay()
     {
-        // Initialize player state on play
+        // Reset and initialize state before showing the play menu
         playerState.InitializeState();
 
-        SceneManager.LoadScene("Level001");
+        playMenuAnim.Play("TransitionIn");
     }
 
     public void OnControlsOpen()

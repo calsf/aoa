@@ -135,18 +135,24 @@ public class PlayerStateObject : ScriptableObject
     public struct Stat
     {
         public float statValue;
+        public float minValue;
+        public float maxValue;
         public Sprite statIcon;
         public string statName;
         public string statDesc;
         public SetStatDelegate setStat;
+        public DecreaseStatDelegate decreaseStat;
 
-        public Stat(float statValue, Sprite statIcon, string statName, string statDesc, SetStatDelegate setStat)
+        public Stat(float statValue, float maxValue, Sprite statIcon, string statName, string statDesc, SetStatDelegate setStat, DecreaseStatDelegate decreaseStat)
         {
             this.statValue = statValue;
+            this.minValue = statValue;
+            this.maxValue = maxValue;
             this.statIcon = statIcon;
             this.statName = statName;
             this.statDesc = statDesc;
             this.setStat = setStat;
+            this.decreaseStat = decreaseStat;
         }
     }
 
@@ -308,76 +314,100 @@ public class PlayerStateObject : ScriptableObject
         stats = new Dictionary<string, Stat>();
         stats.Add("ReloadMultiplier", new Stat(
             1,
+            10,
             reloadMultiplierIcon,
             "Reload Speed",
             "Increases reload speed.",
-            SetReload));
+            SetReload,
+            DecreaseReload));
         stats.Add("FireRateMultiplier", new Stat(
             1,
+            10,
             fireRateMultiplierIcon,
             "Fire Rate",
             "Increases fire rate.",
-            SetFireRate));
+            SetFireRate,
+            DecreaseFireRate));
         stats.Add("DamageBonus", new Stat(
             0,
+            1000,
             damageBonusIcon,
             "Damage Bonus",
             "Increases weapon damage.",
-            SetDamageBonus));
+            SetDamageBonus,
+            DecreaseDamageBonus));
         stats.Add("HeadShotMultiplierBonus", new Stat(
-            0, 
+            0,
+            10,
             headShotMultiplierBonusIcon,
             "Headshot Damage",
             "Increases headshot damage.",
-            SetHeadShot));
+            SetHeadShot,
+            DecreaseHeadShot));
         stats.Add("MagSizeMaxMultiplier", new Stat(
-            1, 
+            1,
+            15,
             magSizeMaxMultiplierIcon,
             "Magazine Size",
             "Increases maximum magazine size.",
-            SetMagazine));
+            SetMagazine,
+            DecreaseMagazine));
         stats.Add("AimTimeReduction", new Stat(
-            0, 
+            0,
+            1.5f,
             aimTimeReductionIcon,
             "Aim Speed", 
             "Increases aim down sight speed.",
-            SetAimSpeed));
+            SetAimSpeed,
+            DecreaseAimSpeed));
         stats.Add("InaccuracyReduction", new Stat(
-            0, 
+            0,
+            1,
             inaccuracyReductionIcon,
             "Accuracy",
             "Increases hip fire accuracy.",
-            SetAccuracy));
+            SetAccuracy,
+            DecreaseAccuracy));
         stats.Add("EffectiveRangeBonus", new Stat(
-            0, 
+            0,
+            1000,
             effectiveRangeBonusIcon,
             "Range", 
             "Increases the effective range of weapons.",
-            SetRange));
+            SetRange,
+            DecreaseRange));
         stats.Add("MoveSpeedBonus", new Stat(
-            0, 
+            0,
+            45,
             moveSpeedBonusIcon,
             "Move Speed",
             "Increases move speed.", 
-            SetMoveSpeed));
+            SetMoveSpeed,
+            DecreaseMoveSpeed));
         stats.Add("JumpBonus", new Stat(
-            5, 
+            0,
+            15,
             jumpBonusIcon,
             "Jump", 
             "Increases the number of jumps.",
-            SetJumps));
+            SetJumps,
+            DecreaseJumps));
         stats.Add("Armor", new Stat(
-            0, 
+            0,
+            .9f,
             armorIcon,
             "Armor", 
             "Increases damage reduction.",
-            SetArmor));
+            SetArmor,
+            DecreaseArmor));
         stats.Add("HealthMax", new Stat(
-            START_HEALTH, 
+            START_HEALTH,
+            MAX_HEALTH,
             healthMaxIcon,
             "Max Health", 
             "Increases maximum health.",
-            SetMaxHealth));
+            SetMaxHealth,
+            DecreaseMaxHealth));
 
         selectedPrimary = 2;
         selectedSecondary = 1;
@@ -406,10 +436,12 @@ public class PlayerStateObject : ScriptableObject
         {
             OnUpgradeStat.Invoke(new Stat(
             value.statValue,
+            value.maxValue,
             value.statIcon,
             value.statName,
             "You feel no change...",
-            value.setStat));
+            value.setStat,
+            value.decreaseStat));
         }
         else  // Else, upgrade and display normally
         {
@@ -434,31 +466,31 @@ public class PlayerStateObject : ScriptableObject
     private float SetReload()
     {
         // Cap max reload
-        if (stats["ReloadMultiplier"].statValue >= 10)
+        if (stats["ReloadMultiplier"].statValue >= stats["ReloadMultiplier"].maxValue)
         {
-            return stats["ReloadMultiplier"].statValue;
+            return stats["ReloadMultiplier"].maxValue;
         }
 
-        return stats["ReloadMultiplier"].statValue + .4f;
+        return (float)((decimal)stats["ReloadMultiplier"].statValue + .4m);
     }
 
     private float SetFireRate()
     {
         // Cap max fire rate
-        if (stats["FireRateMultiplier"].statValue >= 10)
+        if (stats["FireRateMultiplier"].statValue >= stats["FireRateMultiplier"].maxValue)
         {
-            return stats["FireRateMultiplier"].statValue;
+            return stats["FireRateMultiplier"].maxValue;
         }
 
-        return stats["FireRateMultiplier"].statValue + .25f;
+        return (float)((decimal)stats["FireRateMultiplier"].statValue + .25m);
     }
 
     private float SetDamageBonus()
     {
         // Cap max damage bonus
-        if (stats["DamageBonus"].statValue >= 1000)
+        if (stats["DamageBonus"].statValue >= stats["DamageBonus"].maxValue)
         {
-            return stats["DamageBonus"].statValue;
+            return stats["DamageBonus"].maxValue;
         }
 
         return stats["DamageBonus"].statValue + 10;
@@ -467,53 +499,53 @@ public class PlayerStateObject : ScriptableObject
     private float SetHeadShot()
     {
         // Cap max headshot multiplier bonus
-        if (stats["HeadShotMultiplierBonus"].statValue >= 10)
+        if (stats["HeadShotMultiplierBonus"].statValue >= stats["HeadShotMultiplierBonus"].maxValue)
         {
-            return stats["HeadShotMultiplierBonus"].statValue;
+            return stats["HeadShotMultiplierBonus"].maxValue;
         }
 
-        return stats["HeadShotMultiplierBonus"].statValue + .25f;
+        return (float)((decimal)stats["HeadShotMultiplierBonus"].statValue + .25m);
     }
 
     private float SetMagazine()
     {
         // Cap max magazine
-        if (stats["MagSizeMaxMultiplier"].statValue >= 15)
+        if (stats["MagSizeMaxMultiplier"].statValue >= stats["MagSizeMaxMultiplier"].maxValue)
         {
-            return stats["MagSizeMaxMultiplier"].statValue;
+            return stats["MagSizeMaxMultiplier"].maxValue;
         }
 
-        return stats["MagSizeMaxMultiplier"].statValue + .3f;
+        return (float)((decimal)stats["MagSizeMaxMultiplier"].statValue + .3m);
     }
 
     private float SetAimSpeed()
     {
         // Cap max aim speed
-        if (stats["AimTimeReduction"].statValue >= 1.5f)
+        if (stats["AimTimeReduction"].statValue >= stats["AimTimeReduction"].maxValue)
         {
-            return stats["AimTimeReduction"].statValue;
+            return stats["AimTimeReduction"].maxValue;
         }
 
-        return stats["AimTimeReduction"].statValue + .03f;
+        return (float)((decimal)stats["AimTimeReduction"].statValue + .03m);
     }
 
     private float SetAccuracy()
     {
         // Cap max accuracy
-        if (stats["InaccuracyReduction"].statValue >= 1)
+        if (stats["InaccuracyReduction"].statValue >= stats["InaccuracyReduction"].maxValue)
         {
-            return stats["InaccuracyReduction"].statValue;
+            return stats["InaccuracyReduction"].maxValue;
         }
 
-        return stats["InaccuracyReduction"].statValue + .01f;
+        return (float)((decimal)stats["InaccuracyReduction"].statValue + .01m);
     }
 
     private float SetRange()
     {
         // Cap max range
-        if (stats["EffectiveRangeBonus"].statValue >= 1000)
+        if (stats["EffectiveRangeBonus"].statValue >= stats["EffectiveRangeBonus"].maxValue)
         {
-            return stats["EffectiveRangeBonus"].statValue;
+            return stats["EffectiveRangeBonus"].maxValue;
         }
 
         return stats["EffectiveRangeBonus"].statValue + 50;
@@ -522,9 +554,9 @@ public class PlayerStateObject : ScriptableObject
     private float SetMoveSpeed()
     {
         // Cap max move speed
-        if (stats["MoveSpeedBonus"].statValue >= 45)
+        if (stats["MoveSpeedBonus"].statValue >= stats["MoveSpeedBonus"].maxValue)
         {
-            return stats["MoveSpeedBonus"].statValue;
+            return stats["MoveSpeedBonus"].maxValue;
         }
 
         return stats["MoveSpeedBonus"].statValue + 3;
@@ -533,9 +565,9 @@ public class PlayerStateObject : ScriptableObject
     private float SetJumps()
     {
         // Cap max jumps
-        if (stats["JumpBonus"].statValue >= 15)
+        if (stats["JumpBonus"].statValue >= stats["JumpBonus"].maxValue)
         {
-            return stats["JumpBonus"].statValue;
+            return stats["JumpBonus"].maxValue;
         }
 
         return stats["JumpBonus"].statValue + 1;
@@ -544,17 +576,17 @@ public class PlayerStateObject : ScriptableObject
     private float SetArmor()
     {
         // Cap max armor
-        if (stats["Armor"].statValue >= .9f)
+        if (stats["Armor"].statValue >= stats["Armor"].maxValue)
         {
-            return stats["Armor"].statValue;
+            return stats["Armor"].maxValue;
         }
 
-        float newVal = stats["Armor"].statValue + .1f;
+        float newVal = (float)((decimal)stats["Armor"].statValue + .1m);
 
         // Lower increase amount after some value
         if (stats["Armor"].statValue >= .5f)
         {
-            newVal = stats["Armor"].statValue + .05f;
+            newVal = (float)((decimal)stats["Armor"].statValue + .05m);
         }
 
         return newVal;
@@ -563,9 +595,9 @@ public class PlayerStateObject : ScriptableObject
     private float SetMaxHealth()
     {
         // Cap max health
-        if (stats["HealthMax"].statValue >= MAX_HEALTH)
+        if (stats["HealthMax"].statValue >= stats["HealthMax"].maxValue)
         {
-            return stats["HealthMax"].statValue;
+            return stats["HealthMax"].maxValue;
         }
 
         float increaseAmount = 25;
@@ -578,6 +610,143 @@ public class PlayerStateObject : ScriptableObject
         }
         
         return stats["HealthMax"].statValue + increaseAmount;
+    }
+
+    // --- Stat decreases for play menu ---
+
+    // Delegate to decrease a specific stat value
+    public delegate float DecreaseStatDelegate();
+
+    private float DecreaseReload()
+    {
+        if (stats["ReloadMultiplier"].statValue <= stats["ReloadMultiplier"].minValue)
+        {
+            return stats["ReloadMultiplier"].minValue;
+        }
+
+        return (float)((decimal) stats["ReloadMultiplier"].statValue - .4m);
+    }
+
+    private float DecreaseFireRate()
+    {
+        if (stats["FireRateMultiplier"].statValue <= stats["FireRateMultiplier"].minValue)
+        {
+            return stats["FireRateMultiplier"].minValue;
+        }
+
+        return (float)((decimal)stats["FireRateMultiplier"].statValue - .25m);
+    }
+
+    private float DecreaseDamageBonus()
+    {
+        if (stats["DamageBonus"].statValue <= stats["DamageBonus"].minValue)
+        {
+            return stats["DamageBonus"].minValue;
+        }
+
+        return stats["DamageBonus"].statValue - 10;
+    }
+
+    private float DecreaseHeadShot()
+    {
+        if (stats["HeadShotMultiplierBonus"].statValue <= stats["HeadShotMultiplierBonus"].minValue)
+        {
+            return stats["HeadShotMultiplierBonus"].minValue;
+        }
+
+        return (float)((decimal)stats["HeadShotMultiplierBonus"].statValue - .25m);
+    }
+
+    private float DecreaseMagazine()
+    {
+        if (stats["MagSizeMaxMultiplier"].statValue <= stats["MagSizeMaxMultiplier"].minValue)
+        {
+            return stats["MagSizeMaxMultiplier"].minValue;
+        }
+
+        return (float)((decimal)stats["MagSizeMaxMultiplier"].statValue - .3m);
+    }
+
+    private float DecreaseAimSpeed()
+    {
+        if (stats["AimTimeReduction"].statValue <= stats["AimTimeReduction"].minValue)
+        {
+            return stats["AimTimeReduction"].minValue;
+        }
+
+        return (float)((decimal)stats["AimTimeReduction"].statValue - .03m);
+    }
+
+    private float DecreaseAccuracy()
+    {
+        if (stats["InaccuracyReduction"].statValue <= stats["InaccuracyReduction"].minValue)
+        {
+            return stats["InaccuracyReduction"].minValue;
+        }
+
+        return (float)((decimal)stats["InaccuracyReduction"].statValue - .01m);
+    }
+
+    private float DecreaseRange()
+    {
+        if (stats["EffectiveRangeBonus"].statValue <= stats["EffectiveRangeBonus"].minValue)
+        {
+            return stats["EffectiveRangeBonus"].minValue;
+        }
+
+        return stats["EffectiveRangeBonus"].statValue - 50;
+    }
+
+    private float DecreaseMoveSpeed()
+    {
+        if (stats["MoveSpeedBonus"].statValue <= stats["MoveSpeedBonus"].minValue)
+        {
+            return stats["MoveSpeedBonus"].minValue;
+        }
+
+        return stats["MoveSpeedBonus"].statValue - 3;
+    }
+
+    private float DecreaseJumps()
+    {
+        if (stats["JumpBonus"].statValue <= stats["JumpBonus"].minValue)
+        {
+            return stats["JumpBonus"].minValue;
+        }
+
+        return stats["JumpBonus"].statValue - 1;
+    }
+
+    private float DecreaseArmor()
+    {
+        if (stats["Armor"].statValue <= stats["Armor"].minValue)
+        {
+            return stats["Armor"].minValue;
+        }
+
+        float newVal;
+
+        if (stats["Armor"].statValue > .5f)
+        {
+            newVal = (float)((decimal)stats["Armor"].statValue - .05m);
+        } else
+        {
+            newVal = (float)((decimal)stats["Armor"].statValue - .1m);
+        }
+
+        return newVal;
+    }
+
+    private float DecreaseMaxHealth()
+    {
+        if (stats["HealthMax"].statValue <= stats["HealthMax"].minValue)
+        {
+            return stats["HealthMax"].minValue;
+        }
+
+        float decreaseAmount = 25;
+
+        return stats["HealthMax"].statValue - decreaseAmount;
     }
 
     public void AddBloodCurrency(int amount)
