@@ -409,9 +409,9 @@ public class PlayerStateObject : ScriptableObject
             SetMaxHealth,
             DecreaseMaxHealth));
 
-        selectedPrimary = 2;
-        selectedSecondary = 1;
-        selectedActive = 0;
+        //selectedPrimary = 2;
+        //selectedSecondary = 1;
+        //selectedActive = 0;
 
         healthCurr = START_HEALTH;
 

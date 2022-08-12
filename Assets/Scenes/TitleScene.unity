@@ -3911,7 +3911,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 554549802}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1083748681}
+        m_TargetAssemblyTypeName: SelectPrimaryWeapon, Assembly-CSharp
+        m_MethodName: PreviousWeapon
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &554549802
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5458,6 +5470,7 @@ GameObject:
   m_Component:
   - component: {fileID: 932267785}
   - component: {fileID: 932267786}
+  - component: {fileID: 932267787}
   m_Layer: 5
   m_Name: SecondaryWeapon
   m_TagString: Untagged
@@ -5495,8 +5508,30 @@ CanvasGroup:
   m_Enabled: 1
   m_Alpha: 1
   m_Interactable: 1
-  m_BlocksRaycasts: 0
+  m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &932267787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 932267784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1512dd8bcc030b43b7457a3f0f74735, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponDisplay: {fileID: 1277118242}
+  playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
+  weapons:
+  - {fileID: 21300000, guid: b2b17aaf058c3124bab8e393b31caa65, type: 3}
+  - {fileID: 21300000, guid: ff090769f29619948829917d03215670, type: 3}
+  - {fileID: 21300000, guid: 2ed7306a1fd4d92479a8f60e787b5086, type: 3}
+  - {fileID: 21300000, guid: 0547318abace45f4c94a3f5505c6ff31, type: 3}
+  - {fileID: 21300000, guid: 3ba498a5a9f253a42b2be7ef15262429, type: 3}
+  weaponSlot: 1
+  defaultSelected: 1
 --- !u!1 &936592970
 GameObject:
   m_ObjectHideFlags: 0
@@ -6483,6 +6518,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1083748679}
   - component: {fileID: 1083748680}
+  - component: {fileID: 1083748681}
   m_Layer: 5
   m_Name: PrimaryWeapon
   m_TagString: Untagged
@@ -6520,8 +6556,30 @@ CanvasGroup:
   m_Enabled: 1
   m_Alpha: 1
   m_Interactable: 1
-  m_BlocksRaycasts: 0
+  m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &1083748681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1083748678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1512dd8bcc030b43b7457a3f0f74735, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponDisplay: {fileID: 1840411460}
+  playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
+  weapons:
+  - {fileID: 21300000, guid: b2b17aaf058c3124bab8e393b31caa65, type: 3}
+  - {fileID: 21300000, guid: ff090769f29619948829917d03215670, type: 3}
+  - {fileID: 21300000, guid: 2ed7306a1fd4d92479a8f60e787b5086, type: 3}
+  - {fileID: 21300000, guid: 0547318abace45f4c94a3f5505c6ff31, type: 3}
+  - {fileID: 21300000, guid: 3ba498a5a9f253a42b2be7ef15262429, type: 3}
+  weaponSlot: 0
+  defaultSelected: 2
 --- !u!1 &1110263415
 GameObject:
   m_ObjectHideFlags: 0
@@ -7359,7 +7417,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1235692706}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 932267787}
+        m_TargetAssemblyTypeName: SelectWeapon, Assembly-CSharp
+        m_MethodName: NextWeapon
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1235692706
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7784,7 +7854,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 2ed7306a1fd4d92479a8f60e787b5086, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ff090769f29619948829917d03215670, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -9780,7 +9850,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1618097902}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 932267787}
+        m_TargetAssemblyTypeName: SelectWeapon, Assembly-CSharp
+        m_MethodName: PreviousWeapon
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1618097902
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12584,7 +12666,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2047426115}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1083748681}
+        m_TargetAssemblyTypeName: SelectPrimaryWeapon, Assembly-CSharp
+        m_MethodName: NextWeapon
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2047426115
 MonoBehaviour:
   m_ObjectHideFlags: 0
