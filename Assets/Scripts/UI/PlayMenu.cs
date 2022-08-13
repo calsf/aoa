@@ -29,14 +29,10 @@ public class PlayMenu : MonoBehaviour
     [SerializeField] private Text upgradeInfoName;
     [SerializeField] private Text upgradeInfoDesc;
 
-    private Animator playMenuAnim;
-
     private int initialShardAmount;
 
     void Start()
     {
-        playMenuAnim = GetComponent<Animator>();
-
         UpdateStats();
         initialShardAmount = shardDisplay.shardCurrency;
     }
@@ -76,13 +72,11 @@ public class PlayMenu : MonoBehaviour
         upgradeInfoCanvas.alpha = 0;
     }
 
-    public void OnBack()
-    {
-        playMenuAnim.Play("TransitionOut");
-    }
-
     public void OnStart()
     {
+        // Update shard currency
+        PlayerPrefs.SetInt("ShardCurrency", shardDisplay.shardCurrency);
+
         SceneManager.LoadScene("Level001");
     }
 

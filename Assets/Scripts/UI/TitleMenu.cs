@@ -5,57 +5,65 @@ using UnityEngine.SceneManagement;
 
 public class TitleMenu : MonoBehaviour
 {
-    [SerializeField] private CanvasGroup settingsScreen;
-    [SerializeField] private CanvasGroup controlsScreen;
     [SerializeField] private Animator playMenuAnim;
+    [SerializeField] private Animator controlsMenuAnim;
+    [SerializeField] private Animator settingsMenuAnim;
 
     [SerializeField] private PlayerStateObject playerState;
+
+    private CanvasGroup titleMenu;
 
     private void Awake()
     {
         // Initialize player state upon entering title
         playerState.InitializeState();
+
+        titleMenu = GetComponent<CanvasGroup>();
+        titleMenu.blocksRaycasts = true;
     }
 
     void Start()
     {
         // Need to reset time scale in case player quit from pause menu
         Time.timeScale = 1;
-
-        /*
-        // Hide and deactivate screens at start
-        settingsScreen.alpha = 0;
-        settingsScreen.blocksRaycasts = false;
-
-        controlsScreen.alpha = 0;
-        controlsScreen.blocksRaycasts = false;
-        */
     }
 
-    public void OnPlay()
+    public void OnPlayOpen()
     {
         // Reset and initialize state before showing the play menu
         playerState.InitializeState();
 
         playMenuAnim.Play("TransitionIn");
+        titleMenu.blocksRaycasts = false;
+    }
+    public void OnPlayClose()
+    {
+        playMenuAnim.Play("TransitionOut");
+        titleMenu.blocksRaycasts = true;
     }
 
     public void OnControlsOpen()
     {
-        controlsScreen.alpha = 1;
-        controlsScreen.blocksRaycasts = true;
+        controlsMenuAnim.Play("TransitionIn");
+        titleMenu.blocksRaycasts = false;
     }
 
     public void OnControlsClose()
     {
-        controlsScreen.alpha = 0;
-        controlsScreen.blocksRaycasts = false;
+        controlsMenuAnim.Play("TransitionOut");
+        titleMenu.blocksRaycasts = true;
     }
 
-    public void OnSettings()
+    public void OnSettingsOpen()
     {
-        settingsScreen.alpha = 1;
-        settingsScreen.blocksRaycasts = true;
+        settingsMenuAnim.Play("TransitionIn");
+        titleMenu.blocksRaycasts = false;
+    }
+
+    public void OnSettingsClose()
+    {
+        settingsMenuAnim.Play("TransitionOut");
+        titleMenu.blocksRaycasts = true;
     }
 
     public void OnQuit()

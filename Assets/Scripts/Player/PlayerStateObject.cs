@@ -411,7 +411,7 @@ public class PlayerStateObject : ScriptableObject
 
         //selectedPrimary = 2;
         //selectedSecondary = 1;
-        //selectedActive = 0;
+        selectedActive = 0;
 
         healthCurr = START_HEALTH;
 
