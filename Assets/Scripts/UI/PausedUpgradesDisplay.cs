@@ -35,6 +35,8 @@ public class PausedUpgradesDisplay : MonoBehaviour
     [SerializeField] private Text upgradeInfoName;
     [SerializeField] private Text upgradeInfoDesc;
 
+    [SerializeField] private CanvasGroup currencyInfoCanvas;
+
     void Start()
     {
         upgradesScreen = GetComponent<CanvasGroup>();
@@ -136,5 +138,15 @@ public class PausedUpgradesDisplay : MonoBehaviour
     public void HidePowerInfo(PowerDisplayItem item)
     {
         upgradeInfoCanvas.alpha = 0;
+    }
+
+    public void ShowCurrencyInfo()
+    {
+        currencyInfoCanvas.alpha = 1;
+    }
+
+    public void HideCurrencyInfo()
+    {
+        currencyInfoCanvas.alpha = 0;
     }
 }

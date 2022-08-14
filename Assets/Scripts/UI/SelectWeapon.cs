@@ -62,4 +62,10 @@ public class SelectWeapon : MonoBehaviour
             playerState.selectedSecondary = selected;
         }
     }
+
+    public void OnWeaponReset()
+    {
+        selected = defaultSelected;
+        UpdateSelected(weaponSlot);
+    }
 }
