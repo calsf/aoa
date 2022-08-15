@@ -33,10 +33,14 @@ public class PlayMenu : MonoBehaviour
 
     private int initialShardAmount;
 
+    private Animator fade;
+
     void Start()
     {
         UpdateStats();
         initialShardAmount = shardDisplay.shardCurrency;
+
+        fade = GameObject.FindGameObjectWithTag("Fade").GetComponent<Animator>();
     }
 
     private void UpdateStats()
@@ -89,7 +93,7 @@ public class PlayMenu : MonoBehaviour
         // Update shard currency
         PlayerPrefs.SetInt("ShardCurrency", shardDisplay.shardCurrency);
 
-        SceneManager.LoadScene("Level001");
+        StartCoroutine(StartGame());
     }
 
     public void OnStatIncrease(string statKey)
@@ -142,5 +146,15 @@ public class PlayMenu : MonoBehaviour
         shardDisplay.UpdateText();
 
         UpdateStats();
+    }
+
+    private IEnumerator StartGame()
+    {
+        fade.Play("FadeOut");
+
+        // Wait a bit
+        yield return new WaitForSeconds(.55f);
+
+        SceneManager.LoadScene("Level001");
     }
 }

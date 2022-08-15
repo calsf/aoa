@@ -26,6 +26,8 @@ public class TitleMenu : MonoBehaviour
     {
         // Need to reset time scale in case player quit from pause menu
         Time.timeScale = 1;
+
+        Cursor.lockState = CursorLockMode.None;
     }
 
     public void OnPlayOpen()

@@ -12,10 +12,15 @@ public class PauseMenu : MonoBehaviour
 
     private CanvasGroup pauseScreen;
     private bool isPaused = false;
+    private Animator fade;
+
+    public bool canPause { get; set; }
 
     void Start()
     {
         pauseScreen = GetComponent<CanvasGroup>();
+
+        fade = GameObject.FindGameObjectWithTag("Fade").GetComponent<Animator>();
 
         // Hide and deactivate screens at start
         pauseScreen.alpha = 0;
@@ -26,10 +31,22 @@ public class PauseMenu : MonoBehaviour
 
         controlsScreen.alpha = 0;
         controlsScreen.blocksRaycasts = false;
+
+        canPause = true;
     }
 
     void Update()
     {
+        if (!canPause)
+        {
+            if (isPaused)
+            {
+                Unpause();
+            }
+
+            return;
+        }
+
         // Pause input
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -140,6 +157,18 @@ public class PauseMenu : MonoBehaviour
 
     public void OnQuit()
     {
+        canPause = false;
+
+        StartCoroutine(Quit());
+    }
+
+    private IEnumerator Quit()
+    {
+        fade.Play("FadeOut");
+
+        // Wait a bit
+        yield return new WaitForSeconds(.55f);
+
         SceneManager.LoadScene("TitleScene");
     }
 }

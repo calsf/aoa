@@ -33,9 +33,12 @@ public class Exit : MonoBehaviour
     private GameObject player;
     private bool isExiting;
 
-    [SerializeField] protected AudioSource audioSrcActivate;
-    [SerializeField] protected AudioSource audioSrcTeleport;
+    [SerializeField] private AudioSource audioSrcActivate;
+    [SerializeField] private AudioSource audioSrcTeleport;
     private AudioSource audioSrc;
+
+    [SerializeField] private PauseMenu pauseMenu;
+    private Animator fade;
 
     void Start()
     {
@@ -46,6 +49,8 @@ public class Exit : MonoBehaviour
         soundManager.AddAudioSource(audioSrcActivate);
         soundManager.AddAudioSource(audioSrcTeleport);
         soundManager.AddAudioSource(audioSrc);
+
+        fade = GameObject.FindGameObjectWithTag("Fade").GetComponent<Animator>();
 
         grid = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>();
 
@@ -161,18 +166,25 @@ public class Exit : MonoBehaviour
         // Play audio
         audioSrcTeleport.Play();
 
+        pauseMenu.canPause = false;
+
         // Disable components as needed to show player has "teleported"
         player.GetComponent<CharacterController>().enabled = false;
         player.GetComponent<PlayerMoveController>().enabled = false;
         player.GetComponent<PlayerWeaponController>().enabled = false;
         firstPersonCamera.SetActive(false);
 
-        // Wait a bit
-        yield return new WaitForSeconds(3);
-
         // Increase saved blood shard currency by 1
         int shards = PlayerPrefs.GetInt("ShardCurrency", 0);
         PlayerPrefs.SetInt("ShardCurrency", shards + 1);
+
+        // Wait a bit
+        yield return new WaitForSeconds(2.2f);
+
+        fade.Play("FadeOut");
+
+        // Wait a bit
+        yield return new WaitForSeconds(.55f);
 
         // Load next scene
         SceneManager.LoadScene(nextScene);
