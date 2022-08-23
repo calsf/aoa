@@ -56,13 +56,6 @@ public abstract class Enemy : MonoBehaviour
 
         origRot = transform.rotation;
 
-        moveSpeedMax = enemy.MOVE_SPEED_BASE;
-        moveSpeedCurr = moveSpeedMax;
-        healthMax = enemy.HEALTH_BASE;
-        healthCurr = healthMax;
-        damageMax = enemy.DAMAGE_BASE;
-        damageCurr = damageMax;
-
         // Initialize pool of death effects, these are in the (very rare) case an enemy is reused and killed again while previous death effect was still active
         deathEffectPool = new List<GameObject>();
         for (int i = 0; i < POOL_NUM; i++)
@@ -71,6 +64,7 @@ public abstract class Enemy : MonoBehaviour
             deathEffectPool[i].SetActive(false);
         }
 
+        /* MOVED TO INITIALIZESTATS TO MAKE SURE IT USES HEALTH MAX
         // Initialize pool of explosive shot effects, these are in the (very rare) case an enemy is reused and killed again while previous explo shot effect was still active
         explosiveShotEffectPool = new List<GameObject>();
         for (int i = 0; i < POOL_NUM; i++)
@@ -83,10 +77,53 @@ public abstract class Enemy : MonoBehaviour
 
             explosiveShotEffectPool[i].SetActive(false);
         }
+        */
 
         currTarget = player.transform;
 
         minimapIcon = Instantiate(minimapIconPrefab);
+    }
+
+    // Getters
+    public float GetBaseMoveSpeed()
+    {
+        return enemy.MOVE_SPEED_BASE;
+    }
+
+    public float GetBaseHealth()
+    {
+        return enemy.HEALTH_BASE;
+    }
+
+    public float GetBaseDamage()
+    {
+        return enemy.DAMAGE_BASE;
+    }
+
+    // Setters
+    public void InitializeStats(float moveSpeed, float health, float damage)
+    {
+        moveSpeedMax = moveSpeed;
+        moveSpeedCurr = moveSpeedMax;
+
+        healthMax = health;
+        healthCurr = healthMax;
+
+        damageMax = damage;
+        damageCurr = damageMax;
+
+        // Initialize pool of explosive shot effects, these are in the (very rare) case an enemy is reused and killed again while previous explo shot effect was still active
+        explosiveShotEffectPool = new List<GameObject>();
+        for (int i = 0; i < POOL_NUM; i++)
+        {
+            explosiveShotEffectPool.Add(Instantiate(explosiveShotEffect, Vector3.zero, Quaternion.identity));
+
+            Explosion explo = explosiveShotEffectPool[i].GetComponent<Explosion>();
+            explo.SetSize(enemy.EXPLO_SIZE);    // Set explo size
+            explo.damage = (healthMax * EXPLOSIVE_DMG_MULTIPLIER);    // Set explo dmg based on % enemy max health
+
+            explosiveShotEffectPool[i].SetActive(false);
+        }
     }
 
     protected abstract void Move();

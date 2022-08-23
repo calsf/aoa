@@ -8,17 +8,21 @@ public class AltarLarge : Altar
     protected override void Start()
     {
         base.Start();
-        costCurr = COST_BASE_LARGE;
-        costText.text = costCurr.ToString();
+        
         powers = new List<string>(playerState.powers.Keys);
     }
 
-    protected override void OpenAltar()
+    public override int GetBaseCost()
+    {
+        return COST_BASE_LARGE;
+    }
+
+    protected override bool OpenAltar()
     {
         // Do not open if not enough currency
         if (playerState.bloodCurrency < costCurr)
         {
-            return;
+            return false;
         }
 
         playerState.bloodCurrency -= costCurr; // Take away currency
@@ -44,5 +48,7 @@ public class AltarLarge : Altar
 
         // Play sound
         audioSrc.PlayOneShot(audioClip);
+
+        return true;
     }
 }

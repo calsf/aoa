@@ -7,16 +7,19 @@ public class AltarSmall : Altar
     protected override void Start()
     {
         base.Start();
-        costCurr = COST_BASE_SMALL;
-        costText.text = costCurr.ToString();
     }
 
-    protected override void OpenAltar()
+    public override int GetBaseCost()
+    {
+        return COST_BASE_SMALL;
+    }
+
+    protected override bool OpenAltar()
     {
         // Do not open if not enough currency
         if (playerState.bloodCurrency < costCurr)
         {
-            return;
+            return false;
         }
 
         playerState.bloodCurrency -= costCurr; // Take away currency
@@ -31,5 +34,7 @@ public class AltarSmall : Altar
 
         // Play sound
         audioSrc.PlayOneShot(audioClip);
+
+        return true;
     }
 }

@@ -263,11 +263,11 @@ public class PlayerStateObject : ScriptableObject
             "Defiant Reload",
             "Reloading knocks back all nearby enemies."));
         powers.Add("DecoyShot", new Power(
-            false, 
+            true, 
             decoyShotIcon, 
             "Decoy",
             "Decoy Shot",
-            "The last shot of a magazine will spawn a decoy that will attract nearby enemies."));
+            "The last shot of a magazine will spawn a decoy that can attract up to 5 nearby enemies."));
         powers.Add("AirSlide", new Power(
             false, 
             airSlideIcon, 

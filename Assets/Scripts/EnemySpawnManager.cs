@@ -20,6 +20,10 @@ public class EnemySpawnManager : MonoBehaviour
 
     public int maxNum { get { return startNum * 2; } }
 
+    [SerializeField] public float scalingMoveSpeed;
+    [SerializeField] public float scalingHealth;
+    [SerializeField] public float scalingDamage;
+
     void Start()
     {
         grid = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>();
@@ -40,7 +44,11 @@ public class EnemySpawnManager : MonoBehaviour
         for (int i = 0; i < maxNum; i++)
         {
             enemyPool.Add(Instantiate(enemy, Vector3.zero, Quaternion.identity));
-            enemyPool[i].GetComponent<Enemy>().SetIgnoreNestCollision(true); // Initially ignore nest collision
+            Enemy newEnemy = enemyPool[i].GetComponent<Enemy>();
+            
+            newEnemy.SetIgnoreNestCollision(true); // Initially ignore nest collision
+            
+            InitializeEnemyStats(newEnemy); // Initialize stats
 
             enemyPool[i].SetActive(false);
         }
@@ -81,6 +89,16 @@ public class EnemySpawnManager : MonoBehaviour
         activeEnemies.RemoveAll(enemy => !enemy.activeInHierarchy);
     }
 
+    // Initialize enemy stats with scaling values
+    private void InitializeEnemyStats(Enemy enemy)
+    {
+        enemy.InitializeStats(
+            enemy.GetBaseMoveSpeed() * scalingMoveSpeed,
+            enemy.GetBaseHealth() * scalingHealth,
+            enemy.GetBaseDamage() * scalingDamage
+            );
+    }
+
     private GameObject GetFromPool(List<GameObject> pool, GameObject obj)
     {
         for (int i = 0; i < pool.Count; i++)
@@ -92,6 +110,7 @@ public class EnemySpawnManager : MonoBehaviour
         }
 
         // If no object in the pool is available, create a new object and add to the pool
+        // SHOULD NEVER REACH THIS SINCE WE CAP MAX NUMBER OF ENEMIES/INITIALIZED THE POOL WITH THE CAP
         GameObject newObj = Instantiate(obj, Vector3.zero, Quaternion.identity);
         pool.Add(newObj);
         return newObj;

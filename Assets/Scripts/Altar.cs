@@ -6,15 +6,15 @@ using UnityEngine.UI;
 public abstract class Altar : MonoBehaviour
 {
     [SerializeField] protected PlayerStateObject playerState;
-    protected const int COST_BASE_SMALL = 0;
-    protected const int COST_BASE_LARGE = 0;
+    protected const int COST_BASE_SMALL = 800;
+    protected const int COST_BASE_LARGE = 1600;
 
     [SerializeField] protected Text costText;
     [SerializeField] protected GameObject interactPopUpCanvas;
     [SerializeField] protected GameObject interactPopUp;
     protected Camera cam;
 
-    protected int costCurr;
+    public int costCurr { get; set; }
 
     protected List<string> stats;
 
@@ -45,11 +45,20 @@ public abstract class Altar : MonoBehaviour
         // Check for interact input
         if (!hasOpened && canOpen && Input.GetButtonDown("Interact"))
         {
-            hasOpened = true;
-            interactPopUp.SetActive(false);
-            OpenAltar();
+            if (OpenAltar())
+            {
+                hasOpened = true;
+                interactPopUp.SetActive(false);
+            }
         }
     }
+
+    public void UpdateCostText()
+    {
+        costText.text = costCurr.ToString();
+    }
+
+    public abstract int GetBaseCost();
 
     private void LateUpdate()
     {
@@ -61,7 +70,7 @@ public abstract class Altar : MonoBehaviour
         interactPopUpCanvas.transform.LookAt(interactPopUpCanvas.transform.position + cam.transform.rotation * Vector3.back, cam.transform.rotation * Vector3.up);
     }
 
-    protected abstract void OpenAltar();
+    protected abstract bool OpenAltar();
 
     // Upgrades one random player stat
     protected void UpgradeStat()

@@ -15,6 +15,8 @@ public class AltarSpawnManager : MonoBehaviour
     private LayerMask playerMask;
     private LayerMask objectMask;
 
+    [SerializeField] private float scalingCost;
+
     void Start()
     {
         grid = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>();
@@ -64,6 +66,11 @@ public class AltarSpawnManager : MonoBehaviour
             {
                 newAltar = Instantiate(altarSmall, spawnPos, Quaternion.identity);
             }
+
+            // Cost scaling
+            Altar altar = newAltar.GetComponent<Altar>();
+            altar.costCurr = (int)(altar.GetBaseCost() * scalingCost);
+            altar.UpdateCostText();
 
             newAltar.SetActive(true);
         }

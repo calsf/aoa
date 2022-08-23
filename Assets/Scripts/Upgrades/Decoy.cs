@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Decoy : MonoBehaviour
 {
+    private const int MAX_TAUNT = 5;
+
     [SerializeField] private ParticleSystem particles;
 
     private List<GameObject> hitEnemiesObj;
@@ -49,7 +51,7 @@ public class Decoy : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy") && !hitEnemiesObj.Contains(other.gameObject))
+        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy") && !hitEnemiesObj.Contains(other.gameObject) && hitEnemiesObj.Count < MAX_TAUNT)
         {
             Enemy enemy = other.GetComponentInParent<Enemy>();
             
