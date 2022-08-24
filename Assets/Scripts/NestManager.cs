@@ -23,6 +23,10 @@ public class NestManager : MonoBehaviour
     private float nextSpawnTime;
     private int maxActiveEnemies;
 
+    [SerializeField] public float scalingMoveSpeed;
+    [SerializeField] public float scalingHealth;
+    [SerializeField] public float scalingDamage;
+
     void Start()
     {
         grid = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>();
@@ -69,11 +73,23 @@ public class NestManager : MonoBehaviour
             newNest.GetComponent<Nest>().nestManager = this; // For all nests, reference this nest manager
             newNest.SetActive(true);
 
+            InitializeEnemyStats(newNest.GetComponent<Enemy>());
+
             nestList.Add(newNest);
         }
 
         // Initialize next spawn time
         nextSpawnTime = Time.time + Random.Range(BASE_SPAWN_DELAY_MIN, BASE_SPAWN_DELAY_MAX);
+    }
+
+    // Initialize enemy stats with scaling values
+    private void InitializeEnemyStats(Enemy enemy)
+    {
+        enemy.InitializeStats(
+            enemy.GetBaseMoveSpeed() * scalingMoveSpeed,
+            enemy.GetBaseHealth() * scalingHealth,
+            enemy.GetBaseDamage() * scalingDamage
+            );
     }
 
     void Update()
