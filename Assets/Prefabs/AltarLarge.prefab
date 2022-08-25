@@ -335,6 +335,7 @@ MonoBehaviour:
   interactPopUp: {fileID: 7054026946569394621}
   altarUsedEffect: {fileID: 2312987780231701306, guid: cdfe4b840fb71914b888aed30d074603, type: 3}
   audioClip: {fileID: 8300000, guid: 6392193c3c60c32478a50ae844f85912, type: 3}
+  minimapIconPrefab: {fileID: 468331400697541003, guid: 7684f6c644bda6c4f9db9be0ccd9d84e, type: 3}
 --- !u!65 &7054026945684632328
 BoxCollider:
   m_ObjectHideFlags: 0

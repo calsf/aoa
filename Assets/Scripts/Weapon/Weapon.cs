@@ -134,11 +134,13 @@ public class Weapon : MonoBehaviour
         hipPos = transform.Find("AimPositions/Hip").localPosition;
 
         shootLayerMask = new LayerMask();
-        shootLayerMask.value = (1 << LayerMask.NameToLayer("Enemy") 
+        shootLayerMask.value = (1 << LayerMask.NameToLayer("Enemy")
+            | 1 << LayerMask.NameToLayer("Boundary")
             | 1 << LayerMask.NameToLayer("Ground")
             | 1 << LayerMask.NameToLayer("Wall")
             | 1 << LayerMask.NameToLayer("Altar")
-            | 1 << LayerMask.NameToLayer("Nest"));
+            | 1 << LayerMask.NameToLayer("Nest")
+            | 1 << LayerMask.NameToLayer("BoundaryTop"));
 
         damageNumberManager = GameObject.FindGameObjectWithTag("DamageNumberManager").GetComponent<DamageNumberManager>();
         hitmarker = GameObject.FindGameObjectWithTag("Hitmarker").GetComponent<Hitmarker>();

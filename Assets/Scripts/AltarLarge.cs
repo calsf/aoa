@@ -44,6 +44,7 @@ public class AltarLarge : Altar
 
         // Activate used effect and destroy self after use
         altarUsedEffectObj.SetActive(true);
+        Destroy(minimapIcon.gameObject);
         Destroy(gameObject);
 
         // Play sound

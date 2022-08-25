@@ -28,7 +28,8 @@ public class Grid3D : MonoBehaviour
     void Awake()
     {
         unwalkableMask = new LayerMask();
-        unwalkableMask = 1 << LayerMask.NameToLayer("Wall");
+        unwalkableMask = 1 << LayerMask.NameToLayer("Wall") 
+            | 1 << LayerMask.NameToLayer("Boundary");
 
         // Grid sizes should be based on the grid size total and the size of the nodes
         gridSizeX = Mathf.RoundToInt(gridSizeTotal.x / nodeDiameter);

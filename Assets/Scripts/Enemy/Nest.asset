@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Nest
   m_EditorClassIdentifier: 
   MOVE_SPEED_BASE: 0
-  HEALTH_BASE: 1500
+  HEALTH_BASE: 1000
   DAMAGE_BASE: 0
   EXPLO_SIZE: 0
   CURRENCY_DROP: 150

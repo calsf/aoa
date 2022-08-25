@@ -16,6 +16,7 @@ public class WallManager : MonoBehaviour
         {
             int wallToRemove = Random.Range(0, numOfWalls);
             WallBlock wall = transform.GetChild(wallToRemove).GetComponent<WallBlock>();
+            wall.gameObject.SetActive(false); // Set inactive before updating so grid won't see the block
             wall.UpdateGrid(); // Make sure to update grid, Grid3D creates Grid on Awake, enemies copy its grid on Start, so need to update here in Start
             Destroy(wall.gameObject);
         }

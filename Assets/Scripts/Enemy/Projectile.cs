@@ -28,7 +28,8 @@ public class Projectile : MonoBehaviour
             | 1 << LayerMask.NameToLayer("Wall")
             | 1 << LayerMask.NameToLayer("Altar")
             | 1 << LayerMask.NameToLayer("Nest")
-            | 1 << LayerMask.NameToLayer("Boundary"));
+            | 1 << LayerMask.NameToLayer("Boundary")
+            | 1 << LayerMask.NameToLayer("BoundaryTop"));
 
         destroyedEffectPool = new List<GameObject>();
         for (int i = 0; i < POOL_NUM; i++)

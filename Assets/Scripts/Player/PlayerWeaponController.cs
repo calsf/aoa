@@ -48,6 +48,7 @@ public class PlayerWeaponController : MonoBehaviour
         // Must also include anything that can obstruct enemy view
         hoverLayerMask = new LayerMask();
         hoverLayerMask.value = (1 << LayerMask.NameToLayer("Enemy")
+            | 1 << LayerMask.NameToLayer("Boundary")
             | 1 << LayerMask.NameToLayer("Nest")
             | 1 << LayerMask.NameToLayer("Altar")
             | 1 << LayerMask.NameToLayer("Ground")

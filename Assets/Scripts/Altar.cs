@@ -27,6 +27,9 @@ public abstract class Altar : MonoBehaviour
     [SerializeField] protected AudioClip audioClip;
     protected AudioSource audioSrc;
 
+    [SerializeField] protected Transform minimapIconPrefab;
+    protected Transform minimapIcon;
+
     protected virtual void Start()
     {
         // Set up audio, use Player's audio source
@@ -38,6 +41,10 @@ public abstract class Altar : MonoBehaviour
         interactPopUp.SetActive(false);
 
         altarUsedEffectObj = Instantiate(altarUsedEffect, transform.position, Quaternion.identity);
+
+        minimapIcon = Instantiate(minimapIconPrefab);
+        minimapIcon.transform.position = transform.position;
+        minimapIcon.gameObject.SetActive(true);
     }
 
     void Update()
