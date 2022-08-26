@@ -12644,11 +12644,12 @@ MonoBehaviour:
   text: {fileID: 1813997747}
   rings: {fileID: 1874676110}
   groundEffect: {fileID: 1349296834}
-  nextScene: Level001
+  nextScene: Level002
   firstPersonCamera: {fileID: 446280574}
   audioSrcActivate: {fileID: 302833856}
   audioSrcTeleport: {fileID: 1419819890}
   pauseMenu: {fileID: 1391370218}
+  fixedPosition: 0
 --- !u!82 &429781099
 AudioSource:
   m_ObjectHideFlags: 0
@@ -53818,7 +53819,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2000548160915077244, guid: cfc6558844f8c754eb66b63737d565a6, type: 3}
       propertyPath: startNum
-      value: 25
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 2000548160915077244, guid: cfc6558844f8c754eb66b63737d565a6, type: 3}
       propertyPath: scalingDamage
@@ -66485,7 +66486,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7355796377125836381, guid: 78b763dbe3211df4a9669261e252562d, type: 3}
       propertyPath: startNum
-      value: 15
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7355796377125836381, guid: 78b763dbe3211df4a9669261e252562d, type: 3}
       propertyPath: scalingDamage

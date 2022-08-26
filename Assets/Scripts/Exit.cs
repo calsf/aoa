@@ -40,6 +40,8 @@ public class Exit : MonoBehaviour
     [SerializeField] private PauseMenu pauseMenu;
     private Animator fade;
 
+    [SerializeField] private bool fixedPosition;
+
     void Start()
     {
         // Set up audio
@@ -79,7 +81,12 @@ public class Exit : MonoBehaviour
 
         } while (Physics.CheckSphere(spawnPos, OBJECT_SEPARATION, objectMask) || Physics.CheckSphere(spawnPos, PLAYER_SEPARATION, playerMask)); // Keep certain distance between objects and player
 
-        transform.position = spawnPos;
+        // Only spawns at random pos if is not a fixed position
+        if (!fixedPosition)
+        {
+            transform.position = spawnPos;
+        }
+
         objectiveComplete = false;
         isExiting = false;
         text.text = "CANNOT ACTIVATE - COMPLETE CURRENT OBJECTIVE";

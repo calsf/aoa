@@ -6,7 +6,7 @@ public class EnemyAirShooter : EnemyAir
 {
     protected const int PROJECTILE_POOL_NUM = 10;
     protected const float MIN_SHOOT_DELAY = 1;
-    protected const float MAX_SHOOT_DELAY = 5;
+    protected const float MAX_SHOOT_DELAY = 3;
 
     [SerializeField] protected GameObject projectile;
     protected List<GameObject> projectilePool;
