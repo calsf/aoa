@@ -128,6 +128,7 @@ public class EnemySpawnManager : MonoBehaviour
 
         GameObject newEnemy = GetFromPool(enemyPool, enemy);
         Enemy enemyBehavior = newEnemy.GetComponent<Enemy>();
+        InitializeEnemyStats(enemyBehavior);
         enemyBehavior.SetIgnoreNestCollision(true);
 
         // Aggro on spawn if specified
