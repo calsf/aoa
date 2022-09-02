@@ -27,6 +27,9 @@ public class NestManager : MonoBehaviour
     [SerializeField] public float scalingHealth;
     [SerializeField] public float scalingDamage;
 
+    // Toggle to delete nests until startNum remain instead of spawning randomly
+    [SerializeField] private bool deleteSpawn;
+
     void Start()
     {
         grid = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>();
@@ -54,28 +57,56 @@ public class NestManager : MonoBehaviour
             maxActiveEnemies += enemySpawner.maxNum;
         }
 
-        // Spawn within grid bounds
-        for (int i = 0; i < startNum; i++)
+        if (deleteSpawn) // Delete until startNum
         {
-            Vector3 spawnPos = Vector3.zero;
+            int numToRemove = transform.childCount - startNum;
 
-            do
+            // Remove nests until only startNum number of nests remains
+            for (int i = 0; i < numToRemove; i++)
             {
-                float x = Random.Range(-grid.gridBounds.x, grid.gridBounds.x);
-                float y = 0;
-                float z = Random.Range(-grid.gridBounds.z, grid.gridBounds.z);
+                int nestToRemove = Random.Range(0, transform.childCount);
+                GameObject nest = transform.GetChild(nestToRemove).gameObject;
+                nest.transform.SetParent(null);
 
-                spawnPos = new Vector3(x, y, z);
+                Destroy(nest);
+            }
 
-            } while (Physics.CheckSphere(spawnPos, OBJECT_SEPARATION, objectMask) || Physics.CheckSphere(spawnPos, FAR_SEPARATION, farMask)); // Keep certain distance between objects
+            // Initialize remaining nest stats
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Enemy nest = transform.GetChild(i).GetComponent<Enemy>();
+                InitializeEnemyStats(nest);
 
-            GameObject newNest = Instantiate(nest, spawnPos, Quaternion.identity);
-            newNest.GetComponent<Nest>().nestManager = this; // For all nests, reference this nest manager
-            newNest.SetActive(true);
+                nest.GetComponent<Nest>().nestManager = this; // For all remaining nests, reference this nest manager
 
-            InitializeEnemyStats(newNest.GetComponent<Enemy>());
+                nestList.Add(nest.gameObject);
+            }
+        }
+        else // Spawn until startNum
+        {
+            // Spawn within grid bounds
+            for (int i = 0; i < startNum; i++)
+            {
+                Vector3 spawnPos = Vector3.zero;
 
-            nestList.Add(newNest);
+                do
+                {
+                    float x = Random.Range(-grid.gridBounds.x, grid.gridBounds.x);
+                    float y = 0;
+                    float z = Random.Range(-grid.gridBounds.z, grid.gridBounds.z);
+
+                    spawnPos = new Vector3(x, y, z);
+
+                } while (Physics.CheckSphere(spawnPos, OBJECT_SEPARATION, objectMask) || Physics.CheckSphere(spawnPos, FAR_SEPARATION, farMask)); // Keep certain distance between objects
+
+                GameObject newNest = Instantiate(nest, spawnPos, Quaternion.identity);
+                newNest.GetComponent<Nest>().nestManager = this; // For all nests, reference this nest manager
+                newNest.SetActive(true);
+
+                InitializeEnemyStats(newNest.GetComponent<Enemy>());
+
+                nestList.Add(newNest);
+            }
         }
 
         // Initialize next spawn time

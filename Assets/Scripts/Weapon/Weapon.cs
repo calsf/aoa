@@ -452,7 +452,7 @@ public class Weapon : MonoBehaviour
                 {
                     // Check for distance and apply falloff to damage if necessary
                     // Use base damage and base weapon falloff modifier for hits on wall
-                    float damageDealt = hit.distance > effectiveRange ? weapon.DAMAGE_BASE - ((hit.distance - effectiveRange) * weapon.FALLOFF_MODIFIER_BASE) : weapon.DAMAGE_BASE;
+                    float damageDealt = hit.distance > effectiveRange ? weapon.DAMAGE_BASE - ((hit.distance - effectiveRange) * weapon.FALLOFF_MODIFIER_BASE) : (weapon.DAMAGE_BASE * 1.5f);
 
                     // Tactical shot - destroy wall with one shot if within effective range
                     if (playerState.powers["TacticalShot"].isActive && hit.distance < effectiveRange)
