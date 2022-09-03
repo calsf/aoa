@@ -385,7 +385,7 @@ public class PlayerStateObject : ScriptableObject
             SetMoveSpeed,
             DecreaseMoveSpeed));
         stats.Add("JumpBonus", new Stat(
-            0,
+            15,
             15,
             jumpBonusIcon,
             "Jump", 

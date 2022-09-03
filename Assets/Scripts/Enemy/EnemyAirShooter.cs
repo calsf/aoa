@@ -15,6 +15,8 @@ public class EnemyAirShooter : EnemyAir
     protected float nextShotTime;
     protected bool isShooting;
 
+    private AudioSource audioSrc;
+
     protected override void Start()
     {
         base.Start();
@@ -24,6 +26,8 @@ public class EnemyAirShooter : EnemyAir
             projectilePool.Add(Instantiate(projectile, Vector3.zero, Quaternion.identity));
             projectilePool[i].SetActive(false);
         }
+
+        audioSrc = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -48,6 +52,8 @@ public class EnemyAirShooter : EnemyAir
         canMove = false; // Stop movement while shooting
  
         anim.Play("Shoot"); // Shoot animation should have anim event to actually shoot
+
+        audioSrc.Play();
     }
 
     protected void FinishShooting()
