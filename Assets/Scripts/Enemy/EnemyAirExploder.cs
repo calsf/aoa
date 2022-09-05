@@ -6,6 +6,8 @@ public class EnemyAirExploder : EnemyAir
 {
     protected bool isExploding;
 
+    private AudioSource audioSrc;
+
     protected override void Start()
     {
         base.Start();
@@ -14,6 +16,9 @@ public class EnemyAirExploder : EnemyAir
         {
             deathEffect.GetComponent<ExploderDeath>().enemy = this;
         }
+
+        audioSrc = GetComponent<AudioSource>();
+        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
     }
 
     void Update()
@@ -22,6 +27,11 @@ public class EnemyAirExploder : EnemyAir
         if (!isExploding && Vector3.Distance(transform.position, player.transform.position) < 10f)
         {
             anim.Play("Explode");
+        }
+
+        if (isAggro && !audioSrc.isPlaying)
+        {
+            audioSrc.Play();
         }
         
         CheckColdShot();

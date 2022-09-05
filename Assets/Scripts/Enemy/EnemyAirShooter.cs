@@ -28,6 +28,7 @@ public class EnemyAirShooter : EnemyAir
         }
 
         audioSrc = GetComponent<AudioSource>();
+        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
     }
 
     void Update()

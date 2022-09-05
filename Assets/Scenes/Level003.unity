@@ -25287,7 +25287,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7338886559745552642, guid: 8ec7782db8fb30242a3ae8468cc874bf, type: 3}
       propertyPath: scalingCost
-      value: 1.2
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 7338886559745552643, guid: 8ec7782db8fb30242a3ae8468cc874bf, type: 3}
       propertyPath: m_Name
@@ -43318,11 +43318,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8211986189972685962, guid: f7d1bd5855a9e054a9dca5d1f26e3d7d, type: 3}
       propertyPath: scalingDamage
-      value: 1
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 8211986189972685962, guid: f7d1bd5855a9e054a9dca5d1f26e3d7d, type: 3}
       propertyPath: scalingHealth
-      value: 1
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 8211986189972685962, guid: f7d1bd5855a9e054a9dca5d1f26e3d7d, type: 3}
       propertyPath: scalingMoveSpeed
@@ -61432,19 +61432,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2000548160915077244, guid: cfc6558844f8c754eb66b63737d565a6, type: 3}
       propertyPath: startNum
-      value: 25
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 2000548160915077244, guid: cfc6558844f8c754eb66b63737d565a6, type: 3}
       propertyPath: scalingDamage
-      value: 1
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 2000548160915077244, guid: cfc6558844f8c754eb66b63737d565a6, type: 3}
       propertyPath: scalingHealth
-      value: 1
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 2000548160915077244, guid: cfc6558844f8c754eb66b63737d565a6, type: 3}
       propertyPath: scalingMoveSpeed
-      value: 1.2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2000548160915077245, guid: cfc6558844f8c754eb66b63737d565a6, type: 3}
       propertyPath: m_RootOrder
@@ -75219,15 +75219,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7355796377125836381, guid: 78b763dbe3211df4a9669261e252562d, type: 3}
       propertyPath: startNum
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7355796377125836381, guid: 78b763dbe3211df4a9669261e252562d, type: 3}
       propertyPath: scalingDamage
-      value: 1
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 7355796377125836381, guid: 78b763dbe3211df4a9669261e252562d, type: 3}
       propertyPath: scalingHealth
-      value: 1
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 7355796377125836381, guid: 78b763dbe3211df4a9669261e252562d, type: 3}
       propertyPath: scalingMoveSpeed
