@@ -9,20 +9,20 @@ public class HealthBar : MonoBehaviour
     private Camera cam;
     private float nextHideTime;
 
-    [SerializeField] private RectTransform healthFill;
+    [SerializeField] protected RectTransform healthFill;
 
-    [SerializeField] private GameObject coldStatus;
-    [SerializeField] private GameObject weakenedStatus;
+    [SerializeField] protected GameObject coldStatus;
+    [SerializeField] protected GameObject weakenedStatus;
 
     private float startY;
     private Canvas parentCanvas;
 
-    private Settings settings;
-    private bool showHealthBars;
+    protected Settings settings;
+    protected bool showHealthBars;
 
     public Enemy ownerEnemy { get; set; }
 
-    void Awake()
+    protected virtual void Awake()
     {
         cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         settings = GameObject.FindGameObjectWithTag("Settings").GetComponent<Settings>();
@@ -39,7 +39,7 @@ public class HealthBar : MonoBehaviour
     }
 
 
-    private void OnDestroy()
+    protected virtual void OnDestroy()
     {
         if (settings != null)
         {
@@ -47,7 +47,7 @@ public class HealthBar : MonoBehaviour
         }
     }
 
-    void LateUpdate()
+    protected virtual void LateUpdate()
     {
         // Return if not set
         if (ownerEnemy == null)
@@ -102,7 +102,7 @@ public class HealthBar : MonoBehaviour
     }
 
     // Update setting to show health bars
-    private void UpdateShowHealthBar()
+    protected virtual void UpdateShowHealthBar()
     {
         showHealthBars = PlayerPrefs.GetInt("ShowHealthBars", 1) == 1 ? true : false;
 
@@ -116,7 +116,7 @@ public class HealthBar : MonoBehaviour
         }
     }
 
-    public void HealthBarOnHit(float healthRemaining)
+    public virtual void HealthBarOnHit(float healthRemaining)
     {
         // Do not show if setting is off
         if (!showHealthBars || float.IsNaN(healthRemaining))
