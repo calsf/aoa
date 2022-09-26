@@ -13,6 +13,8 @@ public class EnemySpawnManager : MonoBehaviour
     [SerializeField] private bool isGrounded; // If true, spawn at original object y position
     private Grid3D grid;
 
+    [SerializeField] private bool hideStartEnemies;
+
     private LayerMask playerMask;
     private LayerMask objectMask;
 
@@ -53,33 +55,36 @@ public class EnemySpawnManager : MonoBehaviour
             enemyPool[i].SetActive(false);
         }
 
-        // Spawn enemies within grid bounds
-        for (int i = 0; i < startNum; i++)
+        if (!hideStartEnemies)
         {
-            Vector3 spawnPos = Vector3.zero;
- 
-            do
+            // Spawn enemies within grid bounds
+            for (int i = 0; i < startNum; i++)
             {
-                float x = Random.Range(-grid.gridBounds.x, grid.gridBounds.x);
-                float y = Random.Range(0, grid.gridBounds.y); // Min Y bound should be 0
-                float z = Random.Range(-grid.gridBounds.z, grid.gridBounds.z);
+                Vector3 spawnPos = Vector3.zero;
 
-                if (isGrounded)
+                do
                 {
-                    y = enemy.transform.position.y;
-                }
+                    float x = Random.Range(-grid.gridBounds.x, grid.gridBounds.x);
+                    float y = Random.Range(0, grid.gridBounds.y); // Min Y bound should be 0
+                    float z = Random.Range(-grid.gridBounds.z, grid.gridBounds.z);
 
-                spawnPos = new Vector3(x, y, z);
+                    if (isGrounded)
+                    {
+                        y = enemy.transform.position.y;
+                    }
 
-            } while (Physics.CheckSphere(spawnPos, OBJECT_SEPARATION, objectMask) || Physics.CheckSphere(spawnPos, PLAYER_SEPARATION, playerMask)); // Keep certain distance between objects and player
+                    spawnPos = new Vector3(x, y, z);
 
-            // Get unused enemy and set position
-            GameObject newEnemy = GetFromPool(enemyPool, enemy);
-            newEnemy.transform.position = spawnPos;
-            newEnemy.GetComponent<Enemy>().SetIgnoreNestCollision(false); // Reset to collide with nest since these initial spawns will not spawn inside a nest
-            newEnemy.SetActive(true);
+                } while (Physics.CheckSphere(spawnPos, OBJECT_SEPARATION, objectMask) || Physics.CheckSphere(spawnPos, PLAYER_SEPARATION, playerMask)); // Keep certain distance between objects and player
 
-            activeEnemies.Add(newEnemy);
+                // Get unused enemy and set position
+                GameObject newEnemy = GetFromPool(enemyPool, enemy);
+                newEnemy.transform.position = spawnPos;
+                newEnemy.GetComponent<Enemy>().SetIgnoreNestCollision(false); // Reset to collide with nest since these initial spawns will not spawn inside a nest
+                newEnemy.SetActive(true);
+
+                activeEnemies.Add(newEnemy);
+            }
         }
     }
 

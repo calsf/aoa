@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class RotateOnly : MonoBehaviour
 {
-    /*
     void FixedUpdate()
     {
         transform.Rotate(0, 5, 0);
     }
-    */
 }
