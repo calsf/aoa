@@ -23,9 +23,9 @@ public class EnemyAir : Enemy
 
     protected Rigidbody rb;
 
-    protected override void Start()
+    protected void Awake()
     {
-        base.Start();
+        // GRID IS CREATED IN AWAKE, ENEMY SHOULD BE INSTANTIATED BY SPAWNMANAGER IN START
         grid = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>(); // Use air grid
         rb = GetComponent<Rigidbody>();
 
