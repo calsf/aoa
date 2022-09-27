@@ -21,7 +21,8 @@ public class EnemySwarm : EnemyAir
     protected float nextShotTime;
 
     // Enemies
-    [SerializeField] private Transform enemySpawnPos;
+    [SerializeField] protected GameObject enemySpawnPosParent;
+    protected List<Transform> enemySpawnPos;
     private List<EnemySpawnManager> enemySpawners;
     private float nextSpawnTime;
     private int maxActiveEnemies;
@@ -61,6 +62,12 @@ public class EnemySwarm : EnemyAir
             enemySpawners.Add(enemySpawner);
 
             maxActiveEnemies += enemySpawner.maxNum;
+        }
+
+        enemySpawnPos = new List<Transform>();
+        foreach (Transform child in enemySpawnPosParent.transform)
+        {
+            enemySpawnPos.Add(child);
         }
     }
 
@@ -186,9 +193,12 @@ public class EnemySwarm : EnemyAir
 
     public void SpawnEnemies()
     {
-        // Get random enemy type
-        EnemySpawnManager enemyType = enemySpawners[Random.Range(0, enemySpawners.Count)];
+        foreach (Transform spawnPos in enemySpawnPos)
+        {
+            // Get random enemy type
+            EnemySpawnManager enemyType = enemySpawners[Random.Range(0, enemySpawners.Count)];
 
-        bool spawned = enemyType.Spawn(enemySpawnPos.position, true);
+            bool spawned = enemyType.Spawn(spawnPos.position, true);
+        }
     }
 }

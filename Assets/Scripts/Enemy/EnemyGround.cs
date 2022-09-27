@@ -24,9 +24,9 @@ public class EnemyGround : Enemy
 
     protected Rigidbody rb;
 
-    protected override void Start()
+    protected void Awake()
     {
-        base.Start();
+        // GRID IS CREATED IN AWAKE, ENEMY SHOULD BE INSTANTIATED BY SPAWNMANAGER IN START
         grid = GameObject.FindGameObjectWithTag("GridGround").GetComponent<Grid3D>(); // Use ground grid
         rb = GetComponent<Rigidbody>();
 
