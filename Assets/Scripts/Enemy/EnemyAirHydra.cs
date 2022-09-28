@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyAirHydra : Enemy
 {
-    protected const int PROJECTILE_POOL_NUM = 40;
+    protected const int PROJECTILE_POOL_NUM = 80;
     protected const float SHOOT_DELAY = .3f;
 
     protected int minY;
@@ -22,13 +22,10 @@ public class EnemyAirHydra : Enemy
     [SerializeField] protected Transform projectileSpawnPos;
     protected float nextShotTime;
 
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
-        rb = GetComponent<Rigidbody>();
+        base.Awake();
         grid = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>(); // Use air grid
-
-        canMove = true;
 
         projectilePool = new List<GameObject>();
         for (int i = 0; i < PROJECTILE_POOL_NUM; i++)
@@ -36,6 +33,14 @@ public class EnemyAirHydra : Enemy
             projectilePool.Add(Instantiate(projectile, Vector3.zero, Quaternion.identity));
             projectilePool[i].SetActive(false);
         }
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+        rb = GetComponent<Rigidbody>();
+
+        canMove = true;
 
         minY = 10; // Min y position enemy can be at when finding position to move to
 

@@ -1,31 +1,45 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class EnemySwarm : EnemyAir
 {
-    protected const int PROJECTILE_POOL_NUM = 100;
+    protected const int PROJECTILE_POOL_NUM = 500;
     protected const float SHOOT_DELAY = .3f;
+    protected const float ENRAGED_SHOOT_DELAY = .2f;
 
     private const float BASE_SPAWN_DELAY_MIN = 5;
     private const float BASE_SPAWN_DELAY_MAX = 10;
     private const float MIN_SPAWN_DELAY = 2;
 
+    private const float ENRAGE_THRESHOLD = .4f;
+
     [SerializeField] private Transform deathPos;
 
     // Projectiles
-    [SerializeField] protected GameObject projectile;
-    protected List<GameObject> projectilePool;
-    [SerializeField] protected GameObject projectileSpawnPosParent;
-    protected List<Transform> projectileSpawnPos;
-    protected float nextShotTime;
+    [SerializeField] private GameObject projectile;
+    private List<GameObject> projectilePool;
+    [SerializeField] private GameObject projectileSpawnPosParent;
+    private List<Transform> projectileSpawnPos;
+    [SerializeField] private GameObject enragedProjectileSpawnPosParent;
+    private List<Transform> enragedProjectileSpawnPos;
+    private float nextShotTime;
+    private float nextEnragedShotTime;
 
     // Enemies
-    [SerializeField] protected GameObject enemySpawnPosParent;
-    protected List<Transform> enemySpawnPos;
+    [SerializeField] private GameObject enemySpawnPosParent;
+    private List<Transform> enemySpawnPos;
     private List<EnemySpawnManager> enemySpawners;
     private float nextSpawnTime;
     private int maxActiveEnemies;
+
+    // Enrage
+    [SerializeField] private Transform mainEnragedSpawnPos;
+    [SerializeField] Image healthFill;
+    [SerializeField] Color enragedColor;
+    private bool isEnraged;
+
 
     protected override void Start()
     {
@@ -49,6 +63,12 @@ public class EnemySwarm : EnemyAir
         foreach (Transform child in projectileSpawnPosParent.transform)
         {
             projectileSpawnPos.Add(child);
+        }
+
+        enragedProjectileSpawnPos = new List<Transform>();
+        foreach (Transform child in enragedProjectileSpawnPosParent.transform)
+        {
+            enragedProjectileSpawnPos.Add(child);
         }
 
         // Enemies
@@ -77,10 +97,38 @@ public class EnemySwarm : EnemyAir
         CheckWeakeningShot();
         MoveMinimapIcon();
 
-        if (Time.time > nextShotTime) // Is aggro and not already shooting and can move, shoot
+        // Enrage behavior
+        if (!isEnraged && healthCurr / healthMax < ENRAGE_THRESHOLD)
         {
-            nextShotTime = Time.time + SHOOT_DELAY;
+            isEnraged = true;
+            healthFill.color = enragedColor;
+        }
+
+        if (isEnraged && Time.time > nextEnragedShotTime)
+        {
+            nextEnragedShotTime = Time.time + ENRAGED_SHOOT_DELAY;
+            ShootAtPlayer();
+        }
+
+        // Normal behavior
+        if (Time.time > nextShotTime)
+        {
+            if (isEnraged)
+            {
+                // Faster during enrage
+                nextShotTime = Time.time + ENRAGED_SHOOT_DELAY;
+            }
+            else
+            {
+                nextShotTime = Time.time + SHOOT_DELAY;
+            }
+
             Shoot();
+
+            if (isEnraged)
+            {
+                ShootAtPlayer();
+            }
         }
 
         if (nextSpawnTime < Time.time)
@@ -95,7 +143,15 @@ public class EnemySwarm : EnemyAir
 
             float activeEnemyPercent = (float)currActiveEnemies / maxActiveEnemies;
 
-            nextSpawnTime = Time.time + (Random.Range(BASE_SPAWN_DELAY_MIN, BASE_SPAWN_DELAY_MAX) * activeEnemyPercent) + MIN_SPAWN_DELAY; // Add a min delay in case activeEnemyPercent is 0
+            if (isEnraged)
+            {
+                // Faster spawns if enraged
+                nextSpawnTime = Time.time + ((Random.Range(BASE_SPAWN_DELAY_MIN, BASE_SPAWN_DELAY_MAX) * activeEnemyPercent) + MIN_SPAWN_DELAY) / 2; // Add a min delay in case activeEnemyPercent is 0
+            }
+            else
+            {
+                nextSpawnTime = Time.time + (Random.Range(BASE_SPAWN_DELAY_MIN, BASE_SPAWN_DELAY_MAX) * activeEnemyPercent) + MIN_SPAWN_DELAY; // Add a min delay in case activeEnemyPercent is 0
+            }
 
             SpawnEnemies();
         }
@@ -188,6 +244,23 @@ public class EnemySwarm : EnemyAir
             Projectile newProjectile = obj.GetComponent<Projectile>();
             newProjectile.projectileDamage = damageCurr;
             newProjectile.projectileDir = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f)); // Randomize projectile direction
+        }
+    }
+
+    protected void ShootAtPlayer()
+    {
+        foreach (Transform spawnPos in enragedProjectileSpawnPos)
+        {
+            GameObject obj = GetFromPool(projectilePool, projectile);
+
+            obj.transform.rotation = spawnPos.rotation;
+            obj.transform.position = spawnPos.position;
+            obj.SetActive(true);
+
+            // Set projectile damage and direction
+            Projectile newProjectile = obj.GetComponent<Projectile>();
+            newProjectile.projectileDamage = damageCurr;
+            newProjectile.projectileDir = (currTarget.position + (Vector3.up * 2) - mainEnragedSpawnPos.position).normalized; // Offset player position, set direction based off 1 main position spawn
         }
     }
 

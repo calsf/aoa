@@ -46,6 +46,11 @@ public abstract class Enemy : MonoBehaviour
 
     public HealthBar healthBar;
 
+    protected virtual void Awake()
+    {
+
+    }
+
     protected virtual void Start()
     {
         anim = GetComponent<Animator>();

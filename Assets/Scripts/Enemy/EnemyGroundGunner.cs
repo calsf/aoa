@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyGroundGunner : EnemyGround
 {
-    protected const int PROJECTILE_POOL_NUM = 20;
+    protected const int PROJECTILE_POOL_NUM = 60;
     protected const float MIN_SHOOT_DELAY = 1;
     protected const float MAX_SHOOT_DELAY = 5;
 
@@ -19,9 +19,9 @@ public class EnemyGroundGunner : EnemyGround
     [SerializeField] private AudioSource shootAudioSrc;
     private bool hasShot = false;
 
-    protected override void Start()
+    protected override void Awake()
     {
-        base.Start();
+        base.Awake();
 
         // Set up audio
         SoundManager soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();

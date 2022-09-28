@@ -20,6 +20,7 @@ TagManager:
   - SoundManager
   - ExplosionAudioSource
   - Fade
+  - ProjectileSpeedScaler
   layers:
   - Default
   - TransparentFX

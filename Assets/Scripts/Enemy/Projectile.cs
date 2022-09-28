@@ -15,12 +15,18 @@ public class Projectile : MonoBehaviour
     [SerializeField] protected GameObject destroyedEffect;
     protected List<GameObject> destroyedEffectPool;
 
+    protected ProjectileSpeedScaler scaler;
+    protected float projectileSpeedScaled;
+
     public Vector3 projectileDir { get; set; }
     public float projectileDamage { get; set; }
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+
+        scaler = GameObject.FindGameObjectWithTag("ProjectileSpeedScaler").GetComponent<ProjectileSpeedScaler>();
+        projectileSpeedScaled = projectileSpeed * scaler.scaling;
 
         collideLayerMask = new LayerMask();
         collideLayerMask.value = (1 << LayerMask.NameToLayer("Player")
@@ -41,7 +47,7 @@ public class Projectile : MonoBehaviour
 
     void FixedUpdate()
     {
-        rb.AddForce((projectileDir * projectileSpeed) - rb.velocity, ForceMode.VelocityChange);
+        rb.AddForce((projectileDir * projectileSpeedScaled) - rb.velocity, ForceMode.VelocityChange);
     }
 
     void OnTriggerEnter(Collider other)

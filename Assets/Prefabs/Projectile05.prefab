@@ -128,3 +128,4 @@ MonoBehaviour:
   playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
   projectileSpeed: 30
   destroyedEffect: {fileID: 5869359556705712313, guid: d701644ddb7d0404eb09b36d18da6aef, type: 3}
+  scaler: {fileID: 0}
