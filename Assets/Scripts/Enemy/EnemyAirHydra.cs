@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemyAirHydra : Enemy
 {
     protected const int PROJECTILE_POOL_NUM = 80;
-    protected const float SHOOT_DELAY = .3f;
+    protected const float SHOOT_DELAY = .2f;
 
     protected int minY;
 
