@@ -76,6 +76,11 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
+    public void DeathPause()
+    {
+        Time.timeScale = 0;
+    }
+
     // Pause and show pause screen
     private void Pause()
     {
@@ -158,6 +163,7 @@ public class PauseMenu : MonoBehaviour
     public void OnQuit()
     {
         canPause = false;
+        isPaused = false;
 
         StartCoroutine(Quit());
     }
@@ -165,10 +171,12 @@ public class PauseMenu : MonoBehaviour
     private IEnumerator Quit()
     {
         fade.Play("FadeOut");
+        fade.updateMode = AnimatorUpdateMode.UnscaledTime;
 
         // Wait a bit
-        yield return new WaitForSeconds(.55f);
+        yield return new WaitForSecondsRealtime(.55f);
 
+        Time.timeScale = 1;
         SceneManager.LoadScene("TitleScene");
     }
 }

@@ -29,7 +29,11 @@ public class EnemyAirExploder : EnemyAir
             anim.Play("Explode");
         }
 
-        if (isAggro && !audioSrc.isPlaying)
+        if (Time.timeScale == 0 && audioSrc.isPlaying)
+        {
+            audioSrc.Stop();
+        }
+        else if (Time.timeScale > 0 && isAggro && !audioSrc.isPlaying)
         {
             audioSrc.Play();
         }

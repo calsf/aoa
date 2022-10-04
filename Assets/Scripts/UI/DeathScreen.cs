@@ -14,6 +14,7 @@ public class DeathScreen : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         anim = GetComponent<Animator>();
+        anim.updateMode = AnimatorUpdateMode.UnscaledTime;
     }
 
     void OnEnable()
@@ -39,6 +40,7 @@ public class DeathScreen : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
 
             anim.Play("DeathScreenFadeIn");
+            pauseMenu.DeathPause();
         }
     }
 }
