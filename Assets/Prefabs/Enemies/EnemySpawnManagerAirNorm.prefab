@@ -46,3 +46,8 @@ MonoBehaviour:
   startNum: 2
   enemy: {fileID: 2653189645536384461, guid: 5b821dbdf7783b04c940016f0b947d5a, type: 3}
   isGrounded: 0
+  hideStartEnemies: 0
+  scalingMoveSpeed: 0
+  scalingHealth: 0
+  scalingDamage: 0
+  playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}

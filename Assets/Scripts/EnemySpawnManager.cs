@@ -26,6 +26,8 @@ public class EnemySpawnManager : MonoBehaviour
     [SerializeField] public float scalingHealth;
     [SerializeField] public float scalingDamage;
 
+    [SerializeField] private PlayerStateObject playerState;
+
     void Start()
     {
         grid = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>();
@@ -97,11 +99,26 @@ public class EnemySpawnManager : MonoBehaviour
     // Initialize enemy stats with scaling values
     private void InitializeEnemyStats(Enemy enemy)
     {
-        enemy.InitializeStats(
-            enemy.GetBaseMoveSpeed() * scalingMoveSpeed,
-            enemy.GetBaseHealth() * scalingHealth,
-            enemy.GetBaseDamage() * scalingDamage
-            );
+        if (playerState.daysSurvived > playerState.FINAL_DAY_BEFORE_LOOP) // Start adding additional scaling after looping levels
+        {
+            float moveSpeed = enemy.GetBaseMoveSpeed() * scalingMoveSpeed;
+            float health = (enemy.GetBaseHealth() * scalingHealth) * (1 + ((playerState.daysSurvived - playerState.FINAL_DAY_BEFORE_LOOP) * .05f));
+            float damage = (enemy.GetBaseDamage() * scalingDamage) * (1 + ((playerState.daysSurvived - playerState.FINAL_DAY_BEFORE_LOOP) * .05f));
+
+            enemy.InitializeStats(
+                moveSpeed,
+                health,
+                damage
+                );
+        }
+        else
+        {
+            enemy.InitializeStats(
+                enemy.GetBaseMoveSpeed() * scalingMoveSpeed,
+                enemy.GetBaseHealth() * scalingHealth,
+                enemy.GetBaseDamage() * scalingDamage
+    );
+        }
     }
 
     private GameObject GetFromPool(List<GameObject> pool, GameObject obj)

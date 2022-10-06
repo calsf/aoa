@@ -155,6 +155,6 @@ public class PlayMenu : MonoBehaviour
         // Wait a bit
         yield return new WaitForSeconds(.55f);
 
-        SceneManager.LoadScene("Level001");
+        SceneManager.LoadScene("PreLevel001");
     }
 }

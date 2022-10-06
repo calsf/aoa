@@ -42,6 +42,8 @@ public class Exit : MonoBehaviour
 
     [SerializeField] private bool fixedPosition;
 
+    [SerializeField] private PlayerStateObject playerState;
+
     void Start()
     {
         // Set up audio
@@ -193,7 +195,19 @@ public class Exit : MonoBehaviour
         // Wait a bit
         yield return new WaitForSeconds(.55f);
 
-        // Load next scene
-        SceneManager.LoadScene(nextScene);
+        if (playerState.daysSurvived == playerState.FINAL_DAY_BEFORE_LOOP) // Load extra scene before looping
+        {
+            // Increase daysSurvived
+            playerState.daysSurvived++;
+
+            SceneManager.LoadScene("PostLevel015");
+        }
+        else // Load next scene
+        {
+            // Increase daysSurvived
+            playerState.daysSurvived++;
+
+            SceneManager.LoadScene(nextScene);
+        }
     }
 }

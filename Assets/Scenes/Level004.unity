@@ -18089,6 +18089,7 @@ MonoBehaviour:
   audioSrcTeleport: {fileID: 1419819890}
   pauseMenu: {fileID: 1391370218}
   fixedPosition: 0
+  playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
 --- !u!82 &429781099
 AudioSource:
   m_ObjectHideFlags: 0
@@ -53557,6 +53558,10 @@ PrefabInstance:
       value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 7294012937312363978, guid: d1a48890672f1a94180293ef7852c457, type: 3}
+      propertyPath: playerState
+      value: 
+      objectReference: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
+    - target: {fileID: 7294012937312363978, guid: d1a48890672f1a94180293ef7852c457, type: 3}
       propertyPath: scalingDamage
       value: 1.3
       objectReference: {fileID: 0}
@@ -73418,6 +73423,10 @@ PrefabInstance:
       value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 2000548160915077244, guid: cfc6558844f8c754eb66b63737d565a6, type: 3}
+      propertyPath: playerState
+      value: 
+      objectReference: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
+    - target: {fileID: 2000548160915077244, guid: cfc6558844f8c754eb66b63737d565a6, type: 3}
       propertyPath: scalingDamage
       value: 1.3
       objectReference: {fileID: 0}
@@ -87520,7 +87529,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4333414904272349648, guid: 18ead00370f1b5943b8f8eff330bedc0, type: 3}
       propertyPath: scalingHealth
-      value: 1
+      value: 1.1
       objectReference: {fileID: 0}
     - target: {fileID: 4333414904272349648, guid: 18ead00370f1b5943b8f8eff330bedc0, type: 3}
       propertyPath: scalingMoveSpeed
@@ -88028,6 +88037,10 @@ PrefabInstance:
       propertyPath: startNum
       value: 15
       objectReference: {fileID: 0}
+    - target: {fileID: 7355796377125836381, guid: 78b763dbe3211df4a9669261e252562d, type: 3}
+      propertyPath: playerState
+      value: 
+      objectReference: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
     - target: {fileID: 7355796377125836381, guid: 78b763dbe3211df4a9669261e252562d, type: 3}
       propertyPath: scalingDamage
       value: 1.3
@@ -102825,6 +102838,10 @@ PrefabInstance:
       propertyPath: startNum
       value: 15
       objectReference: {fileID: 0}
+    - target: {fileID: 8211986189972685962, guid: f7d1bd5855a9e054a9dca5d1f26e3d7d, type: 3}
+      propertyPath: playerState
+      value: 
+      objectReference: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
     - target: {fileID: 8211986189972685962, guid: f7d1bd5855a9e054a9dca5d1f26e3d7d, type: 3}
       propertyPath: scalingDamage
       value: 1.3

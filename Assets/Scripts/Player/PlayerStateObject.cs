@@ -12,6 +12,7 @@ public class PlayerStateObject : ScriptableObject
     private float nextDamagedTime;
     public float START_HEALTH = 100;
     public float SWAP_MULTIPLIER = .1f;
+    public int FINAL_DAY_BEFORE_LOOP = 15;
 
     public float tempoShotExtraDmg { get; set; }
     public bool peakOfSurvivalActive { get; set; }
@@ -20,6 +21,8 @@ public class PlayerStateObject : ScriptableObject
 
     public Dictionary<string, Power> powers { get; set; }
     public Dictionary<string, Stat> stats { get; set; }
+
+    public int daysSurvived;
 
     public float healthCurr;
     public int bloodCurrency;
@@ -424,6 +427,8 @@ public class PlayerStateObject : ScriptableObject
         bonusVengeDamage = 0;
         
         bloodCurrency = 0;
+
+        daysSurvived = 0;
 
         nextDamagedTime = Time.time;
 

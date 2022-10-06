@@ -22118,6 +22118,7 @@ MonoBehaviour:
   audioSrcTeleport: {fileID: 1419819890}
   pauseMenu: {fileID: 1391370218}
   fixedPosition: 0
+  playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
 --- !u!82 &429781099
 AudioSource:
   m_ObjectHideFlags: 0
@@ -95962,7 +95963,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4333414904272349648, guid: 18ead00370f1b5943b8f8eff330bedc0, type: 3}
       propertyPath: scalingHealth
-      value: 1
+      value: 1.1
       objectReference: {fileID: 0}
     - target: {fileID: 4333414904272349648, guid: 18ead00370f1b5943b8f8eff330bedc0, type: 3}
       propertyPath: scalingMoveSpeed
