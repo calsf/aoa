@@ -428,7 +428,7 @@ public class PlayerStateObject : ScriptableObject
         
         bloodCurrency = 0;
 
-        daysSurvived = 0;
+        daysSurvived = 1;
 
         nextDamagedTime = Time.time;
 
