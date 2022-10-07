@@ -22,6 +22,7 @@ public class AltarLarge : Altar
         // Do not open if not enough currency
         if (playerState.bloodCurrency < costCurr)
         {
+            audioSrc.PlayOneShot(failClip);
             return false;
         }
 

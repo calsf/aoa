@@ -1025,6 +1025,7 @@ MonoBehaviour:
   interactPopUpCanvas: {fileID: 6066205669122310767}
   interactPopUp: {fileID: 6066205668231607587}
   altarUsedEffect: {fileID: 2312987780231701306, guid: cdfe4b840fb71914b888aed30d074603, type: 3}
+  failClip: {fileID: 8300000, guid: 01931ed2fe273134298d348d802237f7, type: 3}
   audioClip: {fileID: 8300000, guid: 6392193c3c60c32478a50ae844f85912, type: 3}
   minimapIconPrefab: {fileID: 468331400697541003, guid: 7684f6c644bda6c4f9db9be0ccd9d84e, type: 3}
 --- !u!65 &6066205668888447163

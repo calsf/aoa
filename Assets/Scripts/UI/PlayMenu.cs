@@ -35,8 +35,12 @@ public class PlayMenu : MonoBehaviour
 
     private Animator fade;
 
+    [SerializeField] private AudioSource failAudioSrc;
+
     void Start()
     {
+        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(failAudioSrc);
+
         UpdateStats();
         initialShardAmount = shardDisplay.shardCurrency;
 
@@ -101,6 +105,7 @@ public class PlayMenu : MonoBehaviour
         if (shardDisplay.shardCurrency == 0
             || playerState.stats[statKey].statValue >= playerState.stats[statKey].maxValue)
         {
+            failAudioSrc.Play();
             return;
         }
 
@@ -119,6 +124,7 @@ public class PlayMenu : MonoBehaviour
         if (shardDisplay.shardCurrency == initialShardAmount 
             || playerState.stats[statKey].statValue <= playerState.stats[statKey].minValue)
         {
+            failAudioSrc.Play();
             return;
         }
 

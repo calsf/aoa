@@ -117,7 +117,7 @@ public class EnemySpawnManager : MonoBehaviour
                 enemy.GetBaseMoveSpeed() * scalingMoveSpeed,
                 enemy.GetBaseHealth() * scalingHealth,
                 enemy.GetBaseDamage() * scalingDamage
-    );
+                );
         }
     }
 

@@ -40,14 +40,29 @@ public class EnemySwarm : EnemyAir
     [SerializeField] Color enragedColor;
     private bool isEnraged;
 
+    private AudioSource audioSrc;
 
     protected override void Start()
     {
         base.Start();
-        InitializeStats(
-            enemy.MOVE_SPEED_BASE,
-            enemy.HEALTH_BASE,
-            enemy.DAMAGE_BASE);
+
+        audioSrc = GetComponent<AudioSource>();
+        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
+
+        if (playerState.daysSurvived > playerState.FINAL_DAY_BEFORE_LOOP) // Start adding additional scaling after looping levels
+        {
+            InitializeStats(
+                enemy.MOVE_SPEED_BASE,
+                enemy.HEALTH_BASE * (1 + ((playerState.daysSurvived - playerState.FINAL_DAY_BEFORE_LOOP) * .05f)),
+                enemy.DAMAGE_BASE * (1 + ((playerState.daysSurvived - playerState.FINAL_DAY_BEFORE_LOOP) * .05f)));
+        }
+        else
+        {
+            InitializeStats(
+                enemy.MOVE_SPEED_BASE,
+                enemy.HEALTH_BASE,
+                enemy.DAMAGE_BASE);
+        }
 
         isAggro = true;
 
@@ -102,6 +117,8 @@ public class EnemySwarm : EnemyAir
         {
             isEnraged = true;
             healthFill.color = enragedColor;
+
+            audioSrc.Play();
         }
 
         if (isEnraged && Time.time > nextEnragedShotTime)

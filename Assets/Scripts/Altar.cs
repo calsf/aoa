@@ -24,6 +24,7 @@ public abstract class Altar : MonoBehaviour
     [SerializeField] protected GameObject altarUsedEffect;
     protected GameObject altarUsedEffectObj;
 
+    [SerializeField] protected AudioClip failClip;
     [SerializeField] protected AudioClip audioClip;
     protected AudioSource audioSrc;
 
