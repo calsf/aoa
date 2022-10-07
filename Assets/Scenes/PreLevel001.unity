@@ -317,7 +317,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45a982158ac8bab4598e76cfd5691f51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waitTime: 5
+  waitTime: 7
   nextScene: Level001
 --- !u!1 &1542191278
 GameObject:

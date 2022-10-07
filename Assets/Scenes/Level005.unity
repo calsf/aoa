@@ -44553,6 +44553,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nest: {fileID: 154440097}
+  playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
+  objectiveHeaderText: {fileID: 1508028442}
   objectiveText: {fileID: 1447738488}
   exit: {fileID: 429781098}
 --- !u!1001 &819323001

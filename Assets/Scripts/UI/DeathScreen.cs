@@ -37,6 +37,12 @@ public class DeathScreen : MonoBehaviour
             player.GetComponent<PlayerMoveController>().enabled = false;
             player.GetComponent<PlayerWeaponController>().enabled = false;
 
+            // Check and update best days survived as needed
+            if (playerState.daysSurvived > PlayerPrefs.GetInt("BestDaysSurvived", 0))
+            {
+                PlayerPrefs.SetInt("BestDaysSurvived", playerState.daysSurvived);
+            }
+
             Cursor.lockState = CursorLockMode.None;
 
             anim.Play("DeathScreenFadeIn");

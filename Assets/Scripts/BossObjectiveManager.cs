@@ -7,15 +7,23 @@ public class BossObjectiveManager : MonoBehaviour
 {
     [SerializeField] private GameObject boss;
 
+    [SerializeField] private PlayerStateObject playerState;
+
+    [SerializeField] private Text objectiveHeaderText;
     [SerializeField] private Text objectiveText;
 
     [SerializeField] private Exit exit;
+
+    void Start()
+    {
+        objectiveHeaderText.text = "DAY " + playerState.daysSurvived + " - OBJECTIVE";
+    }
 
     void Update()
     {
         if (boss.activeInHierarchy)
         {
-            objectiveText.text = "Eliminate the Swarm!";
+            objectiveText.text = "Eliminate the Swarm";
         }
         else if (exit.hasActivated) // No boss and has activated portal
         {

@@ -7,6 +7,9 @@ public class ObjectiveManager : MonoBehaviour
 {
     [SerializeField] private NestManager nest;
 
+    [SerializeField] private PlayerStateObject playerState;
+
+    [SerializeField] private Text objectiveHeaderText;
     [SerializeField] private Text objectiveText;
 
     [SerializeField] private Exit exit;
@@ -24,6 +27,8 @@ public class ObjectiveManager : MonoBehaviour
             EnemySpawnManager enemySpawner = obj.GetComponent<EnemySpawnManager>();
             enemySpawners.Add(enemySpawner);
         }
+
+        objectiveHeaderText.text = "DAY " + playerState.daysSurvived + " - OBJECTIVE";
     }
 
     void Update()
