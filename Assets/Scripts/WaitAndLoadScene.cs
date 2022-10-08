@@ -8,6 +8,8 @@ public class WaitAndLoadScene : MonoBehaviour
     [SerializeField] private float waitTime;
     [SerializeField] private string nextScene;
 
+    [SerializeField] private PlayerStateObject playerState;
+
     private float loadTime;
     private bool isLoading;
 

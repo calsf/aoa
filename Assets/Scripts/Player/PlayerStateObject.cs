@@ -266,7 +266,7 @@ public class PlayerStateObject : ScriptableObject
             "Defiant Reload",
             "Reloading knocks back all nearby enemies."));
         powers.Add("DecoyShot", new Power(
-            true, 
+            false, 
             decoyShotIcon, 
             "Decoy",
             "Decoy Shot",
@@ -388,7 +388,7 @@ public class PlayerStateObject : ScriptableObject
             SetMoveSpeed,
             DecreaseMoveSpeed));
         stats.Add("JumpBonus", new Stat(
-            15,
+            0,
             15,
             jumpBonusIcon,
             "Jump", 

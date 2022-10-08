@@ -187,6 +187,9 @@ public class Exit : MonoBehaviour
         int shards = PlayerPrefs.GetInt("ShardCurrency", 0);
         PlayerPrefs.SetInt("ShardCurrency", shards + 1);
 
+        // Reset blood currency
+        playerState.bloodCurrency = 0;
+
         // Wait a bit
         yield return new WaitForSeconds(2.2f);
 
