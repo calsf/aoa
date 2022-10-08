@@ -37832,7 +37832,7 @@ GameObject:
   - component: {fileID: 968547151}
   m_Layer: 5
   m_Name: ControlsScreen
-  m_TagString: Settings
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

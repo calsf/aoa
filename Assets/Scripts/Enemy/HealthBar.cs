@@ -32,13 +32,10 @@ public class HealthBar : MonoBehaviour
         startY = parentCanvas.transform.localPosition.y;
         healthFill.localScale = Vector3.one;
 
-        nextHideTime = Time.time;
-
         UpdateShowHealthBar();
-    }
 
-    protected virtual void Start()
-    {
+        gameObject.SetActive(false);
+
         // Update to show health bar or not based on settings
         settings.OnSettingsSaved.AddListener(UpdateShowHealthBar);
     }

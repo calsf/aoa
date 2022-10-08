@@ -33,7 +33,7 @@ public class Settings : MonoBehaviour
 
     public UnityEvent OnSettingsSaved;
 
-    void Start()
+    void Awake()
     {
         ResetValues();
 
@@ -111,8 +111,15 @@ public class Settings : MonoBehaviour
         // Get saved value
         showHealthBars = PlayerPrefs.GetInt("ShowHealthBars", 1);
 
+        // Remove listeners to avoid triggering on initialize
+        Toggle.ToggleEvent valueChangeEvent = showHealthBarsToggle.onValueChanged;
+        showHealthBarsToggle.onValueChanged = new Toggle.ToggleEvent();
+
         // Set toggle based on saved value ---> 1 is ON, 0 or other number is OFF
         showHealthBarsToggle.isOn = showHealthBars == 1 ? true : false;
+
+        // Add back listeners
+        showHealthBarsToggle.onValueChanged = valueChangeEvent;
     }
 
     // Initializes all setting values to display based on saved values, should be called before Settings screen is opened
