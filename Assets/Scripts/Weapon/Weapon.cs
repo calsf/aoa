@@ -83,15 +83,8 @@ public class Weapon : MonoBehaviour
 
     protected virtual void Awake()
     {
-        // Set up audio
-        SoundManager soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
-        soundManager.AddAudioSource(audioSrcMain);
-        soundManager.AddAudioSource(audioSrcHeadHit);
-        soundManager.AddAudioSource(audioSrcBodyHit);
-
         // Set up audio, use Player's audio source
         audioSrc = GameObject.FindGameObjectWithTag("Player").GetComponent<AudioSource>();
-        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
 
         crosshair = GameObject.FindGameObjectWithTag("Crosshair").GetComponent<RectTransform>();
 
@@ -172,6 +165,17 @@ public class Weapon : MonoBehaviour
             decoyShotPool.Add(Instantiate(decoyShotEffect, Vector3.zero, Quaternion.identity));
             decoyShotPool[i].SetActive(false);
         }
+    }
+
+    void Start()
+    {
+        // Set up audio
+        SoundManager soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
+        soundManager.AddAudioSource(audioSrcMain);
+        soundManager.AddAudioSource(audioSrcHeadHit);
+        soundManager.AddAudioSource(audioSrcBodyHit);
+
+        soundManager.AddAudioSource(audioSrc);
     }
 
     void OnEnable()

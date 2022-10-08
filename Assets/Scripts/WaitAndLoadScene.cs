@@ -22,10 +22,9 @@ public class WaitAndLoadScene : MonoBehaviour
         loadTime = Time.time + waitTime;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (!isLoading && Time.time > waitTime)
+        if (!isLoading && Time.time > loadTime)
         {
             isLoading = true;
             StartCoroutine(LoadNextScene());

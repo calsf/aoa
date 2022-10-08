@@ -239,7 +239,7 @@ public abstract class Enemy : MonoBehaviour
         // On exiting a nest, re-activate collision with nest
         if (other.gameObject.layer == LayerMask.NameToLayer("Nest"))
         {
-            Debug.Log("called");
+            //Debug.Log("called");
             SetIgnoreNestCollision(false);
         }
     }

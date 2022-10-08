@@ -193,7 +193,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: IN A FAILED ATTEMPT TO ERADICATE MOSQUITOES FROM THE WORLD, WE ENDED UP
+  m_Text: IN A FAILED ATTEMPT TO ELIMINATE MOSQUITOES FROM THE WORLD, WE ENDED UP
     CREATING A NIGHTMARE...
 --- !u!222 &494398000
 CanvasRenderer:
@@ -317,7 +317,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45a982158ac8bab4598e76cfd5691f51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waitTime: 7
+  waitTime: 4.5
   nextScene: Level001
   playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
 --- !u!1 &1542191278

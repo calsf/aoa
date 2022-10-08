@@ -64,11 +64,6 @@ public class PlayerMoveController : MonoBehaviour
 
     void Awake()
     {
-        // Set up audio
-        SoundManager soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
-        soundManager.AddAudioSource(audioSrcMovement);
-        soundManager.AddAudioSource(audioSrcRocketJump);
-
         settings = GameObject.FindGameObjectWithTag("Settings").GetComponent<Settings>();
         controller = GetComponent<CharacterController>();
 
@@ -93,6 +88,11 @@ public class PlayerMoveController : MonoBehaviour
 
     void Start()
     {
+        // Set up audio
+        SoundManager soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
+        soundManager.AddAudioSource(audioSrcMovement);
+        soundManager.AddAudioSource(audioSrcRocketJump);
+
         Cursor.lockState = CursorLockMode.Locked;
 
         UpdateSensitivity();

@@ -23,8 +23,10 @@ public class EnemyAir : Enemy
 
     protected Rigidbody rb;
 
-    protected virtual void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         // GRID IS CREATED IN AWAKE, ENEMY SHOULD BE INSTANTIATED BY SPAWNMANAGER IN START
         grid = GameObject.FindGameObjectWithTag("GridAir").GetComponent<Grid3D>(); // Use air grid
         rb = GetComponent<Rigidbody>();
@@ -57,6 +59,11 @@ public class EnemyAir : Enemy
 
         lastValidStartPos = transform.position;
         canMove = true;
+    }
+
+    protected override void Start()
+    {
+        base.Start();
 
         // Update node walkable for this grid copy when original gets updated
         grid.OnNodeWalkableUpdate.AddListener((nodeIndex) => UpdateNodeWalkable(nodeIndex));

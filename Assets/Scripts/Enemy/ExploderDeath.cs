@@ -19,6 +19,10 @@ public class ExploderDeath : MonoBehaviour
         mainParticles = GetComponent<ParticleSystem>();
 
         audioSrc = GetComponent<AudioSource>();
+    }
+
+    private void Start()
+    {
         GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
     }
 

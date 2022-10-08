@@ -11,7 +11,10 @@ public class SwarmHealthBar : HealthBar
         healthFill.localScale = Vector3.one;
 
         UpdateShowHealthBar();
+    }
 
+    protected override void Start()
+    {
         // Update to show health bar or not based on settings
         settings.OnSettingsSaved.AddListener(UpdateShowHealthBar);
     }
