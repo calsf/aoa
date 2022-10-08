@@ -59,11 +59,6 @@ public class EnemyAir : Enemy
 
         lastValidStartPos = transform.position;
         canMove = true;
-    }
-
-    protected override void Start()
-    {
-        base.Start();
 
         // Update node walkable for this grid copy when original gets updated
         grid.OnNodeWalkableUpdate.AddListener((nodeIndex) => UpdateNodeWalkable(nodeIndex));

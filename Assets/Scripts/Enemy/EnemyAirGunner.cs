@@ -23,22 +23,17 @@ public class EnemyAirGunner : EnemyAir
     {
         base.Awake();
 
+        // Set up audio
+        SoundManager soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
+        soundManager.AddAudioSource(shootAudioSrc);
+        soundManager.AddAudioSource(windUpAudioSrc);
+
         projectilePool = new List<GameObject>();
         for (int i = 0; i < PROJECTILE_POOL_NUM; i++)
         {
             projectilePool.Add(Instantiate(projectile, Vector3.zero, Quaternion.identity));
             projectilePool[i].SetActive(false);
         }
-    }
-
-    protected override void Start()
-    {
-        base.Start();
-
-        // Set up audio
-        SoundManager soundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
-        soundManager.AddAudioSource(shootAudioSrc);
-        soundManager.AddAudioSource(windUpAudioSrc);
     }
 
     void Update()

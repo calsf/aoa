@@ -25,10 +25,6 @@ public class GasCloud : MonoBehaviour
         hitmarker = GameObject.FindGameObjectWithTag("Hitmarker").GetComponent<Hitmarker>();
 
         audioSrc = GetComponent<AudioSource>();
-    }
-
-    void Start()
-    {
         GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
     }
 

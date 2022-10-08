@@ -18,16 +18,12 @@ public class Explosion : MonoBehaviour
     void Awake()
     {
         audioSrc = GameObject.FindGameObjectWithTag("ExplosionAudioSource").GetComponent<AudioSource>();
+        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
 
         hitEnemies = new List<GameObject>();
         mainParticles = GetComponent<ParticleSystem>();
         damageNumberManager = GameObject.FindGameObjectWithTag("DamageNumberManager").GetComponent<DamageNumberManager>();
         hitmarker = GameObject.FindGameObjectWithTag("Hitmarker").GetComponent<Hitmarker>();
-    }
-
-    void Start()
-    {
-        GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>().AddAudioSource(audioSrc);
     }
 
     void OnEnable()
