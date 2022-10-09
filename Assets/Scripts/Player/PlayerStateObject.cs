@@ -179,7 +179,7 @@ public class PlayerStateObject : ScriptableObject
         nextDamagedTime = Time.time + INVULN_TIME;
         healthCurr = healthCurr - damage < 0 ? 0 : healthCurr - damage;
 
-        Debug.Log("OUCH! Health: " + healthCurr.ToString());
+        //Debug.Log("OUCH! Health: " + healthCurr.ToString());
 
         OnPlayerDamaged.Invoke();
     }

@@ -163,7 +163,7 @@ public class EnemySpawnManager : MonoBehaviour
         newEnemy.SetActive(true);
         activeEnemies.Add(newEnemy);
 
-        Debug.Log(newEnemy + "spawned");
+        //Debug.Log(newEnemy + "spawned");
 
         return true; // Return true, enemy spawned
     }
