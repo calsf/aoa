@@ -1,2 +1,2 @@
-# Age of Aedes
+# aoa
 A first-person shooter game made with Unity 2020.3.17.
