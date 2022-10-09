@@ -10,6 +10,8 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] private UpgradesDisplay upgradesDisplay;
     [SerializeField] private PausedUpgradesDisplay pausedUpgradesDisplay;
 
+    [SerializeField] private PlayerStateObject playerState;
+
     private CanvasGroup pauseScreen;
     private bool isPaused = false;
     private Animator fade;
@@ -172,6 +174,12 @@ public class PauseMenu : MonoBehaviour
     {
         fade.Play("FadeOut");
         fade.updateMode = AnimatorUpdateMode.UnscaledTime;
+
+        // Check and update best days survived as needed
+        if (playerState.daysSurvived > PlayerPrefs.GetInt("BestDaysSurvived", 0))
+        {
+            PlayerPrefs.SetInt("BestDaysSurvived", playerState.daysSurvived);
+        }
 
         // Wait a bit
         yield return new WaitForSecondsRealtime(.55f);

@@ -50680,6 +50680,7 @@ MonoBehaviour:
   controlsScreen: {fileID: 968547151}
   upgradesDisplay: {fileID: 2142224757}
   pausedUpgradesDisplay: {fileID: 178274784}
+  playerState: {fileID: 11400000, guid: 7af393561a9bbd44fb563ea1f5b8a820, type: 2}
 --- !u!1 &1394094872
 GameObject:
   m_ObjectHideFlags: 0

@@ -254,7 +254,7 @@ public class PlayerStateObject : ScriptableObject
             "Explosive Death",
             "Enemies explode on death."));
         powers.Add("ClonedShot", new Power(
-            true, 
+            false, 
             clonedShotIcon, 
             "Cloned",
             "Cloned Shot",
@@ -278,7 +278,7 @@ public class PlayerStateObject : ScriptableObject
             "Air Slide",
             "Sliding can be performed while in the air."));
         powers.Add("SwapShot", new Power(
-            true, 
+            false, 
             swapShotIcon, 
             "Swap Shot",
             "Swap Shot",
