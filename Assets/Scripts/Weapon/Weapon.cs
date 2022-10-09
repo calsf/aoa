@@ -423,7 +423,7 @@ public class Weapon : MonoBehaviour
                     }
 
                     // Swap shot - apply any bonus damage from swapping
-                    if (playerState.powers["SwapShot"].isActive)
+                    if (playerState.powers["SwapShot"].isActive && !isClonedShot)
                     {
                         // Add bonus damage based on percent of damage dealt
                         damageDealt += damageDealt * playerState.bonusSwapDamage;
@@ -569,7 +569,7 @@ public class Weapon : MonoBehaviour
                     }
 
                     // Swap shot - apply any bonus damage from swapping
-                    if (playerState.powers["SwapShot"].isActive)
+                    if (playerState.powers["SwapShot"].isActive && !isClonedShot)
                     {
                         // Add bonus damage based on percent of damage dealt
                         damageDealt += damageDealt * playerState.bonusSwapDamage;
@@ -610,7 +610,7 @@ public class Weapon : MonoBehaviour
         }
 
         // Swap shot - MAKE SURE TO RESET EVEN ON MISS
-        if (playerState.powers["SwapShot"].isActive)
+        if (playerState.powers["SwapShot"].isActive && !isClonedShot)
         {
             // Reset the bonus swap damage
             playerState.bonusSwapDamage = 0;

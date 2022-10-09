@@ -33,12 +33,12 @@ public class AltarSpawnManager : MonoBehaviour
             | 1 << LayerMask.NameToLayer("AltarInteract"));
 
         // Set number of large altars to spawn
-        int largeNum = Random.Range(1, 4);
+        int largeNum = Random.Range(1, 5);
 
         // Prevent too many large chests if not many total chests
-        if (largeNum >= startNum / 2)
+        if (largeNum > startNum / 2)
         {
-            largeNum = startNum / 3;
+            largeNum = startNum / 2;
         }
 
         // Spawn within grid bounds

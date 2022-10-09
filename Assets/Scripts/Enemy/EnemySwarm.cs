@@ -13,7 +13,7 @@ public class EnemySwarm : EnemyAir
     private const float BASE_SPAWN_DELAY_MAX = 10;
     private const float MIN_SPAWN_DELAY = 2;
 
-    private const float ENRAGE_THRESHOLD = .4f;
+    private const float ENRAGE_THRESHOLD = .5f;
 
     [SerializeField] private Transform deathPos;
 

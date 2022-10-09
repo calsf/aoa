@@ -13,11 +13,13 @@ MonoBehaviour:
   m_Name: PlayerState
   m_EditorClassIdentifier: 
   START_HEALTH: 100
-  SWAP_MULTIPLIER: 0.2
-  healthCurr: 96
-  bloodCurrency: 0
+  SWAP_MULTIPLIER: 1
+  FINAL_DAY_BEFORE_LOOP: 15
+  daysSurvived: 1
+  healthCurr: 70
+  bloodCurrency: 450
   selectedPrimary: 2
-  selectedSecondary: 0
+  selectedSecondary: 1
   selectedActive: 0
   reloadMultiplierIcon: {fileID: 21300000, guid: d79060a4e49139c45a34ec3130a2609d, type: 3}
   fireRateMultiplierIcon: {fileID: 21300000, guid: de11cabaa557a4541a4749e27b5d92db, type: 3}

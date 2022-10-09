@@ -29677,7 +29677,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7338886559745552642, guid: 8ec7782db8fb30242a3ae8468cc874bf, type: 3}
       propertyPath: startNum
-      value: 10
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 7338886559745552642, guid: 8ec7782db8fb30242a3ae8468cc874bf, type: 3}
       propertyPath: scalingCost

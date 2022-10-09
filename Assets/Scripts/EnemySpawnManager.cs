@@ -102,8 +102,8 @@ public class EnemySpawnManager : MonoBehaviour
         if (playerState.daysSurvived > playerState.FINAL_DAY_BEFORE_LOOP) // Start adding additional scaling after looping levels
         {
             float moveSpeed = enemy.GetBaseMoveSpeed() * scalingMoveSpeed;
-            float health = (enemy.GetBaseHealth() * scalingHealth) * (1 + ((playerState.daysSurvived - playerState.FINAL_DAY_BEFORE_LOOP) * .05f));
-            float damage = (enemy.GetBaseDamage() * scalingDamage) * (1 + ((playerState.daysSurvived - playerState.FINAL_DAY_BEFORE_LOOP) * .05f));
+            float health = (enemy.GetBaseHealth() * scalingHealth) * (1 + ((playerState.daysSurvived - playerState.FINAL_DAY_BEFORE_LOOP) * .5f));
+            float damage = (enemy.GetBaseDamage() * scalingDamage) * (1 + ((playerState.daysSurvived - playerState.FINAL_DAY_BEFORE_LOOP) * .5f));
 
             enemy.InitializeStats(
                 moveSpeed,

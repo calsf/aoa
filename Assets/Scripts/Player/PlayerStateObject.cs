@@ -11,7 +11,7 @@ public class PlayerStateObject : ScriptableObject
     private const float INVULN_TIME = 1f;
     private float nextDamagedTime;
     public float START_HEALTH = 100;
-    public float SWAP_MULTIPLIER = .1f;
+    public float SWAP_MULTIPLIER = 1f;
     public int FINAL_DAY_BEFORE_LOOP = 15;
 
     public float tempoShotExtraDmg { get; set; }
@@ -254,7 +254,7 @@ public class PlayerStateObject : ScriptableObject
             "Explosive Death",
             "Enemies explode on death."));
         powers.Add("ClonedShot", new Power(
-            false, 
+            true, 
             clonedShotIcon, 
             "Cloned",
             "Cloned Shot",
@@ -278,7 +278,7 @@ public class PlayerStateObject : ScriptableObject
             "Air Slide",
             "Sliding can be performed while in the air."));
         powers.Add("SwapShot", new Power(
-            false, 
+            true, 
             swapShotIcon, 
             "Swap Shot",
             "Swap Shot",
