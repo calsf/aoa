@@ -399,21 +399,27 @@ public class Weapon : MonoBehaviour
                     {
                         damageDealt *= headshotMultiplier;
 
-                        TempoShot(true);
+                        if (!isClonedShot)
+                        {
+                            TempoShot(true);
+                        }
                     }
                     else
                     {
-                        TempoShot(false);
+                        if (!isClonedShot)
+                        {
+                            TempoShot(false);
+                        }
                     }
 
                     // Tempo shot - apply extra damage if applies
-                    if (playerState.powers["TempoShot"].isActive)
+                    if (playerState.powers["TempoShot"].isActive && !isClonedShot)
                     {
                         damageDealt += playerState.tempoShotExtraDmg;
                     }
 
                     // Vengeance - apply any stored bonus damage from venge
-                    if (playerState.powers["Vengeance"].isActive)
+                    if (playerState.powers["Vengeance"].isActive && !isClonedShot)
                     {
                         // Add bonus venge damage
                         damageDealt += playerState.bonusVengeDamage;
@@ -475,7 +481,10 @@ public class Weapon : MonoBehaviour
                 }
                 else // Else hit nothing
                 {
-                    TempoShot(false);
+                    if (!isClonedShot)
+                    {
+                        TempoShot(false);
+                    }
                 }
             }
         }
@@ -544,22 +553,29 @@ public class Weapon : MonoBehaviour
                     {
                         damageDealt *= headshotMultiplier;
 
-                        TempoShot(true);
+                        if (!isClonedShot)
+                        {
+                            TempoShot(true);
+                        }
+
                         hasHeadshotOnce = true; // Set headshot as already having hit since punchthrough
                     }
                     else if (!hasHeadshotOnce) // Do not penalize on punchthrough miss
                     {
-                        TempoShot(false);
+                        if (!isClonedShot)
+                        {
+                            TempoShot(false);
+                        }
                     }
 
                     // Tempo shot - apply extra damage if applies
-                    if (playerState.powers["TempoShot"].isActive)
+                    if (playerState.powers["TempoShot"].isActive && !isClonedShot)
                     {
                         damageDealt += playerState.tempoShotExtraDmg;
                     }
 
                     // Vengeance - apply any stored bonus damage from venge
-                    if (playerState.powers["Vengeance"].isActive)
+                    if (playerState.powers["Vengeance"].isActive && !isClonedShot)
                     {
                         // Add bonus venge damage
                         damageDealt += playerState.bonusVengeDamage;
@@ -604,7 +620,10 @@ public class Weapon : MonoBehaviour
                 }
                 else if (!hasHeadshotOnce) // Hit nothing, but do not penalize on punchthrough miss
                 {
-                    TempoShot(false);
+                    if (!isClonedShot)
+                    {
+                        TempoShot(false);
+                    }
                 }
             }
         }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Swarm
   m_EditorClassIdentifier: 
   MOVE_SPEED_BASE: 12
-  HEALTH_BASE: 90000
+  HEALTH_BASE: 100000
   DAMAGE_BASE: 125
   EXPLO_SIZE: 10
   CURRENCY_DROP: 10000
